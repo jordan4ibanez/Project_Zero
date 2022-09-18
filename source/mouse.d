@@ -27,9 +27,11 @@ public class Mouse {
     Vector2 getPosition() {
         return this.position;
     }
+    
     Vector2 getDelta() {
         return this.delta;
     }
+
     float getMouseWheelMove() {
         return this.mouseWheelMove;
     }
