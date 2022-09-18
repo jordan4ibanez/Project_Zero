@@ -17,7 +17,7 @@ void main()
 
     InitWindow(800,600, "hi there");
 
-    // SetTargetFPS(30);
+    SetTargetFPS(30);
 
     GameCamera camera = new GameCamera(Vector3(0,0,0));
 
