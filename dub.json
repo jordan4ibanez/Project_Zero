@@ -4,6 +4,7 @@
 	],
 	"copyright": "Copyright © 2022, jordan4ibanez",
 	"dependencies": {
+		"bindbc-lua": "~>0.5.0",
 		"delta_time": "~>1.0.5",
 		"raylib-d": "~>4.2.1"
 	},
