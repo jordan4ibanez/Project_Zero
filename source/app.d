@@ -6,6 +6,7 @@ import delta_time;
 import camera;
 import mouse;
 import keyboard;
+import physics;
 
 void main()
 {
@@ -25,6 +26,8 @@ void main()
     mouse.grab(camera3d);
 
     Keyboard keyboard = new Keyboard();
+
+    Physics physics = new Physics();
 
 
     while(!WindowShouldClose()) {
