@@ -8,6 +8,7 @@ import camera;
 void main()
 {
     validateRaylibBinding();
+
 	if (load_lua()) {
         return;
     }
@@ -22,10 +23,11 @@ void main()
         calculateDelta();
 
 
+
         BeginDrawing();
         {
 
-            UpdateCamera(camera.getPointer());
+            camera.update();
             
             ClearBackground(Colors.RAYWHITE);
 
