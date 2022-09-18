@@ -16,7 +16,7 @@ public class Mouse {
         this.position       = GetMousePosition();
         this.delta          = GetMouseDelta();
         this.mouseWheelMove = GetMouseWheelMove();
-        this.sensitivity    = 8;
+        this.sensitivity    = 0.001;
     }
 
     void update() {
