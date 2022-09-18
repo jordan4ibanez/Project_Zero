@@ -6,17 +6,22 @@ import mouse;
 import std.math.trigonometry: cos, sin;
 import std.math.constants: PI;
 import std.algorithm.comparison: clamp;
-import std.stdio;
 
 private immutable HALF_PI = PI / 2.0;
 private immutable DOUBLE_PI = PI * 2;
 
-// Wrapper class for the game camera
+/// Wrapper class for the game camera
 public class GameCamera {
 
     private Camera3D camera;
 
     private bool firstPerson = true;
+
+    /*
+     * This is a flag to ignore one frame from when the mouse was grabbed
+     * This is required due to a side effect of GLFW calculations of mouse delta
+     */
+    private bool ignoreMouseInput = true;
 
     private Vector2 cameraLookRotation;
     private Vector3 cameraFront;
@@ -36,7 +41,7 @@ public class GameCamera {
         this.camera.fovy       = 55;
         this.cameraLookRotation = Vector2(0,0);
         // Again needs to update rotation target
-        this.setRotation(this.camera.target);
+        this.setRotation(Vector3(1,0,0));
     }
 
     void setFirstPerson(bool isFirstPerson) {
@@ -66,9 +71,28 @@ public class GameCamera {
         return &this.camera;
     }
 
+    void ignoreFrame() {
+        this.ignoreMouseInput = true;
+    }
+
     void firstPersonLook(Mouse mouse) {
-        float delta = getDelta();
+
+        if (!mouse.isGrabbed()) {
+            return;
+        }
+
         Vector2 mouseDelta = mouse.getDelta();
+
+        /// This is a workaround for initial delta being crazy
+        if (this.ignoreMouseInput) {
+            if (mouseDelta.x == 0 && mouseDelta.y == 0) {
+                this.ignoreMouseInput = false;
+            }
+            return;
+        }
+
+        float delta = getDelta();
+
         float sensitivity = mouse.getSensitivity();
 
         float yaw = this.cameraLookRotation.y += mouseDelta.x * delta * sensitivity;
