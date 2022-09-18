@@ -13,3 +13,9 @@ I'm also practicing pure OOP for this. So it might look strange!
 3. Built on mods (But what language for modding, I don't know)
 4. Map editor, somehow
 5. Optimizated
+
+## Project libraries:
+
+- **Rendering & input**: Raylib
+- **Physics**: bindbc-newton
+- **Timing**: delta_time
