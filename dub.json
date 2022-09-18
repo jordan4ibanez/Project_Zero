@@ -1,0 +1,9 @@
+{
+	"authors": [
+		"jordan4ibanez"
+	],
+	"copyright": "Copyright © 2022, jordan4ibanez",
+	"description": "A post apocalyptic first person survival game written in D with Raylib",
+	"license": "MIT",
+	"name": "d_raylib_zombie_game"
+}

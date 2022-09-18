@@ -1,0 +1,15 @@
+.dub
+docs.json
+__dummy.html
+docs/
+/d_raylib_zombie_game
+d_raylib_zombie_game.so
+d_raylib_zombie_game.dylib
+d_raylib_zombie_game.dll
+d_raylib_zombie_game.a
+d_raylib_zombie_game.lib
+d_raylib_zombie_game-test-*
+*.exe
+*.o
+*.obj
+*.lst
