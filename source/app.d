@@ -6,7 +6,9 @@ import lua;
 void main()
 {
     validateRaylibBinding();
-	load_lua();
+	if (load_lua()) {
+        return;
+    }
 
     InitWindow(800,600, "hi there");
 

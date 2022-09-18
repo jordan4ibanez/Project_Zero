@@ -3,12 +3,12 @@ module lua;
 import bindbc.lua;
 import std.stdio;
 
-void load_lua() {
+bool load_lua() {
 
     LuaSupport returnedVersion;
 
     version(Windows) {
-        returnedVersion = loadLua("lib/lua54.dll");
+        returnedVersion = loadLua("libs/lua54.dll");
     } else {
         // Linux,FreeBSD, OpenBSD, macOSX, haiku, etc
         returnedVersion = loadLua();
@@ -27,5 +27,10 @@ void load_lua() {
             "shared library is a version different from the one the app was",
             "configured to load");
         }
+        return true;
     }
+
+    writeln("Lua 5.4 loaded successfully!");
+
+    return false;
 }
