@@ -13,5 +13,8 @@
 	"name": "d_raylib_zombie_game",
 	"versions": [
 		"LUA_54"
-	]
+	],
+    "libs": [ "raylib" ],
+    "lflags-posix" : ["-L."],
+    "lflags-osx" : ["-rpath", "@executable_path/"]
 }
