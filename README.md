@@ -4,6 +4,8 @@
 
 ### **Please note:** I am a programmer, not an artist. The base game will be an absolute bodge of assets for now.
 
+I'm also practicing pure OOP for this. So it might look strange!
+
 ## Project goals:
 0. Fun
 1. Clean code
