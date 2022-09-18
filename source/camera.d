@@ -91,15 +91,13 @@ public class GameCamera {
             return;
         }
 
-        float delta = getDelta();
-
         float sensitivity = mouse.getSensitivity();
 
-        float yaw = this.cameraLookRotation.y += mouseDelta.x * delta * sensitivity;
+        float yaw = this.cameraLookRotation.y += mouseDelta.x * sensitivity;
 
         float pitch = (
             this.cameraLookRotation.x = clamp(
-                this.cameraLookRotation.x + mouseDelta.y * delta * sensitivity,
+                this.cameraLookRotation.x + mouseDelta.y * sensitivity,
                 -HALF_PI,
                 HALF_PI
             )
