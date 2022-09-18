@@ -10,5 +10,8 @@
 	},
 	"description": "A post apocalyptic first person survival game written in D with Raylib",
 	"license": "MIT",
-	"name": "d_raylib_zombie_game"
+	"name": "d_raylib_zombie_game",
+	"versions": [
+		"LUA_54"
+	]
 }
