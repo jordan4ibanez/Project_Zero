@@ -29,7 +29,7 @@ public class GameCamera {
         this.firstPerson = isFirstPerson;
     }
 
-    void getFirstPerson() {
+    bool getFirstPerson() {
         return this.firstPerson;
     }
 
@@ -62,10 +62,18 @@ public class GameCamera {
         );
     }
 
+    Vector3 getRotation() {
+        return this.camera.target;
+    }
+
     void setPosition(Vector3 position) {
         this.camera.position = position;
         // Must update the target or the rotation goes crazy
         this.setRotation(this.camera.target);
+    }
+
+    Vector3 getPosition() {
+        return this.camera.position;
     }
 
 }

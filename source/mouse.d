@@ -27,9 +27,17 @@ public class Mouse {
     Vector2 getPosition() {
         return this.position;
     }
-    
+
     Vector2 getDelta() {
         return this.delta;
+    }
+
+    float getSensitivity() {
+        return this.sensitivity;
+    }
+
+    void setSensitivity(float newSensitivity) {
+        this.sensitivity = newSensitivity;
     }
 
     float getMouseWheelMove() {
