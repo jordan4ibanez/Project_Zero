@@ -4,6 +4,7 @@ import raylib;
 import lua;
 import delta_time;
 import camera;
+import mouse;
 
 void main()
 {
@@ -16,6 +17,10 @@ void main()
     InitWindow(800,600, "hi there");
 
     GameCamera camera = new GameCamera(Vector3(0,0,0));
+
+    Mouse mouse = new Mouse();
+
+    mouse.grab();
 
 
     while(!WindowShouldClose()) {
