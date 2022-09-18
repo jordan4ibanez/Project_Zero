@@ -17,10 +17,12 @@ void main()
 
     InitWindow(800,600, "hi there");
 
+    // SetTargetFPS(30);
+
     GameCamera camera = new GameCamera(Vector3(0,0,0));
 
     Mouse mouse = new Mouse();
-    mouse.grab();
+    mouse.grab(camera);
 
     Keyboard keyboard = new Keyboard();
 
