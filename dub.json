@@ -4,6 +4,7 @@
 	],
 	"copyright": "Copyright © 2022, jordan4ibanez",
 	"dependencies": {
+		"delta_time": "~>1.0.5",
 		"raylib-d": "~>4.2.1"
 	},
 	"description": "A post apocalyptic first person survival game written in D with Raylib",
