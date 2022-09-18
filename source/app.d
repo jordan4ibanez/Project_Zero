@@ -21,26 +21,27 @@ void main()
 
         calculateDelta();
 
-       
-
 
         BeginDrawing();
+        {
 
-        UpdateCamera(camera.getPointer());
-        
-        ClearBackground(Colors.RAYWHITE);
+            UpdateCamera(camera.getPointer());
+            
+            ClearBackground(Colors.RAYWHITE);
 
-        BeginMode3D(camera.get());
+            BeginMode3D(camera.get());
+            {
 
-        DrawCube(Vector3(10,0,0),2,2,2,Colors.BLACK);
-        DrawCube(Vector3(0,10,0),2,2,2,Colors.BLACK);
+                DrawCube(Vector3(10,0,0),2,2,2,Colors.BLACK);
+                DrawCube(Vector3(0,10,0),2,2,2,Colors.BLACK);
 
-        EndMode3D();
-
-
-        // DrawText("hello there", 400, 300, 28, Colors.BLACK);
+            }
+            EndMode3D();
 
 
+            // DrawText("hello there", 400, 300, 28, Colors.BLACK);
+
+        }
         EndDrawing();
     }
 
