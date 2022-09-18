@@ -19,11 +19,11 @@ void main()
 
     SetTargetFPS(30);
 
-    GameCamera camera = new GameCamera(Vector3(0,0,0));
+    GameCamera camera3d = new GameCamera(Vector3(0,0,0));
 
     Mouse mouse = new Mouse();
-    mouse.grab(camera);
-
+    mouse.grab(camera3d);
+    
     Keyboard keyboard = new Keyboard();
 
 
@@ -37,9 +37,9 @@ void main()
 
         keyboard.update();
 
-        camera.firstPersonLook(mouse);
+        camera3d.firstPersonLook(mouse);
 
-        camera.update();
+        camera3d.update();
 
         /// End internal calculations, begin draw
 
@@ -47,9 +47,9 @@ void main()
         BeginDrawing();
         {
             
-            camera.clear(Colors.RAYWHITE);
+            camera3d.clear(Colors.RAYWHITE);
 
-            BeginMode3D(camera.get());
+            BeginMode3D(camera3d.get());
             {
 
                 DrawCube(Vector3(-10,0,0),2,2,2,Colors.RED);
