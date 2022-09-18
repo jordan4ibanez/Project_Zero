@@ -41,7 +41,7 @@ public class GameCamera {
         this.camera.fovy       = 55;
         this.cameraLookRotation = Vector2(0,0);
         // Again needs to update rotation target
-        this.setRotation(Vector3(1,0,0));
+        this.setRotation(Vector3(-1,0,0));
     }
 
     void setFirstPerson(bool isFirstPerson) {
