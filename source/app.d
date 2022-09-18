@@ -35,24 +35,27 @@ void main()
 
         keyboard.update();
 
-        
+        camera.firstPersonLook(mouse);
 
+        camera.update();
 
         /// End internal calculations, begin draw
 
 
         BeginDrawing();
         {
-
-            camera.update();
             
             camera.clear(Colors.RAYWHITE);
 
             BeginMode3D(camera.get());
             {
 
-                DrawCube(Vector3(10,0,0),2,2,2,Colors.BLACK);
+                DrawCube(Vector3(-10,0,0),2,2,2,Colors.RED);
+                DrawCube(Vector3(10,0,0),2,2,2,Colors.BLUE);
                 DrawCube(Vector3(0,10,0),2,2,2,Colors.BLACK);
+                DrawCube(Vector3(0,-10,0),2,2,2,Colors.BLACK);
+                DrawCube(Vector3(0,0,10),2,2,2,Colors.GOLD);
+                DrawCube(Vector3(0,0,-10),2,2,2,Colors.DARKGRAY);
 
             }
             EndMode3D();
