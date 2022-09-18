@@ -2,6 +2,8 @@ import std.stdio;
 
 import raylib;
 import lua;
+import delta_time;
+import camera;
 
 void main()
 {
@@ -12,10 +14,35 @@ void main()
 
     InitWindow(800,600, "hi there");
 
+    GameCamera camera = new GameCamera(Vector3(0,0,0));
+
+    float FOV = 55;
+    bool up = true;
+
     while(!WindowShouldClose()) {
+
+        calculateDelta();
+
+       
+
+
         BeginDrawing();
+
+        UpdateCamera(camera.getPointer());
+        
         ClearBackground(Colors.RAYWHITE);
-        DrawText("hello there", 400, 300, 28, Colors.BLACK);
+
+        BeginMode3D(camera.get());
+
+        DrawCube(Vector3(10,0,0),2,2,2,Colors.BLACK);
+        DrawCube(Vector3(0,10,0),2,2,2,Colors.BLACK);
+
+        EndMode3D();
+
+
+        // DrawText("hello there", 400, 300, 28, Colors.BLACK);
+
+
         EndDrawing();
     }
 
