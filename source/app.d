@@ -5,6 +5,7 @@ import lua;
 import delta_time;
 import camera;
 import mouse;
+import keyboard;
 
 void main()
 {
@@ -19,14 +20,25 @@ void main()
     GameCamera camera = new GameCamera(Vector3(0,0,0));
 
     Mouse mouse = new Mouse();
-
     mouse.grab();
+
+    Keyboard keyboard = new Keyboard();
 
 
     while(!WindowShouldClose()) {
 
         calculateDelta();
 
+        /// Begin internal calculations
+
+        mouse.update();
+
+        keyboard.update();
+
+        
+
+
+        /// End internal calculations, begin draw
 
 
         BeginDrawing();
