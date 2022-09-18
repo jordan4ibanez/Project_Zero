@@ -2,7 +2,7 @@
  A post apocalyptic first person survival game written in D with Raylib
 
 
-Project goals:
+## Project goals:
 0. Fun
 1. Clean code
 2. Easy to understand
