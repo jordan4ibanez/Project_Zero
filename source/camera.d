@@ -23,6 +23,10 @@ public class GameCamera {
         this.setRotation(this.camera.target);
     }
 
+    void setFOV(float FOV) {
+        this.camera.fovy = FOV;
+    }
+
     Camera get() {
         return this.camera;
     }

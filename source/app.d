@@ -16,8 +16,6 @@ void main()
 
     GameCamera camera = new GameCamera(Vector3(0,0,0));
 
-    float FOV = 55;
-    bool up = true;
 
     while(!WindowShouldClose()) {
 
