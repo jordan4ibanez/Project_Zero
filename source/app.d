@@ -15,7 +15,7 @@ void main()
         return;
     }
 
-    InitWindow(800,600, "hi there");
+    InitWindow(800,600, "D Raylib Zombie Game 0.0.0");
 
     SetTargetFPS(30);
 
@@ -23,7 +23,7 @@ void main()
 
     Mouse mouse = new Mouse();
     mouse.grab(camera3d);
-    
+
     Keyboard keyboard = new Keyboard();
 
 
