@@ -2,6 +2,8 @@
  A post apocalyptic first person survival game written in D with Raylib
 
 
+### **Please note:** I am a programmer, not an artist. The base game will be an absolute bodge of assets for now.
+
 ## Project goals:
 0. Fun
 1. Clean code
