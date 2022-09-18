@@ -8,6 +8,8 @@ public class GameCamera {
 
     private Camera3D camera;
 
+    private boolean firstPerson = true;
+
     this() {
         throw new Exception("CANNOT INITIALIZE A CAMERA WITHOUT A POSITION!");
     }
@@ -21,6 +23,14 @@ public class GameCamera {
         this.camera.fovy = 55;
         // Again needs to update rotation target
         this.setRotation(this.camera.target);
+    }
+
+    void setFirstPerson(bool isFirstPerson) {
+        this.firstPerson = isFirstPerson;
+    }
+
+    void getFirstPerson() {
+        return this.firstPerson;
     }
 
     void update() {
