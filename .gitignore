@@ -13,3 +13,4 @@ d_raylib_zombie_game-test-*
 *.o
 *.obj
 *.lst
+*.pdb
