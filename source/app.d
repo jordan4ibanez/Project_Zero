@@ -29,7 +29,7 @@ void main()
 
             camera.update();
             
-            ClearBackground(Colors.RAYWHITE);
+            camera.clear(Colors.RAYWHITE);
 
             BeginMode3D(camera.get());
             {

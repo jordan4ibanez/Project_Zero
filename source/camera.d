@@ -27,6 +27,10 @@ public class GameCamera {
         UpdateCamera(&this.camera);
     }
 
+    void clear(Color color) {
+        ClearBackground(color);
+    }
+
     void setFOV(float FOV) {
         this.camera.fovy = FOV;
     }
