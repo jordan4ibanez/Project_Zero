@@ -10,9 +10,16 @@ import physics;
 
 void main()
 {
+    /// This is just awesome!
     validateRaylibBinding();
 
+    /// Mod API & Integration
 	if (load_lua()) {
+        return;
+    }
+
+    /// Load physics engine
+    if (loadNewtonPhysicsEngine()) {
         return;
     }
 
