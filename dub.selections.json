@@ -7,6 +7,7 @@
 		"delta_time": "1.0.5",
 		"dlib": "0.19.2",
 		"dmech": "0.4.1",
-		"raylib-d": "4.2.1"
+		"raylib-d": "4.2.1",
+		"stb_vorbis": "1.0.0"
 	}
 }
