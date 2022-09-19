@@ -13,21 +13,18 @@ import dmech.shape;
 
 void main()
 {
-    /// This is just awesome!
+
     validateRaylibBinding();
 
     /// Mod API & Integration
 	if (loadLuaLibrary()) {
         return;
     }
+
     InitWindow(800,600, "D Raylib Zombie Game 0.0.0");
 
     SetTargetFPS(60);
 
-    InitAudioDevice();
-
-    Music bonk = LoadMusicStream("sounds/bonk.mp3");
-    bonk.looping = false;
 
     GameCamera camera3d = new GameCamera(Vector3(0,0,0));
 
@@ -46,14 +43,9 @@ void main()
     RigidBody ball = physics.addBody();
 
     float oldSpeed = 0;
-
     
 
     while(!WindowShouldClose()) {
-
-        if (IsMusicStreamPlaying(bonk)) {
-            UpdateMusicStream(bonk);
-        }
 
         calculateDelta();
 
@@ -70,7 +62,7 @@ void main()
         float speed = ballSpeed.y;
 
         if (oldSpeed < 0 && speed > 0) {
-            PlayMusicStream(bonk);
+            writeln("bonk");
         }
         
         oldSpeed = speed;
@@ -102,14 +94,13 @@ void main()
 
                 DrawSphere(ballPosition, 1, Colors.BLACK);
 
-                /*
+                
                 DrawCube(Vector3(-10,0,0),2,2,2,Colors.RED);
                 DrawCube(Vector3(10,0,0),2,2,2,Colors.BLUE);
-                DrawCube(Vector3(0,10,0),2,2,2,Colors.YELLOW);
+                DrawCube(Vector3(1,10,0),2,2,2,Colors.YELLOW);
                 DrawCube(Vector3(0,-10,0),2,2,2,Colors.GREEN);
                 DrawCube(Vector3(0,0,10),2,2,2,Colors.BEIGE);
                 DrawCube(Vector3(0,0,-10),2,2,2,Colors.DARKGRAY);
-                */
 
             }
             EndMode3D();
