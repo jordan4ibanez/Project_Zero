@@ -1,4 +1,4 @@
-module open_al;
+module sound_engine;
 
 
 import bindbc.openal;
@@ -120,8 +120,6 @@ public class SoundEngine {
         this.sources[uuid] = thisSource;
 
     }
-
-
 
 
     /// Begin the OpenAL internal handling
