@@ -25,7 +25,7 @@ void main()
 
     InitWindow(800,600, "D Raylib Zombie Game 0.0.0");
 
-    SetTargetFPS(30);
+    SetTargetFPS(144);
 
     GameCamera camera3d = new GameCamera(Vector3(0,0,0));
 
@@ -64,9 +64,9 @@ void main()
 
                 DrawCube(Vector3(-10,0,0),2,2,2,Colors.RED);
                 DrawCube(Vector3(10,0,0),2,2,2,Colors.BLUE);
-                DrawCube(Vector3(0,10,0),2,2,2,Colors.BLACK);
-                DrawCube(Vector3(0,-10,0),2,2,2,Colors.BLACK);
-                DrawCube(Vector3(0,0,10),2,2,2,Colors.GOLD);
+                DrawCube(Vector3(0,10,0),2,2,2,Colors.YELLOW);
+                DrawCube(Vector3(0,-10,0),2,2,2,Colors.GREEN);
+                DrawCube(Vector3(0,0,10),2,2,2,Colors.BEIGE);
                 DrawCube(Vector3(0,0,-10),2,2,2,Colors.DARKGRAY);
 
             }
