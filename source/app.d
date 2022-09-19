@@ -97,7 +97,7 @@ void main()
                 
                 DrawCube(Vector3(-10,0,0),2,2,2,Colors.RED);
                 DrawCube(Vector3(10,0,0),2,2,2,Colors.BLUE);
-                DrawCube(Vector3(1,10,0),2,2,2,Colors.YELLOW);
+                DrawCube(Vector3(2,10,0),2,2,2,Colors.YELLOW);
                 DrawCube(Vector3(0,-10,0),2,2,2,Colors.GREEN);
                 DrawCube(Vector3(0,0,10),2,2,2,Colors.BEIGE);
                 DrawCube(Vector3(0,0,-10),2,2,2,Colors.DARKGRAY);
