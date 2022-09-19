@@ -43,11 +43,15 @@ public class Physics {
     this() {
         this.world = NewtonCreate();
         this.entity_count = 0;
+
+        writeln("Succesfully initialized physics world!");
     }
 
     ~this() {
         NewtonDestroyAllBodies(this.world);
         NewtonDestroy(this.world);
+
+        writeln("Successfully deleted physics world!");
     }
 
 
