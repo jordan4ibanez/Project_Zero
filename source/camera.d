@@ -9,6 +9,7 @@ import std.algorithm.comparison: clamp;
 
 private immutable HALF_PI = PI / 2.0;
 private immutable DOUBLE_PI = PI * 2;
+private immutable RAYLIB_FLIP_FIX = 0.0001;
 
 /// Wrapper class for the game camera
 public class GameCamera {
@@ -98,8 +99,8 @@ public class GameCamera {
         float pitch = (
             this.cameraLookRotation.x = clamp(
                 this.cameraLookRotation.x + mouseDelta.y * sensitivity,
-                -HALF_PI,
-                HALF_PI
+                -HALF_PI + RAYLIB_FLIP_FIX,
+                HALF_PI - RAYLIB_FLIP_FIX
             )
         ) + PI;
 
