@@ -6,21 +6,28 @@ import std.stdio;
 import stb_vorbis;
 import std.conv: to;
 import raylib;
+import std.uuid;
 
-/*
-This is utilizing OpenAL Soft for maximum compatibility.
-This holds all OpenAL init, and structs for sound_manager to use.
-*/
+/**
+ *This is utilizing OpenAL Soft for maximum compatibility.
+ */
 
 public class SoundEngine {
 
+    /// Is the actual OpenAL existence
     private void* context;
     private void* device;
     private string deviceName;
     private bool debugging = false;
 
-    // Holds the cache of loaded sounds
+    /// Holds the cache of loaded sounds
     private VorbisCache[string] soundCache;
+
+    /// Holds all variable data, positions, etc
+    SoundListener listener;
+    private SoundBuffer[UUID] buffers;
+    private SoundSource[UUID] sources;
+
 
     this() {
         
@@ -79,14 +86,14 @@ public class SoundEngine {
 
         this.debugOpenAL();
 
-        initializeListener();
+        this.listener = new SoundListener(Vector3(0,0,0));
 
         writeln("OpenAL initialized successfully!");
     }
 
     ~this() {
 
-        cleanUpSoundManager();
+        this.cleanUpAll();
 
         alcMakeContextCurrent(null);
         alcDestroyContext(context);
@@ -99,7 +106,54 @@ public class SoundEngine {
         this.debugging = true;
     }
 
-    bool isDebugging() {
+    void playSound(string fileName) {
+
+        UUID uuid = randomUUID();
+
+        SoundBuffer thisBuffer = new SoundBuffer(this, fileName);
+        SoundSource thisSource = new SoundSource(this, false, false);
+
+        thisSource.setBuffer(thisBuffer.getID());
+        thisSource.play();
+
+        this.buffers[uuid] = thisBuffer;
+        this.sources[uuid] = thisSource;
+
+    }
+
+
+
+
+    /// Begin the OpenAL internal handling
+
+    private void cleanSoundsNotPlaying() {
+        UUID[] cleanQueue;
+        foreach (pair; this.sources.byKeyValue()) {
+            UUID key = pair.key;
+            SoundSource value = pair.value;
+            if (!value.isPlaying()) {
+                cleanQueue ~= key;
+            }
+        }
+        foreach (UUID key; cleanQueue) {
+            this.sources[key].cleanUp(this);
+            this.buffers[key].cleanUp(this);
+            this.sources.remove(key);
+            this.buffers.remove(key);
+        }
+    }
+
+    private void cleanUpAll() {
+        UUID[] cleanQueue = this.sources.keys;
+        foreach (UUID key; cleanQueue) {
+            this.sources[key].cleanUp(this);
+            this.buffers[key].cleanUp(this);
+            this.sources.remove(key);
+            this.buffers.remove(key);            
+        }
+    }
+
+    private bool isDebugging() {
         return this.debugging;
     }
 
@@ -110,7 +164,6 @@ public class SoundEngine {
     private void cacheVorbis(VorbisCache newCache, string fileName) {
         this.soundCache[fileName] = newCache;
     }
-
 
     private class VorbisCache {
         short[] pcm;
@@ -296,13 +349,13 @@ public class SoundEngine {
         }
     }
 
-    void debugOpenAL() {
+    private void debugOpenAL() {
         int error = alGetError();
 
         if (!error == AL_NO_ERROR) {
 
-            writeln("OpenAL buffer error! Error number: ", error);
-            
+            writeln("OpenAL error! Error number: ", error);
+
             switch (error) {
                 case ALC_INVALID_DEVICE: {
                     throw new Exception("AL_INVALID_DEVICE");
