@@ -6,9 +6,11 @@ import bindbc.newton;
 /// This class is a wrapper for bindbc newton physics
 public class Physics {
 
-    private NewtonWorld* world;
+    private const NewtonWorld* world;
 
     private int entity_count;
+
+    
 
     this() {
         this.world = NewtonCreate();
@@ -24,10 +26,15 @@ public class Physics {
         writeln("Successfully deleted physics world!");
     }
 
-
+    void addEntity() {
+        dFloat[3] matrix = [0,0,0];
+        dFloat zero = 0.0;
+        NewtonCollision* shape = NewtonCreateBox(this.world, zero, zero, zero,0/*id*/,matrix.ptr);
+    }
 
 
 }
+
 
 
 

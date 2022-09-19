@@ -35,6 +35,7 @@ void main()
     Keyboard keyboard = new Keyboard();
 
     Physics physics = new Physics();
+    physics.addEntity();
 
 
     while(!WindowShouldClose()) {
