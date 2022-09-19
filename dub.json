@@ -6,6 +6,7 @@
 	"dependencies": {
 		"bindbc-lua": "~>0.5.0",
 		"delta_time": "~>1.0.5",
+		"dmech": "~>0.4.1",
 		"raylib-d": "~>4.2.1"
 	},
 	"description": "A post apocalyptic first person survival game written in D with Raylib",
