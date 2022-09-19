@@ -16,6 +16,7 @@ bool load_lua() {
 
     // Yeah this is literally just taken from the readme
     if(returnedVersion != luaSupport) {
+        writeln("LUA 5.4 FAILED TO LOAD!");
         // Handle error. For most use cases, its reasonable to use the the error handling API in
         // bindbc-loader to retrieve error messages for logging and then abort. If necessary, it's
         // possible to determine the root cause via the return value:
