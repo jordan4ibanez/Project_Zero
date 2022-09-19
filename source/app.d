@@ -19,7 +19,7 @@ void main()
     }
 
     /// Load physics engine
-    if (loadNewtonPhysicsEngine()) {
+    if (loadNewtonLibrary()) {
         return;
     }
 

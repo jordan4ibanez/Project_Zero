@@ -3,7 +3,7 @@ module physics;
 import std.stdio;
 import bindbc.newton;
 
-public bool loadNewtonPhysicsEngine() {
+public bool loadNewtonLibrary() {
     NewtonSupport returnedVersion;
 
     version(Windows) {
