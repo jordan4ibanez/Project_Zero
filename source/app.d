@@ -14,7 +14,7 @@ void main()
     validateRaylibBinding();
 
     /// Mod API & Integration
-	if (load_lua()) {
+	if (loadLuaLibrary()) {
         return;
     }
 

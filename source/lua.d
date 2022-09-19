@@ -3,7 +3,7 @@ module lua;
 import bindbc.lua;
 import std.stdio;
 
-bool load_lua() {
+bool loadLuaLibrary() {
 
     LuaSupport returnedVersion;
 
