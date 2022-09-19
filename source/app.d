@@ -24,6 +24,11 @@ void main()
 
     SetTargetFPS(60);
 
+    InitAudioDevice();
+
+    Music bonk = LoadMusicStream("sounds/bonk.mp3");
+    bonk.looping = false;
+
     GameCamera camera3d = new GameCamera(Vector3(0,0,0));
 
     Mouse mouse = new Mouse();
@@ -38,10 +43,17 @@ void main()
     Vector3 groundPosition = cast(Vector3)ground.position;
     Vector4 groundRotation = cast(Vector4)ground.orientation;
 
-    RigidBody ball = physics.addBody();   
+    RigidBody ball = physics.addBody();
 
+    float oldSpeed = 0;
+
+    
 
     while(!WindowShouldClose()) {
+
+        if (IsMusicStreamPlaying(bonk)) {
+            UpdateMusicStream(bonk);
+        }
 
         calculateDelta();
 
@@ -51,6 +63,19 @@ void main()
 
         Vector3 ballPosition = cast(Vector3)ball.position;
         Vector4 ballRotation = cast(Vector4)ball.orientation;
+
+
+        Vector3 ballSpeed = cast(Vector3)ball.linearVelocity;
+
+        float speed = ballSpeed.y;
+
+        if (oldSpeed < 0 && speed > 0) {
+            PlayMusicStream(bonk);
+        }
+        
+        oldSpeed = speed;
+
+        writeln(ballSpeed);
 
         mouse.update();
 
