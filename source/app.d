@@ -17,12 +17,6 @@ void main()
 	if (loadLuaLibrary()) {
         return;
     }
-
-    /// Load physics engine
-    if (loadNewtonLibrary()) {
-        return;
-    }
-
     InitWindow(800,600, "D Raylib Zombie Game 0.0.0");
 
     SetTargetFPS(144);
@@ -35,7 +29,6 @@ void main()
     Keyboard keyboard = new Keyboard();
 
     Physics physics = new Physics();
-    physics.addEntity();
 
 
     while(!WindowShouldClose()) {
