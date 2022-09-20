@@ -31,7 +31,7 @@ public class PhysicsEngine {
 
     RigidBody addBody() {
         // bSphere - dynamic sphere with radius of 1 m and mass of 1 kg 
-        RigidBody bSphere = world.addDynamicBody(Vector3f(-4.0f, 20.0f, 0.0f), 0.0f);
+        RigidBody bSphere = world.addDynamicBody(Vector3f(-4.0f, 2.0f, 0.0f), 0.0f);
         Geometry gSphere = New!GeomSphere(world, 1.0f);
         world.addShapeComponent(bSphere, gSphere, Vector3f(0.0f, 0.0f, 0.0f), 1.0f);
 
@@ -40,7 +40,7 @@ public class PhysicsEngine {
 
     void update() {
         // delta - simulation time step in seconds, usually is fixed
-        double delta = 1.0 / 60.0;
+        double delta = 1.0 / 1000.0;
         world.update(delta);
     }
     
