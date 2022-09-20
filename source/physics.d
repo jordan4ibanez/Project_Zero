@@ -11,7 +11,13 @@ import raylib;
 
 /// This class is a wrapper for bindbc newton physics
 public class PhysicsEngine {
+
     PhysicsWorld world;
+    double timeAccumalator = 0.0;
+
+    /// 1000 FPS physics simulation
+    immutable double fpsPrecision = 300;
+    immutable double lockedTick = 1.0 / this.fpsPrecision;
 
     this() {
         this.world = New!PhysicsWorld(null);
@@ -31,17 +37,22 @@ public class PhysicsEngine {
 
     RigidBody addBody() {
         // bSphere - dynamic sphere with radius of 1 m and mass of 1 kg 
-        RigidBody bSphere = world.addDynamicBody(Vector3f(-4.0f, 2.0f, 0.0f), 0.0f);
+        RigidBody bSphere = world.addDynamicBody(Vector3f(-4.0f, 20.0f, 0.0f), 0.0f);
         Geometry gSphere = New!GeomSphere(world, 1.0f);
         world.addShapeComponent(bSphere, gSphere, Vector3f(0.0f, 0.0f, 0.0f), 1.0f);
 
         return bSphere;
     }
 
-    void update() {
-        // delta - simulation time step in seconds, usually is fixed
-        double delta = 1.0 / 1000.0;
-        world.update(delta);
+    void update(double delta) {
+        
+        /// Simulate higher FPS precision
+        this.timeAccumalator += delta;
+
+        while(this.timeAccumalator >= this.lockedTick) {
+            world.update(this.lockedTick);
+            this.timeAccumalator -= this.lockedTick;
+        }
     }
     
     auto get() {
