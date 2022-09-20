@@ -33,15 +33,15 @@ void main()
     mouse.grab(camera3d);
 
     Keyboard keyboard = new Keyboard();
+    
+    PhysicsEngine physicsEngine = new PhysicsEngine();
 
-    Physics physics = new Physics();
-
-    RigidBody ground =  physics.addGround();
+    RigidBody ground =  physicsEngine.addGround();
 
     Vector3 groundPosition = cast(Vector3)ground.position;
     Vector4 groundRotation = cast(Vector4)ground.orientation;
 
-    RigidBody ball = physics.addBody();
+    RigidBody ball = physicsEngine.addBody();
 
     float oldSpeed = 0;
 
@@ -53,13 +53,15 @@ void main()
     // soundEngine.playSound("sounds/sounds_main_menu.ogg");
     // soundEngine.playSound("sounds/sounds_hurt.ogg");
 
+    soundEngine.playSound("sounds/sounds_hurt.ogg");
+
     while(!WindowShouldClose()) {
 
         calculateDelta();
 
         /// Begin internal calculations
 
-        physics.update();
+        physicsEngine.update();
 
         Vector3 ballPosition = cast(Vector3)ball.position;
         Vector4 ballRotation = cast(Vector4)ball.orientation;
@@ -70,7 +72,7 @@ void main()
         float speed = ballSpeed.y;
 
         if (oldSpeed < 0 && speed > 0) {
-            soundEngine.playSound("sounds/bonk.ogg");
+            soundEngine.playSound("sounds/sounds_hurt.ogg");
         }
         
         oldSpeed = speed;
@@ -118,7 +120,7 @@ void main()
 
         }
         EndDrawing();
-    }
+    }    
 
     CloseWindow();
 }
