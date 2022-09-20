@@ -96,8 +96,8 @@ public class SoundEngine {
         this.cleanUpAll();
 
         alcMakeContextCurrent(null);
-        alcDestroyContext(context);
-        alcCloseDevice(device);
+        alcDestroyContext(this.context);
+        alcCloseDevice(this.device);
 
         writeln("OpenAL has successfully closed");
     }
@@ -158,13 +158,17 @@ public class SoundEngine {
     }
 
     private void cleanUpAll() {
-        UUID[] cleanQueue = this.sources.keys;
-        foreach (UUID key; cleanQueue) {
-            this.sources[key].cleanUp(this);
-            this.buffers[key].cleanUp(this);
-            this.sources.remove(key);
-            this.buffers.remove(key);            
+
+        foreach (SoundSource thisSource; this.sources) {
+            thisSource.cleanUp(this);
         }
+
+        foreach (SoundBuffer thisBuffer; this.buffers) {
+            thisBuffer.cleanUp(this);
+        }
+
+        this.sources.clear();
+        this.buffers.clear();
     }
 
     private bool isDebugging() {
