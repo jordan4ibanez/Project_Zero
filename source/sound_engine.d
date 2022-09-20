@@ -106,7 +106,22 @@ public class SoundEngine {
         this.debugging = true;
     }
 
+    /// Allows loading large files like music at startup
+    void cacheSound(string fileName) {
+        VorbisDecoder vorbisHandler = VorbisDecoder(fileName);
+        int streamLength = vorbisHandler.streamLengthInSamples();
+        short[] pcm = new short[streamLength];
+        int pcmLength = cast(int)(pcm.length * short.sizeof);
+        ubyte channels = vorbisHandler.chans();
+        int sampleRate = vorbisHandler.sampleRate();
+        vorbisHandler.getSamplesShortInterleaved(channels, pcm.ptr, streamLength);
+
+        this.cacheVorbis(new VorbisCache(pcm,pcmLength,channels,sampleRate), fileName);
+    }
+
     void playSound(string fileName) {
+
+        this.cleanSoundsNotPlaying();
 
         UUID uuid = randomUUID();
 
