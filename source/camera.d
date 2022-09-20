@@ -166,6 +166,7 @@ public class GameCamera {
         return Vector3Multiply(this.cameraUp, Vector3(-1,-1,-1));
     }
 
+    /// Primarily used for 3d first person movement
 
     Vector3 getForward2d() {
         Vector3 forward = this.cameraFront;
@@ -173,9 +174,22 @@ public class GameCamera {
         return Vector3Normalize(forward);
     }
 
+    Vector3 getBackward2d() {
+        Vector3 backward = this.getBackward();
+        backward.y = 0;
+        return Vector3Normalize(backward);
+    }
+
     Vector3 getRight2d() {
         Vector3 right = this.cameraRight;
         right.y = 0;
         return Vector3Normalize(right);
+    }
+
+    Vector3 getLeft2d() {
+        Vector3 left = this.getLeft();
+        left.y = 0;
+        return Vector3Normalize(left);
+
     }
 }
