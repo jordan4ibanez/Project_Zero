@@ -2,12 +2,12 @@ import std.stdio;
 
 import raylib;
 import lua;
-import delta_time;
 import camera;
 import mouse;
 import keyboard;
 import physics;
 import sound_engine;
+import delta;
 
 import dmech.rigidbody;
 import dmech.shape;
@@ -25,6 +25,8 @@ void main()
     InitWindow(800,600, "D Raylib Zombie Game 0.0.0");
 
     SetTargetFPS(60);
+
+    DeltaCalculator deltaCalculator = new DeltaCalculator();
 
 
     GameCamera camera3d = new GameCamera(Vector3(0,0,0));
@@ -59,7 +61,7 @@ void main()
 
     while(!WindowShouldClose()) {
 
-        calculateDelta();
+        deltaCalculator.calculateDelta();
 
         /// Begin internal calculations
 
