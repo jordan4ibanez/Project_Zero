@@ -139,6 +139,7 @@ public class SoundEngine {
 
     /// Begin the OpenAL internal handling
 
+    /// This is basically an internal GC
     private void cleanSoundsNotPlaying() {
         UUID[] cleanQueue;
         foreach (pair; this.sources.byKeyValue()) {
