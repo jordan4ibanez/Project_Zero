@@ -19,3 +19,4 @@ I'm also practicing pure OOP for this. So it might look strange!
 - **Rendering & input**: Raylib
 - **Physics**: bindbc-newton
 - **Timing**: delta_time
+- **Audio**: bindbc-openal
