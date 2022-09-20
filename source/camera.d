@@ -192,4 +192,13 @@ public class GameCamera {
         return Vector3Normalize(left);
 
     }
+
+    /// This is silly, but it makes it easier to work with
+    Vector3 getUp2d() {
+        return Vector3(0,1,0);
+    }
+
+    Vector3 getDown2d() {
+        return Vector3(0,-1,0);
+    }
 }
