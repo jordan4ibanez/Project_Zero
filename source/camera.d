@@ -132,6 +132,13 @@ public class GameCamera {
         this.camera.target = Vector3Add(this.camera.position,rotation);
     }
 
+    /// This needs to be removed when this test is done
+    void movePosition(Vector3 positionAddition) {
+        this.camera.position = Vector3Add(this.camera.position, positionAddition);
+        // Must update the target or the rotation goes crazy
+        this.setRotation(this.camera.target);
+    }
+
     void setPosition(Vector3 position) {
         this.camera.position = position;
         // Must update the target or the rotation goes crazy
