@@ -1,7 +1,6 @@
 module camera;
 
 import raylib;
-import delta_time;
 import mouse;
 import std.math.trigonometry: cos, sin;
 import std.math.constants: PI;
