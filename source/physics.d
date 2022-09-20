@@ -15,7 +15,7 @@ public class PhysicsEngine {
     PhysicsWorld world;
     double timeAccumalator = 0.0;
 
-    /// 1000 FPS physics simulation
+    /// 300 FPS physics simulation
     immutable double fpsPrecision = 300;
     immutable double lockedTick = 1.0 / this.fpsPrecision;
 
