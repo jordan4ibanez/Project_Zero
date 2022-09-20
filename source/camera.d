@@ -154,4 +154,15 @@ public class GameCamera {
         return this.cameraUp;
     }
 
+    Vector3 getForward2d() {
+        Vector3 forward = this.cameraFront;
+        forward.y = 0;
+        return Vector3Normalize(forward);
+    }
+
+    Vector3 getRight2d() {
+        Vector3 right = this.cameraRight;
+        right.y = 0;
+        return Vector3Normalize(right);
+    }
 }
