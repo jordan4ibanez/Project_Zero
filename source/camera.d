@@ -122,7 +122,7 @@ public class GameCamera {
 
         cameraFront = Vector3Normalize(direction);
         cameraRight = Vector3Normalize(Vector3CrossProduct(cameraFront, camera.up));
-        cameraUp = Vector3CrossProduct(direction, cameraRight);
+        cameraUp = Vector3CrossProduct(cameraRight, direction);
 
         this.setRotation(cameraFront);
         
