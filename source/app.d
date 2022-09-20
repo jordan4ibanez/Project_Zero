@@ -7,6 +7,7 @@ import camera;
 import mouse;
 import keyboard;
 import physics;
+import sound_engine;
 
 import dmech.rigidbody;
 import dmech.shape;
@@ -43,7 +44,14 @@ void main()
     RigidBody ball = physics.addBody();
 
     float oldSpeed = 0;
+
+    SoundEngine soundEngine = new SoundEngine();
+
+    soundEngine.enableDebugging();
     
+    // soundEngine.cacheSound("sounds/sounds_main_menu.ogg");
+    // soundEngine.playSound("sounds/sounds_main_menu.ogg");
+    // soundEngine.playSound("sounds/sounds_hurt.ogg");
 
     while(!WindowShouldClose()) {
 
@@ -62,7 +70,7 @@ void main()
         float speed = ballSpeed.y;
 
         if (oldSpeed < 0 && speed > 0) {
-            writeln("bonk");
+            soundEngine.playSound("sounds/bonk.ogg");
         }
         
         oldSpeed = speed;
