@@ -3,6 +3,7 @@ module window;
 import raylib;
 import std.string: toStringz;
 import std.stdio;
+import std.conv: to;
 
 /// Wrapper object for Raylib window
 public class Window {
@@ -13,6 +14,8 @@ public class Window {
     private string title = "D Raylib Zombie Game 0.0.0";
 
     private bool fullScreen = false;
+
+    private bool updateWithFPS = true;
 
     this(int width, int height) {
 
@@ -41,13 +44,25 @@ public class Window {
     }
 
     void update() {
-        if (!fullScreen & IsWindowResized()) {
-            this.width = GetRenderWidth();
-            this.height = GetRenderHeight();
+        if (!fullScreen) {
+            if (IsWindowResized()) {
+                this.width = GetRenderWidth();
+                this.height = GetRenderHeight();
 
-            writeln("Window was resized to: ", this.width, ", ", this.height);
+                writeln("Window was resized to: ", this.width, ", ", this.height);
+            }
+
+            if (updateWithFPS) {
+                SetWindowTitle(this.convertTitleWithFPS());
+            }
         }
+
     }
+
+    private const(char)* convertTitleWithFPS(){
+        return toStringz(this.title ~ " | FPS: " ~ to!string(GetFPS()));
+    }
+
 
     private const(char)* convertTitle(){
         return toStringz(this.title);
