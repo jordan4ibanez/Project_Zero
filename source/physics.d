@@ -10,7 +10,7 @@ import dlib.math.matrix;
 import raylib;
 
 /// This class is a wrapper for bindbc newton physics
-public class Physics {
+public class PhysicsEngine {
     PhysicsWorld world;
 
     this() {
