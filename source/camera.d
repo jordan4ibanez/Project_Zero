@@ -146,13 +146,26 @@ public class GameCamera {
         return this.cameraFront;
     }
 
+    Vector3 getBackward() {
+        return Vector3Multiply(this.cameraFront, Vector3(-1,-1,-1));
+    }
+
     Vector3 getRight() {
         return this.cameraRight;
+    }
+
+    Vector3 getLeft() {
+        return Vector3Multiply(this.cameraRight, Vector3(-1,-1,-1));
     }
 
     Vector3 getUp() {
         return this.cameraUp;
     }
+
+    Vector3 getDown() {
+        return Vector3Multiply(this.cameraUp, Vector3(-1,-1,-1));
+    }
+
 
     Vector3 getForward2d() {
         Vector3 forward = this.cameraFront;
