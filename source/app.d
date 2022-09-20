@@ -24,7 +24,7 @@ void main()
 
     InitWindow(800,600, "D Raylib Zombie Game 0.0.0");
 
-    SetTargetFPS(60);
+    SetTargetFPS(144);
 
     DeltaCalculator deltaCalculator = new DeltaCalculator();
 
@@ -63,7 +63,11 @@ void main()
 
         deltaCalculator.calculateDelta();
 
+        double delta = deltaCalculator.getDelta();
+
         /// Begin internal calculations
+
+        physicsEngine.update(delta);
 
         Vector3 ballPosition = cast(Vector3)ball.position;
         Vector4 ballRotation = cast(Vector4)ball.orientation;
@@ -74,7 +78,7 @@ void main()
         float speed = ballSpeed.y;
 
         if (oldSpeed < 0 && speed > 0) {
-            soundEngine.playSound("sounds/sounds_hurt.ogg");
+            soundEngine.playSound("sounds/bonk.ogg");
         }
         
         oldSpeed = speed;
@@ -85,8 +89,6 @@ void main()
         }
 
         oldY = ballPosition.y;
-
-        physicsEngine.update();
 
         mouse.update();
 
