@@ -45,9 +45,11 @@ void main()
 
     float oldSpeed = 0;
 
+    float oldY = 10_000;
+
     SoundEngine soundEngine = new SoundEngine();
 
-    soundEngine.enableDebugging();
+    // soundEngine.enableDebugging();
     
     // soundEngine.cacheSound("sounds/sounds_main_menu.ogg");
     // soundEngine.playSound("sounds/sounds_main_menu.ogg");
@@ -60,8 +62,6 @@ void main()
         calculateDelta();
 
         /// Begin internal calculations
-
-        physicsEngine.update();
 
         Vector3 ballPosition = cast(Vector3)ball.position;
         Vector4 ballRotation = cast(Vector4)ball.orientation;
@@ -77,7 +77,14 @@ void main()
         
         oldSpeed = speed;
 
-        writeln(ballSpeed);
+        if (ballPosition.y > oldY) {
+            writeln("physics error?");
+            writeln(ballPosition.y, " ", oldY);
+        }
+
+        oldY = ballPosition.y;
+
+        physicsEngine.update();
 
         mouse.update();
 
