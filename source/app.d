@@ -8,6 +8,7 @@ import keyboard;
 import physics;
 import sound_engine;
 import delta;
+import window;
 
 import dmech.rigidbody;
 import dmech.shape;
@@ -22,7 +23,8 @@ void main()
         return;
     }
 
-    InitWindow(800,600, "D Raylib Zombie Game 0.0.0");
+    Window window = new Window(1280,720);
+
 
     SetTargetFPS(144);
 
@@ -59,8 +61,25 @@ void main()
 
     soundEngine.playSound("sounds/sounds_hurt.ogg");
 
+    bool wasToggle = false;
+
     while(!WindowShouldClose()) {
 
+
+        window.update();
+
+        mouse.update();
+
+        keyboard.update();
+
+
+        bool togglingFullScreen = keyboard.getToggleFullScreen();
+
+        if (togglingFullScreen && !wasToggle) {
+            window.toggleFullScreen();
+        }
+
+        wasToggle = togglingFullScreen;
 
         deltaCalculator.calculateDelta();
 
@@ -92,6 +111,7 @@ void main()
             camera3d.movePosition(direction);
         }
         
+
         /// Begin physics engine
         
         /// Simulate higher FPS precision
@@ -138,10 +158,6 @@ void main()
 
         oldY = ballPosition.y;
 
-        mouse.update();
-
-        keyboard.update();
-
         camera3d.firstPersonLook(mouse);
 
         camera3d.update();
@@ -166,7 +182,7 @@ void main()
                 
                 DrawCube(Vector3(-10,0,0),2,2,2,Colors.RED);
                 DrawCube(Vector3(10,0,0),2,2,2,Colors.BLUE);
-                DrawCube(Vector3(2,10,0),2,2,2,Colors.YELLOW);
+                DrawCube(Vector3(0,10,0),2,2,2,Colors.YELLOW);
                 DrawCube(Vector3(0,-10,0),2,2,2,Colors.GREEN);
                 DrawCube(Vector3(0,0,10),2,2,2,Colors.BEIGE);
                 DrawCube(Vector3(0,0,-10),2,2,2,Colors.DARKGRAY);
@@ -179,7 +195,5 @@ void main()
 
         }
         EndDrawing();
-    }    
-
-    CloseWindow();
+    }
 }
