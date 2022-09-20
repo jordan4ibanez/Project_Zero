@@ -6,12 +6,12 @@ import std.math.trigonometry: cos, sin;
 import std.math.constants: PI;
 import std.algorithm.comparison: clamp;
 
-private immutable HALF_PI = PI / 2.0;
-private immutable DOUBLE_PI = PI * 2;
-private immutable RAYLIB_FLIP_FIX = 0.0001;
-
 /// Wrapper class for the game camera
 public class GameCamera {
+
+    private immutable HALF_PI = PI / 2.0;
+    private immutable DOUBLE_PI = PI * 2;
+    private immutable RAYLIB_FLIP_FIX = 0.0001;
 
     private Camera3D camera;
 
@@ -75,6 +75,7 @@ public class GameCamera {
         this.ignoreMouseInput = true;
     }
 
+
     void firstPersonLook(Mouse mouse) {
 
         if (!mouse.isGrabbed()) {
@@ -120,7 +121,7 @@ public class GameCamera {
         direction.z = sin(yaw) * cos(pitch);
 
         cameraFront = Vector3Normalize(direction);
-        cameraRight = Vector3Normalize(Vector3CrossProduct(camera.up, cameraFront));
+        cameraRight = Vector3Normalize(Vector3CrossProduct(cameraFront, camera.up));
         cameraUp = Vector3CrossProduct(direction, cameraRight);
 
         this.setRotation(cameraFront);
@@ -139,6 +140,18 @@ public class GameCamera {
 
     Vector3 getPosition() {
         return this.camera.position;
+    }
+
+    Vector3 getForward() {
+        return this.cameraFront;
+    }
+
+    Vector3 getRight() {
+        return this.cameraRight;
+    }
+
+    Vector3 getUp() {
+        return this.cameraUp;
     }
 
 }
