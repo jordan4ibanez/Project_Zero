@@ -44,15 +44,21 @@ public class PhysicsEngine {
         return bSphere;
     }
 
-    void update(double delta) {
-        
-        /// Simulate higher FPS precision
-        this.timeAccumalator += delta;
+    double getTimeAccumulator() {
+        return this.timeAccumalator;
+    }
 
-        while(this.timeAccumalator >= this.lockedTick) {
-            world.update(this.lockedTick);
-            this.timeAccumalator -= this.lockedTick;
-        }
+    void setTimeAccumulator(double newValue) {
+        this.timeAccumalator = newValue;
+    }
+
+    double getLockedTick() {
+        return this.lockedTick;
+    }
+
+    /// Remember: this needs an external handler for fixed time stamps!
+    void update() {
+        world.update(this.lockedTick);
     }
     
     auto get() {

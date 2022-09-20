@@ -91,12 +91,31 @@ void main()
             Vector3 direction = Vector3Multiply(camera3d.getDown2d(), movementSpeed);
             camera3d.movePosition(direction);
         }
-
         
+        /// Begin physics engine
+        
+        /// Simulate higher FPS precision
+        double timeAccumalator = physicsEngine.getTimeAccumulator() + delta;
+        immutable double lockedTick = physicsEngine.getLockedTick();
+
+        /// Literally all IO with the physics engine NEEDS to happen here!
+        while(timeAccumalator >= lockedTick) {
+
+
+            if(keyboard.getLeanRight()) {
+                ball.linearVelocity.y += lockedTick * 100;
+            }
+
+            physicsEngine.update();
+
+            timeAccumalator -= lockedTick;
+        }
+
+        physicsEngine.setTimeAccumulator(timeAccumalator);
+
+
 
         /// Begin internal calculations
-
-        physicsEngine.update(delta);
 
         Vector3 ballPosition = cast(Vector3)ball.position;
         Vector4 ballRotation = cast(Vector4)ball.orientation;
