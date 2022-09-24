@@ -75,6 +75,8 @@ void main()
 
     Map map = new Map(2000,2000, "textures/grass.png");
 
+    PhysicsEngine physicsEngine = new PhysicsEngine(1,1);
+
     // Wall wall = new Wall("textures/bricks.png", 0, 0, 50, 200);
     map.insertNewStructure(new Structure(-500, -200, width, height, walls, decorations, "textures/wood_floor.png", "textures/bricks.png", "textures/tile_roof.png"));
 
@@ -101,6 +103,18 @@ void main()
         double delta = deltaCalculator.getDelta();
 
         camera.intakeMouseInput(mouse);
+
+        /// Simulate higher FPS precision
+        double timeAccumalator = physicsEngine.getTimeAccumulator() + delta;
+        immutable double lockedTick = physicsEngine.getLockedTick();
+
+        /// Literally all IO with the physics engine NEEDS to happen here!
+        while(timeAccumalator >= lockedTick) {
+            player.move(camera, keyboard);
+            timeAccumalator -= lockedTick;
+        }
+
+        physicsEngine.setTimeAccumulator(timeAccumalator);
         
 
         // writeln(rotation);

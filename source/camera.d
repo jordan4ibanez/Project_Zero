@@ -47,6 +47,10 @@ public class GameCamera {
         return this.camera;
     }
 
+    float getRotation() {
+        return this.camera.rotation;
+    }
+
 
     Camera2D* getPointer() {
         return &this.camera;
