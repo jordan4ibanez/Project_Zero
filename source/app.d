@@ -76,7 +76,7 @@ void main()
     Map map = new Map(2000,2000, "textures/grass.png");
 
     // Wall wall = new Wall("textures/bricks.png", 0, 0, 50, 200);
-    map.insertNewStructure(new Structure(0, 0, width, height, walls, decorations, "textures/wood_floor.png", "textures/bricks.png", "textures/tile_roof.png"));
+    map.insertNewStructure(new Structure(-500, -200, width, height, walls, decorations, "textures/wood_floor.png", "textures/bricks.png", "textures/tile_roof.png"));
 
 
 
