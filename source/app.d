@@ -9,6 +9,7 @@ import physics;
 import sound_engine;
 import delta;
 import window;
+import player;
 
 void main()
 {
@@ -28,7 +29,7 @@ void main()
     DeltaCalculator deltaCalculator = new DeltaCalculator();
 
 
-    GameCamera camera = new GameCamera(Vector2(0,0));
+    GameCamera camera = new GameCamera(window);
 
     Mouse mouse = new Mouse();
     mouse.grab(camera);
@@ -43,10 +44,15 @@ void main()
 
     bool wasToggle = false;
 
+    Player player = new Player(Vector2(0,0));
+
+    float rotation = 0;
+
+
     while(!WindowShouldClose()) {
 
 
-        window.update();
+        window.update(camera);
 
         mouse.update();
 
@@ -55,7 +61,7 @@ void main()
 
         bool togglingFullScreen = keyboard.getToggleFullScreen();
         if (togglingFullScreen && !wasToggle) {
-            window.toggleFullScreen();
+            window.toggleFullScreen(camera);
         }
         wasToggle = togglingFullScreen;
 
@@ -63,19 +69,35 @@ void main()
 
         double delta = deltaCalculator.getDelta();
 
+        rotation += delta * 100;
+
+        if (rotation > 360) {
+            rotation -= 360;
+        }
+
+        writeln(rotation);
+
+
+        camera.setRotation(rotation);
+
 
         /// End internal calculations, begin draw
+
+        camera.updateTarget(player.getPosition());
 
 
         BeginDrawing();
         {
+
+            camera.clear(Colors.WHITE);
             
+            BeginMode2D(camera.get());
             
+            DrawText("hello there", 10, 10, 28, Colors.BLACK);
 
-           
+            DrawCircle(cast(int)player.getX(), cast(int)player.getY(), player.getSize(), Colors.RED);
 
-
-            // DrawText("hello there", 400, 300, 28, Colors.BLACK);
+            EndMode2D();
 
         }
         EndDrawing();

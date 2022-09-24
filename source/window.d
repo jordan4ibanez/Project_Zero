@@ -4,6 +4,7 @@ import raylib;
 import std.string: toStringz;
 import std.stdio;
 import std.conv: to;
+import camera;
 
 /// Wrapper object for Raylib window
 public class Window {
@@ -31,7 +32,7 @@ public class Window {
         CloseWindow();
     }
 
-    void toggleFullScreen() {
+    void toggleFullScreen(GameCamera camera) {
         if (fullScreen) {
             ToggleFullscreen();
             SetWindowSize(this.width, this.height);
@@ -40,10 +41,18 @@ public class Window {
             SetWindowSize(GetMonitorWidth(currentMonitor), GetMonitorWidth(currentMonitor));
             ToggleFullscreen();
         }
-        fullScreen = !fullScreen;
+        fullScreen = !fullScreen;   
     }
 
-    void update() {
+    float getWidth() {
+        return this.width;
+    }
+
+    float getHeight() {
+        return this.height;
+    }
+
+    void update(GameCamera camera) {
         if (!fullScreen) {
             if (IsWindowResized()) {
                 this.width = GetRenderWidth();
