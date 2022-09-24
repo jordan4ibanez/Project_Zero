@@ -77,6 +77,12 @@ public class Decoration : MapObject {
         this.boundingBox = *new Rectangle(posX,posY,this.floorTexture.width, this.floorTexture.height);
         this.origin = *new Vector2(this.floorTexture.width / 2, this.floorTexture.height / 2);
     }
+    this(Decoration cloningDecoration) {
+        this.collide = cloningDecoration.collide;
+        this.boundingBox = *new Rectangle(cloningDecoration.boundingBox.x, cloningDecoration.boundingBox.y, cloningDecoration.boundingBox.width, cloningDecoration.boundingBox.height);
+        this.floorTexture = cloningDecoration.floorTexture;
+        this.origin = *new Vector2(cloningDecoration.origin.x, cloningDecoration.origin.y);
+    }
 
     override
     void draw(bool xray) {
@@ -129,7 +135,7 @@ public class Structure : MapObject {
         foreach (Decoration decoration; newDecorations) {
             decoration.boundingBox.x -= this.origin.x;
             decoration.boundingBox.y -= this.origin.y;
-            this.decorations ~= decoration;
+            this.decorations ~= new Decoration(decoration);
         }
     }
 
