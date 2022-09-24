@@ -6,9 +6,12 @@ import std.stdio;
 public class Map {
 
     MapObject[string] cache;
+
     Rectangle boundingBox;
     Texture2D groundTexture;
     Rectangle groundTextureSource;
+
+    Structure[] buildings;
 
     this(int mapWidth, int mapHeight, string groundTextureLocation) {
         this.boundingBox = *new Rectangle( -mapWidth / 2, -mapHeight / 2, mapWidth, mapHeight);
@@ -16,7 +19,22 @@ public class Map {
         this.groundTextureSource = *new Rectangle(0,0, this.groundTexture.width, this.groundTexture.height);
     }
 
-    void drawGround(Vector2 offset) {
+    void insertNewStructure(Structure newStruct) {
+        this.buildings ~= newStruct;
+    }
+
+    void draw(Vector2 offset) {
+        this.drawGround(offset);
+        this.drawBuildings(offset);
+    }
+
+    private void drawBuildings(Vector2 offset) {
+        foreach (Structure building; this.buildings) {
+            building.draw(true);
+        }
+    }
+
+    private void drawGround(Vector2 offset) {
         DrawTextureTiled(
             this.groundTexture,
             this.groundTextureSource,
@@ -27,6 +45,8 @@ public class Map {
             Colors.WHITE
         );
     }
+
+
 }
 
 public class MapObject {
