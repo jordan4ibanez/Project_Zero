@@ -1,6 +1,7 @@
 module map;
 
 import raylib;
+import std.stdio;
 
 public class Map {
 
@@ -33,10 +34,34 @@ public class MapObject {
     Vector2 origin;
     Texture2D floorTexture;
 
-    void draw(int posX, int posY, bool xray) {
+    void draw(bool xray) {
 
     }
 
+}
+
+/**
+ * Even though these are called decorations, they will have functionality in the future
+ */
+public class Decoration : MapObject {
+    Rectangle boundingBox;
+    Texture2D floorTexture;
+    bool collide;
+    Vector2 origin;
+    
+    /**
+     * If you're putting this decoration inside a structure, it's relative to the structure!
+     */
+    this(int posX, int posY, string decorationTextureLocation, bool collides) {
+        this.floorTexture = LoadTexture(decorationTextureLocation.ptr);
+        this.boundingBox = *new Rectangle(posX,posY,this.floorTexture.width, this.floorTexture.height);
+        this.origin = *new Vector2(this.floorTexture.width / 2, this.floorTexture.height / 2);
+    }
+
+    override
+    void draw(bool xray) {
+        DrawTexture(this.floorTexture, cast(int)this.boundingBox.x, cast(int)this.boundingBox.y, Colors.RAYWHITE);
+    }
 }
 
 
@@ -44,6 +69,7 @@ public class Structure : MapObject {
 
     Rectangle boundingBox;
     Wall[] walls;
+    Decoration[] decorations;
     Vector2 origin;
 
     Texture2D floorTexture;
@@ -56,9 +82,12 @@ public class Structure : MapObject {
     immutable int halfDoorSize = doorSize / 2;
 
     this(
+        int posX,
+        int posY,
         int width,
         int height,
         Rectangle[] newWalls,
+        Decoration[] newDecorations,
         string floorTextureLocation,
         string wallTextureLocation,
         string roofTextureLocation
@@ -71,16 +100,21 @@ public class Structure : MapObject {
         this.roofTextureSource = *new Rectangle(0,0, this.roofTexture.width, this.roofTexture.height);
 
 
-        this.origin = Vector2(width / 2, height / 2);
-        this.boundingBox = Rectangle(0, 0, width, height);
+        this.origin = Vector2(-posX + (width / 2), -posY + (height / 2));
+        this.boundingBox = Rectangle(posX, posY, width, height);
 
         foreach (Rectangle wall; newWalls) {
-            walls ~= new Wall(wallTextureLocation, wall);
+            this.walls ~= new Wall(posX, posY, wallTextureLocation, wall);
+        }
+        foreach (Decoration decoration; newDecorations) {
+            decoration.boundingBox.x -= this.origin.x;
+            decoration.boundingBox.y -= this.origin.y;
+            this.decorations ~= decoration;
         }
     }
 
     override
-    void draw(int posX, int posY, bool xray) {
+    void draw(bool xray) {
 
         if (xray) {
             DrawTextureTiled(
@@ -89,17 +123,18 @@ public class Structure : MapObject {
                 this.boundingBox,
                 Vector2Subtract(
                     this.origin,
-                    Vector2(posX, posY)
+                    Vector2(this.boundingBox.x, this.boundingBox.y)
                 ),
                 0,
                 1, 
                 Colors.WHITE
             );
+            
             foreach (Wall wall; this.walls) {
                 DrawTextureTiled(
                     wall.texture,
                     wall.textureSource,
-                    wall.rectangle,
+                    wall.boundingBox,
                     /**
                     * Subtract because this is a double inversion!
                     * Origin = how far to shift to center to 0,0
@@ -108,21 +143,32 @@ public class Structure : MapObject {
                     */
                     Vector2Subtract(
                         this.origin,
-                        Vector2(posX, posY)
+                        Vector2(this.boundingBox.x, this.boundingBox.y)
                     ),
                     0,
                     1,
                     Colors.WHITE
                 );
             }
-        } else {
+
+            foreach (Decoration decoration; this.decorations) {
+                DrawTexture(
+                    decoration.floorTexture,
+                    cast(int)decoration.boundingBox.x,
+                    cast(int)decoration.boundingBox.y,
+                    Colors.WHITE
+                );
+            }
+        } 
+        
+        else {
             DrawTextureTiled(
                 this.roofTexture,
                 this.roofTextureSource,
                 this.boundingBox,
                 Vector2Subtract(
                     this.origin,
-                    Vector2(posX, posY)
+                    Vector2(this.boundingBox.x, this.boundingBox.y)
                 ),
                 0,
                 1, 
@@ -134,11 +180,11 @@ public class Structure : MapObject {
 
 public class Wall {
     Texture2D texture;
-    Rectangle rectangle;
+    Rectangle boundingBox;
     Rectangle textureSource;
-    this(string textureLocation, Rectangle rectangle) {
+    this(int posX, int posY, string textureLocation, Rectangle rectangle) {
         this.texture = LoadTexture(textureLocation.ptr);
-        this.rectangle = *new Rectangle(rectangle.x, rectangle.y, rectangle.width, rectangle.height);
+        this.boundingBox = *new Rectangle(posX + rectangle.x, posY + rectangle.y, rectangle.width, rectangle.height);
         this.textureSource = *new Rectangle(0,0, texture.width, texture.height);
     }
 }
