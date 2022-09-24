@@ -4,8 +4,11 @@ import raylib;
 import std.stdio;
 import camera;
 import keyboard;
+import sound_engine;
 
 import std.math.trigonometry: cos, sin, atan;
+import std.random;
+import std.conv: to;
 
 
 public class Player {
@@ -98,7 +101,6 @@ public class Player {
         velocity = Vector2Multiply(velocity, Vector2(0.015, 0.015));
 
         this.speed = Vector2Add(velocity, this.speed);
-
         
         if (Vector2Length(this.speed) < 0.0149) {
             this.speed.x = 0;
@@ -106,5 +108,14 @@ public class Player {
         } 
 
         this.position = Vector2Add(this.position, speed);
+    }
+
+    void processFootsteps(SoundEngine soundEngine) {
+        if (this.stepAccumulator > 150) {
+            Random randy = Random(unpredictableSeed());
+            int selection = uniform(1,6, randy);
+            soundEngine.playSound("sounds/hard_step_" ~ to!string(selection) ~ ".ogg");
+            this.stepAccumulator = 0;
+        }
     }
 }

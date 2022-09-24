@@ -115,6 +115,8 @@ void main()
         }
 
         physicsEngine.setTimeAccumulator(timeAccumalator);
+
+        player.processFootsteps(soundEngine);
         
 
         // writeln(rotation);
