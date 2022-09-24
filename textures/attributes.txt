@@ -1,0 +1,8 @@
+Roboto Slab Regular: https://fonts.google.com/specimen/Roboto+Slab (https://www.apache.org/licenses/LICENSE-2.0)
+
+brick: https://opengameart.org/content/brick-texture
+wood floor: https://opengameart.org/content/wood-texture-tiles
+tile roof: https://opengameart.org/content/granite-roof-texture-pack-512px-graniteroofing1-6png
+grass: https://opengameart.org/content/dark-grass
+
+house insides: https://opengameart.org/content/lpc-house-insides

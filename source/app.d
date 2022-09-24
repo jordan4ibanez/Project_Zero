@@ -5,13 +5,12 @@ import lua;
 import camera;
 import mouse;
 import keyboard;
-import physics;
 import sound_engine;
 import delta;
 import window;
-
-import dmech.rigidbody;
-import dmech.shape;
+import player;
+import map;
+import physics;
 
 void main()
 {
@@ -30,43 +29,32 @@ void main()
 
     DeltaCalculator deltaCalculator = new DeltaCalculator();
 
-
-    GameCamera camera3d = new GameCamera(Vector3(0,0,0));
+    GameCamera camera = new GameCamera(Vector3(0,0,0));
 
     Mouse mouse = new Mouse();
-    mouse.grab(camera3d);
+    mouse.grab(camera);
 
     Keyboard keyboard = new Keyboard();
-    
-    PhysicsEngine physicsEngine = new PhysicsEngine();
-
-    RigidBody ground =  physicsEngine.addGround();
-
-    Vector3 groundPosition = cast(Vector3)ground.position;
-    Vector4 groundRotation = cast(Vector4)ground.orientation;
-
-    RigidBody ball = physicsEngine.addBody();
-
-    float oldSpeed = 0;
-
-    float oldY = 10_000;
 
     SoundEngine soundEngine = new SoundEngine();
 
-    // soundEngine.enableDebugging();
-    
-    // soundEngine.cacheSound("sounds/sounds_main_menu.ogg");
-    // soundEngine.playSound("sounds/sounds_main_menu.ogg");
+    Font font = LoadFont("textures/roboto_slab.ttf");
+    GenTextureMipmaps(&font.texture);
+    SetTextureFilter(font.texture, TextureFilter.TEXTURE_FILTER_TRILINEAR);
+
     // soundEngine.playSound("sounds/sounds_hurt.ogg");
 
-    soundEngine.playSound("sounds/sounds_hurt.ogg");
+    PhysicsEngine physicsEngine = new PhysicsEngine();
 
     bool wasToggle = false;
+
+    Player player = new Player(Vector2(0,0), "singleplayer");
+
 
     while(!WindowShouldClose()) {
 
 
-        window.update();
+        window.update(camera);
 
         mouse.update();
 
@@ -74,9 +62,8 @@ void main()
 
 
         bool togglingFullScreen = keyboard.getToggleFullScreen();
-
         if (togglingFullScreen && !wasToggle) {
-            window.toggleFullScreen();
+            window.toggleFullScreen(camera);
         }
 
         wasToggle = togglingFullScreen;
@@ -85,113 +72,61 @@ void main()
 
         double delta = deltaCalculator.getDelta();
 
-        Vector3 movementSpeed = Vector3Multiply(Vector3(delta, delta, delta), Vector3(10, 10, 10));
+        camera.firstPersonLook(mouse);
 
-        /// Freecam 2d test
-        if (keyboard.getForward()) {
-            Vector3 direction = Vector3Multiply(camera3d.getForward2d(), movementSpeed);
-            camera3d.movePosition(direction);
-        
-        } else if (keyboard.getBack()) {
-            Vector3 direction = Vector3Multiply(camera3d.getBackward2d(), movementSpeed);
-            camera3d.movePosition(direction);
-        }
-        if (keyboard.getRight()) {
-            Vector3 direction = Vector3Multiply(camera3d.getRight2d(), movementSpeed);
-            camera3d.movePosition(direction);
-        } else if (keyboard.getLeft()) {
-            Vector3 direction = Vector3Multiply(camera3d.getLeft2d(), movementSpeed);
-            camera3d.movePosition(direction);
-        }
-        if (keyboard.getJump()) {
-            Vector3 direction = Vector3Multiply(camera3d.getUp2d(), movementSpeed);
-            camera3d.movePosition(direction);
-        } else if (keyboard.getRun()) {
-            Vector3 direction = Vector3Multiply(camera3d.getDown2d(), movementSpeed);
-            camera3d.movePosition(direction);
-        }
-        
-
-        /// Begin physics engine
-        
         /// Simulate higher FPS precision
         double timeAccumalator = physicsEngine.getTimeAccumulator() + delta;
         immutable double lockedTick = physicsEngine.getLockedTick();
 
+        /*
         /// Literally all IO with the physics engine NEEDS to happen here!
         while(timeAccumalator >= lockedTick) {
 
-
-            if(keyboard.getLeanRight()) {
-                ball.linearVelocity.y += lockedTick * 100;
-            }
+            // player.move(camera, keyboard);
 
             physicsEngine.update();
 
             timeAccumalator -= lockedTick;
         }
+        */
 
         physicsEngine.setTimeAccumulator(timeAccumalator);
 
-
-
-        /// Begin internal calculations
-
-        Vector3 ballPosition = cast(Vector3)ball.position;
-        Vector4 ballRotation = cast(Vector4)ball.orientation;
-
-
-        Vector3 ballSpeed = cast(Vector3)ball.linearVelocity;
-
-        float speed = ballSpeed.y;
-
-        if (oldSpeed < 0 && speed > 0) {
-            soundEngine.playSound("sounds/bonk.ogg");
-        }
+        // player.processFootsteps(soundEngine);
         
-        oldSpeed = speed;
 
-        if (ballPosition.y > oldY) {
-            writeln("physics error?");
-            writeln(ballPosition.y, " ", oldY);
-        }
+        // writeln(rotation);
+        // camera.setRotation(rotation);
 
-        oldY = ballPosition.y;
-
-        camera3d.firstPersonLook(mouse);
-
-        camera3d.update();
 
         /// End internal calculations, begin draw
+
+        // camera.updateTarget(player.getCenter());
 
 
         BeginDrawing();
         {
+
+            camera.clear(Colors.WHITE);
+
+            camera.update();
             
-            camera3d.clear(Colors.RAYWHITE);
+            { // Begin 3d
+                BeginMode3D(camera.get());
 
-            BeginMode3D(camera3d.get());
-            {
-                DrawCube(groundPosition, 40, 1, 40, Colors.GREEN);
+                // map.draw(player.getCenter());
 
+                // Rectangle aabb = player.getBoundingBox();
 
-                ballPosition.y -= .5;
+                // DrawRectangle(cast(int)aabb.x, cast(int)aabb.y, cast(int)aabb.width, cast(int)aabb.height, Colors.RED);
 
-                DrawSphere(ballPosition, 1, Colors.BLACK);
-
-                
-                DrawCube(Vector3(-10,0,0),2,2,2,Colors.RED);
-                DrawCube(Vector3(10,0,0),2,2,2,Colors.BLUE);
-                DrawCube(Vector3(0,10,0),2,2,2,Colors.YELLOW);
-                DrawCube(Vector3(0,-10,0),2,2,2,Colors.GREEN);
-                DrawCube(Vector3(0,0,10),2,2,2,Colors.BEIGE);
-                DrawCube(Vector3(0,0,-10),2,2,2,Colors.DARKGRAY);
-
+                // DrawCircle3D(Vector3(0,0,0), 1,Vector3(0,1,0), 1, Colors.RED);
+                DrawSphere(Vector3(1,0,0), 1, Colors.RED);
+                EndMode3D();
             }
-            EndMode3D();
 
-
-            // DrawText("hello there", 400, 300, 28, Colors.BLACK);
+            // DrawTextEx(font, "Zombie Game 0.0.0", Vector2(10,10), 30, 1, Colors.BLACK);
+            // DrawTextEx(font, "Zombie Game 0.0.0", Vector2(7,7), 30, 1, Colors.GREEN);
 
         }
         EndDrawing();

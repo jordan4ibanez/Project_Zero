@@ -1,3 +1,5 @@
+module code_vault.old_3d_camera;
+
 module camera;
 
 import raylib;
@@ -5,7 +7,6 @@ import mouse;
 import std.math.trigonometry: cos, sin;
 import std.math.constants: PI;
 import std.algorithm.comparison: clamp;
-import std.stdio;
 
 /// Wrapper class for the game camera
 public class GameCamera {
@@ -124,8 +125,6 @@ public class GameCamera {
         cameraFront = Vector3Normalize(direction);
         cameraRight = Vector3Normalize(Vector3CrossProduct(cameraFront, camera.up));
         cameraUp = Vector3CrossProduct(cameraRight, direction);
-
-        writeln(cameraFront);
 
         this.setRotation(cameraFront);
         
