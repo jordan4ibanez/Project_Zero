@@ -35,12 +35,10 @@ void main()
     mouse.grab(camera);
 
     Keyboard keyboard = new Keyboard();
-    
-
 
     SoundEngine soundEngine = new SoundEngine();
 
-    soundEngine.playSound("sounds/sounds_hurt.ogg");
+    // soundEngine.playSound("sounds/sounds_hurt.ogg");
 
     bool wasToggle = false;
 
@@ -69,7 +67,7 @@ void main()
 
         double delta = deltaCalculator.getDelta();
 
-        rotation += delta * 100;
+        // rotation += delta * 100;
 
         if (rotation > 360) {
             rotation -= 360;
@@ -96,6 +94,13 @@ void main()
             DrawText("hello there", 10, 10, 28, Colors.BLACK);
 
             DrawCircle(cast(int)player.getX(), cast(int)player.getY(), player.getSize(), Colors.RED);
+
+            DrawRectangle(-150 / 2,  150, 150, 150, Colors.YELLOW);
+            DrawRectangle(-150 / 2, -300, 150, 150, Colors.BEIGE);
+
+            DrawRectangle(150,  -150 / 2, 150, 150, Colors.GREEN);
+            DrawRectangle(-300, -150 / 2, 150, 150, Colors.VIOLET);
+
 
             EndMode2D();
 
