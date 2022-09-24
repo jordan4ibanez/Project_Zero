@@ -56,8 +56,34 @@ public class GameCamera {
         this.ignoreMouseInput = true;
     }
 
+    void intakeMouseInput(Mouse mouse) {
+         if (!mouse.isGrabbed()) {
+            return;
+        }
 
-    void firstPersonLook(Mouse mouse) {        
+        Vector2 mouseDelta = mouse.getDelta();
+
+        /// This is a workaround for initial delta being crazy
+        if (this.ignoreMouseInput) {
+            if (mouseDelta.x == 0 && mouseDelta.y == 0) {
+                this.ignoreMouseInput = false;
+            }
+            return;
+        }
+
+        float sensitivity = mouse.getSensitivity();
+
+        float yaw = this.camera.rotation -= mouseDelta.x * sensitivity;
+
+        /// yaw limiter, precision keeper basically
+        if (yaw < 0) {
+            yaw += 360.0;
+            this.camera.rotation = yaw;
+        } else if (yaw > 360.0) {
+            yaw -= 360.0;
+            this.camera.rotation = yaw;
+        }
+
     }
 
     void updateTarget(Vector2 target) {

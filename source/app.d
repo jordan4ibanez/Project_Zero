@@ -100,16 +100,11 @@ void main()
 
         double delta = deltaCalculator.getDelta();
 
-        // rotation += delta * 100;
-
-        if (rotation > 360) {
-            rotation -= 360;
-        }
+        camera.intakeMouseInput(mouse);
+        
 
         // writeln(rotation);
-
-
-        camera.setRotation(rotation);
+        // camera.setRotation(rotation);
 
 
         /// End internal calculations, begin draw
