@@ -13,6 +13,7 @@ public class Player {
     private float size = 50;
     private Vector2 position;
     private Vector2 speed;
+    private float stepAccumulator = 0;
 
     this(Vector2 position) {
         this.position = position;        
@@ -66,10 +67,15 @@ public class Player {
         }
         
 
-        rotatedVelocity = Vector2Normalize(rotatedVelocity);        
+        rotatedVelocity = Vector2Normalize(rotatedVelocity);
 
+        Vector2 oldPosition = this.position;
 
         this.processSpeed(rotatedVelocity, keyboard.getRun());
+
+        stepAccumulator += Vector2Distance(oldPosition, this.position);
+
+        writeln(stepAccumulator);
         
     }
 
@@ -93,8 +99,6 @@ public class Player {
 
         this.speed = Vector2Add(velocity, this.speed);
 
-
-        writeln(Vector2Length(this.speed));
         
         if (Vector2Length(this.speed) < 0.0149) {
             this.speed.x = 0;
