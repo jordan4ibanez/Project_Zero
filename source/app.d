@@ -66,13 +66,19 @@ void main()
         // Top wall
         Rectangle(0, 0, width, thickness),
         // Bottom wall
-        Rectangle(0, height - thickness, width, thickness),
+        Rectangle(0, height - thickness, width, thickness)
     ];
 
-    // Wall wall = new Wall("textures/bricks.png", 0, 0, 50, 200);
-    Structure house = new Structure(width, height, walls, "textures/wood_floor.png", "textures/bricks.png", "textures/tile_roof.png");
+    Decoration[] decorations = [
+        new Decoration(380,330, "textures/chair.png", false)
+    ];
 
     Map map = new Map(2000,2000, "textures/grass.png");
+
+    // Wall wall = new Wall("textures/bricks.png", 0, 0, 50, 200);
+    map.insertNewStructure(new Structure(0, 0, width, height, walls, decorations, "textures/wood_floor.png", "textures/bricks.png", "textures/tile_roof.png"));
+
+
 
     while(!WindowShouldClose()) {
 
@@ -116,15 +122,15 @@ void main()
 
             camera.clear(Colors.WHITE);
             
-            BeginMode2D(camera.get());
+            { // Begin 2d
+                BeginMode2D(camera.get());
 
-            map.drawGround(Vector2(0,0));
+                map.draw(Vector2(0,0));
 
-            house.draw(0, 0, true);
+                DrawCircle(cast(int)player.getX(), cast(int)player.getY(), player.getSize(), Colors.RED);
 
-            DrawCircle(cast(int)player.getX(), cast(int)player.getY(), player.getSize(), Colors.RED);
-
-            EndMode2D();
+                EndMode2D();
+            }
 
 
 
