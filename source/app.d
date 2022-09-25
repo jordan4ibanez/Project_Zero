@@ -47,7 +47,6 @@ void main()
 
     Player player = new Player(Vector2(0,0), "singleplayer");
 
-
     int thickness = 30;
     int doorPosition = 100;
     int halfDoorSize = 50;
@@ -145,8 +144,6 @@ void main()
 
                 EndMode2D();
             }
-
-
 
             DrawTextEx(font, "Zombie Game 0.0.0", Vector2(10,10), 30, 1, Colors.BLACK);
             DrawTextEx(font, "Zombie Game 0.0.0", Vector2(7,7), 30, 1, Colors.GREEN);
