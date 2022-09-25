@@ -94,12 +94,15 @@ public class Map {
         aabb.x += speed.x;
 
         foreach (Structure building; this.buildings) {
-            foreach (Wall wall; building.walls) {
-                if (CheckCollisionRecs(aabb, wall.boundingBox)) {
-                    collisionSize = wall.boundingBox.width / 2;
-                    collisionPosition = wall.boundingBox.x + collisionSize;
-                    collision = true;
-                    break;
+
+            if (CheckCollisionRecs(aabb, building.boundingBox)) {
+                foreach (Wall wall; building.walls) {
+                    if (CheckCollisionRecs(aabb, wall.boundingBox)) {
+                        collisionSize = wall.boundingBox.width / 2;
+                        collisionPosition = wall.boundingBox.x + collisionSize;
+                        collision = true;
+                        break;
+                    }
                 }
             }
             if (collision) {
@@ -123,12 +126,14 @@ public class Map {
         aabb.y += speed.y;
 
         foreach (Structure building; this.buildings) {
-            foreach (Wall wall; building.walls) {
-                if (CheckCollisionRecs(aabb, wall.boundingBox)) {
-                    collisionSize = wall.boundingBox.height / 2;
-                    collisionPosition = wall.boundingBox.y + collisionSize;
-                    collision = true;
-                    break;
+            if (CheckCollisionRecs(aabb, building.boundingBox)) {
+                foreach (Wall wall; building.walls) {
+                    if (CheckCollisionRecs(aabb, wall.boundingBox)) {
+                        collisionSize = wall.boundingBox.height / 2;
+                        collisionPosition = wall.boundingBox.y + collisionSize;
+                        collision = true;
+                        break;
+                    }
                 }
             }
             if (collision) {
