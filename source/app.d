@@ -47,7 +47,6 @@ void main()
 
     Player player = new Player(Vector2(0,0), "singleplayer");
 
-    float rotation = 0;
 
     int thickness = 30;
     int doorPosition = 100;
