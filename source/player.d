@@ -17,12 +17,13 @@ public class Player : Entity {
     private float stepAccumulator = 0;
     private string name;
     private Vector2 oldPosition;
+    private immutable size = 50;
 
     this(Vector2 position, string name) {
         this.name = name;
         this.oldPosition = position;
 
-        this.boundingBox = *new Rectangle(position.x, position.y, 50, 50);
+        this.boundingBox = *new Rectangle(position.x, position.y, this.size, this.size);
     }
 
     string getName() {
