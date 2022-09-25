@@ -5,39 +5,24 @@ import std.stdio;
 import camera;
 import keyboard;
 import sound_engine;
+import entity;
 
 import std.math.trigonometry: cos, sin, atan;
 import std.random;
 import std.conv: to;
 
 
-public class Player {
-
-    private float size = 50;
-    private Vector2 position;
-    private Vector2 speed;
+public class Player : Entity {
+    
     private float stepAccumulator = 0;
     private string name;
+    private Vector2 oldPosition;
 
     this(Vector2 position, string name) {
+        this.size = 50;
+        this.name = name;
         this.position = position;
-        this.name = name;   
-    }
-
-    Vector2 getPosition() {
-        return this.position;
-    }
-
-    float getX() {
-        return this.position.x;
-    }
-
-    float getY() {
-        return this.position.y;
-    }
-
-    float getSize() {
-        return this.size;
+        this.oldPosition = position;
     }
 
     string getName() {
@@ -45,6 +30,9 @@ public class Player {
     }
 
     void move(GameCamera camera, Keyboard keyboard) {
+
+        stepAccumulator += Vector2Distance(this.oldPosition, this.position);
+
         Vector2 movement = Vector2(0,0);
 
         if (keyboard.getForward()) {
@@ -78,11 +66,9 @@ public class Player {
 
         rotatedVelocity = Vector2Normalize(rotatedVelocity);
 
-        Vector2 oldPosition = this.position;
-
         this.processSpeed(rotatedVelocity, keyboard.getRun());
 
-        stepAccumulator += Vector2Distance(oldPosition, this.position);        
+        this.oldPosition = this.getPosition();
     }
 
     private void processSpeed(Vector2 velocity, bool isRunning) {
