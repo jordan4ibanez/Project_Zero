@@ -124,7 +124,7 @@ void main()
 
         /// End internal calculations, begin draw
 
-        camera.updateTarget(player.getBoundingBox());
+        camera.updateTarget(player.getCenter());
 
 
         BeginDrawing();

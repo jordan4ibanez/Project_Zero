@@ -90,10 +90,7 @@ public class GameCamera {
 
     }
 
-    void updateTarget(Rectangle aabb) {
-        Vector2 position = Vector2(aabb.x, aabb.y);
-        position.x += aabb.width / 2;
-        position.y += aabb.height / 2;
+    void updateTarget(Vector2 position) {
         this.camera.target = position;
     }
 

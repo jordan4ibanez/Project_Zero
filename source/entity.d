@@ -39,6 +39,15 @@ public class Entity {
     }
 
     final
+    Vector2 getCenter() {
+        Rectangle aabb = this.boundingBox;
+        Vector2 position = Vector2(aabb.x, aabb.y);
+        position.x += aabb.width / 2;
+        position.y += aabb.height / 2;
+        return position;
+    }
+
+    final
     Vector2 getSpeed() {
         return this.speed;
     }
