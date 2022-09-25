@@ -5,6 +5,13 @@ import std.stdio;
 
 public class Map {
 
+    double timeAccumalator = 0.0;
+
+    /// 300 FPS physics simulation
+    immutable double fpsPrecision = 300;
+    immutable double lockedTick = 1.0 / this.fpsPrecision;
+
+    Texture2D[string] textureCache;
     MapObject[string] cache;
 
     Rectangle boundingBox;
@@ -46,7 +53,22 @@ public class Map {
         );
     }
 
+    // "Physics" & Collision Detection
+    double getTimeAccumulator() {
+        return this.timeAccumalator;
+    }
 
+    void setTimeAccumulator(double newValue) {
+        this.timeAccumalator = newValue;
+    }
+
+    double getLockedTick() {
+        return this.lockedTick;
+    }
+
+    void update() {
+        
+    } 
 }
 
 public class MapObject {
