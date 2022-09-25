@@ -17,9 +17,10 @@ public class Player : Entity {
     private float stepAccumulator = 0;
     private string name;
     private Vector2 oldPosition;
-    private immutable size = 50;
 
     this(Vector2 position, string name) {
+        this.size = 50;
+
         this.name = name;
         this.oldPosition = position;
 

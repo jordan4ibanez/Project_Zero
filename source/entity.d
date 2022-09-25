@@ -10,6 +10,7 @@ public class Entity {
 
     protected Vector2 speed;
     protected Rectangle boundingBox;
+    protected float size = 50;
     
     final
     Vector2 getPosition() {
