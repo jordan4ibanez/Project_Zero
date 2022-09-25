@@ -68,8 +68,10 @@ public class Map {
     }
 
     void update(Player player) {
-        writeln(player.getName());
-    } 
+        Vector2 speed = player.getSpeed();
+        Vector2 position = player.getPosition();
+        player.setPosition(Vector2Add(speed, position));
+    }
 }
 
 public class MapObject {
