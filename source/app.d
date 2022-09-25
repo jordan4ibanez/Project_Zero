@@ -45,7 +45,7 @@ void main()
 
     bool wasToggle = false;
 
-    Player player = new Player(Vector2(0,0));
+    Player player = new Player(Vector2(0,0), "singleplayer");
 
     float rotation = 0;
 
@@ -107,7 +107,14 @@ void main()
 
         /// Literally all IO with the physics engine NEEDS to happen here!
         while(timeAccumalator >= lockedTick) {
+
             player.move(camera, keyboard);
+
+
+            map.update(player);
+
+
+
             timeAccumalator -= lockedTick;
         }
 

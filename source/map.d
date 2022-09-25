@@ -2,6 +2,7 @@ module map;
 
 import raylib;
 import std.stdio;
+import player;
 
 public class Map {
 
@@ -66,8 +67,8 @@ public class Map {
         return this.lockedTick;
     }
 
-    void update() {
-        
+    void update(Player player) {
+        writeln(player.getName());
     } 
 }
 

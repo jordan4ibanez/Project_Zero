@@ -17,9 +17,11 @@ public class Player {
     private Vector2 position;
     private Vector2 speed;
     private float stepAccumulator = 0;
+    private string name;
 
-    this(Vector2 position) {
-        this.position = position;        
+    this(Vector2 position, string name) {
+        this.position = position;
+        this.name = name;   
     }
 
     Vector2 getPosition() {
@@ -36,6 +38,10 @@ public class Player {
 
     float getSize() {
         return this.size;
+    }
+
+    string getName() {
+        return this.name;
     }
 
     void move(GameCamera camera, Keyboard keyboard) {
@@ -76,10 +82,7 @@ public class Player {
 
         this.processSpeed(rotatedVelocity, keyboard.getRun());
 
-        stepAccumulator += Vector2Distance(oldPosition, this.position);
-
-        writeln(stepAccumulator);
-        
+        stepAccumulator += Vector2Distance(oldPosition, this.position);        
     }
 
     private void processSpeed(Vector2 velocity, bool isRunning) {
@@ -106,8 +109,6 @@ public class Player {
             this.speed.x = 0;
             this.speed.y = 0;
         } 
-
-        this.position = Vector2Add(this.position, speed);
     }
 
     void processFootsteps(SoundEngine soundEngine) {
