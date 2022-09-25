@@ -19,7 +19,7 @@ public class Player : Entity {
     private Vector2 oldPosition;
 
     this(Vector2 position, string name) {
-        this.size = 50;
+        this.size = 60;
 
         this.name = name;
         this.oldPosition = position;
