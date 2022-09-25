@@ -3,6 +3,15 @@ module map;
 import raylib;
 import std.stdio;
 import player;
+import keyboard;
+import std.traits: Select, isFloatingPoint, isIntegral;
+
+
+@safe pure nothrow Select!(isFloatingPoint!T || isIntegral!T, T, float)
+signum(T)(in T x) {
+    return (T(0) < x) - (x < T(0));
+}
+
 
 public class Map {
 
@@ -67,10 +76,79 @@ public class Map {
         return this.lockedTick;
     }
 
-    void update(Player player) {
+    void updatePhysics(Player player) {
         Vector2 speed = player.getSpeed();
         Vector2 position = player.getPosition();
-        player.setPosition(Vector2Add(speed, position));
+
+        /// Cache some data, this could be a TON of collisions
+        Vector2 playerPos = player.getPosition();
+        Rectangle aabb    = player.getBoundingBox();
+
+        float collisionPosition = 0;
+        float collisionSize = 0;
+
+        bool collision = false;
+
+        /// X detection
+
+        aabb.x += speed.x;
+
+        foreach (Structure building; this.buildings) {
+            foreach (Wall wall; building.walls) {
+                if (CheckCollisionRecs(aabb, wall.boundingBox)) {
+                    collisionSize = wall.boundingBox.width / 2;
+                    collisionPosition = wall.boundingBox.x + collisionSize;
+                    collision = true;
+                    break;
+                }
+            }
+            if (collision) {
+                break;
+            }
+        }
+        if (collision) {
+            float sign = signum(position.x - collisionPosition);
+            if (sign < 0) {
+                aabb.x = collisionPosition + (sign * collisionSize) + (sign * (aabb.width + 0.001));
+            } else {
+                aabb.x = collisionPosition + (sign * collisionSize) + 0.001;
+            }
+            speed.x = 0;
+        }
+
+        /// Y detection
+
+        collision = false;
+    
+        aabb.y += speed.y;
+
+        foreach (Structure building; this.buildings) {
+            foreach (Wall wall; building.walls) {
+                if (CheckCollisionRecs(aabb, wall.boundingBox)) {
+                    collisionSize = wall.boundingBox.height / 2;
+                    collisionPosition = wall.boundingBox.y + collisionSize;
+                    collision = true;
+                    break;
+                }
+            }
+            if (collision) {
+                break;
+            }
+        }
+        if (collision) {
+            float sign = signum(position.y - collisionPosition);
+            if (sign < 0) {
+                aabb.y = collisionPosition + (sign * collisionSize) + (sign * (aabb.height + 0.001));
+            } else {
+                aabb.y = collisionPosition + (sign * collisionSize) + 0.001;
+            }
+            speed.y = 0;
+        }
+
+        player.setSpeed(speed);
+        player.setPosition(Vector2(aabb.x, aabb.y));
+
+        // player.setPosition(Vector2Add(speed, position));
     }
 }
 

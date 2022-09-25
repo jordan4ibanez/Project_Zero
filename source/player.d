@@ -19,10 +19,10 @@ public class Player : Entity {
     private Vector2 oldPosition;
 
     this(Vector2 position, string name) {
-        this.size = 50;
         this.name = name;
-        this.position = position;
         this.oldPosition = position;
+
+        this.boundingBox = *new Rectangle(position.x, position.y, 50, 50);
     }
 
     string getName() {
@@ -31,7 +31,7 @@ public class Player : Entity {
 
     void move(GameCamera camera, Keyboard keyboard) {
 
-        stepAccumulator += Vector2Distance(this.oldPosition, this.position);
+        stepAccumulator += Vector2Distance(this.oldPosition, this.getPosition());
 
         Vector2 movement = Vector2(0,0);
 
@@ -69,6 +69,10 @@ public class Player : Entity {
         this.processSpeed(rotatedVelocity, keyboard.getRun());
 
         this.oldPosition = this.getPosition();
+    }
+
+    Vector2 getOldPosition() {
+        return this.oldPosition;
     }
 
     private void processSpeed(Vector2 velocity, bool isRunning) {

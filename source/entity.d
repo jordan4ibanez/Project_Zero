@@ -4,42 +4,37 @@ import raylib;
 import std.stdio: writeln;
 
 /**
- * Entities are always a circle, allows easier integration into raylib collision detection.
+ * Entities are a square
  */
 public class Entity {
 
-    protected Vector2 position;
     protected Vector2 speed;
-    protected float size;
+    protected Rectangle boundingBox;
     
     final
     Vector2 getPosition() {
-        return this.position;
+        return Vector2(this.boundingBox.x, this.boundingBox.y);
     }
 
     final
     float getX() {
-        return this.position.x;
+        return this.boundingBox.x + (this.boundingBox.width / 2);
     }
 
     final
     float getY() {
-        return this.position.y;
+        return this.boundingBox.y + (this.boundingBox.height / 2);
     }
 
     final
     void setPosition(Vector2 newPosition) {
-        this.position = newPosition;
-    }    
-
-    final
-    float getSize() {
-        return this.size;
+        this.boundingBox.x = newPosition.x;
+        this.boundingBox.y = newPosition.y;
     }
 
     final
-    void setSize(float newSize) {
-        this.size = newSize;
+    Rectangle getBoundingBox() {
+        return this.boundingBox;
     }
 
     final

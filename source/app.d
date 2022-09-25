@@ -73,7 +73,7 @@ void main()
     Map map = new Map(2000,2000, "textures/grass.png");    
 
     // Wall wall = new Wall("textures/bricks.png", 0, 0, 50, 200);
-    map.insertNewStructure(new Structure(-500, -200, width, height, walls, decorations, "textures/wood_floor.png", "textures/bricks.png", "textures/tile_roof.png"));
+    map.insertNewStructure(new Structure(-200, -200, width, height, walls, decorations, "textures/wood_floor.png", "textures/bricks.png", "textures/tile_roof.png"));
 
 
 
@@ -108,10 +108,7 @@ void main()
 
             player.move(camera, keyboard);
 
-
-            map.update(player);
-
-
+            map.updatePhysics(player);
 
             timeAccumalator -= lockedTick;
         }
@@ -140,7 +137,8 @@ void main()
 
                 map.draw(Vector2(0,0));
 
-                DrawCircle(cast(int)player.getX(), cast(int)player.getY(), player.getSize(), Colors.RED);
+                Rectangle aabb = player.getBoundingBox();
+                DrawRectangle(cast(int)aabb.x, cast(int)aabb.y, cast(int)aabb.width, cast(int)aabb.height, Colors.RED);
 
                 EndMode2D();
             }
