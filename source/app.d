@@ -5,7 +5,6 @@ import lua;
 import camera;
 import mouse;
 import keyboard;
-import physics;
 import sound_engine;
 import delta;
 import window;
@@ -73,9 +72,7 @@ void main()
         new Decoration(380,330, "textures/chair.png", false)
     ];
 
-    Map map = new Map(2000,2000, "textures/grass.png");
-
-    PhysicsEngine physicsEngine = new PhysicsEngine(1,1);
+    Map map = new Map(2000,2000, "textures/grass.png");    
 
     // Wall wall = new Wall("textures/bricks.png", 0, 0, 50, 200);
     map.insertNewStructure(new Structure(-500, -200, width, height, walls, decorations, "textures/wood_floor.png", "textures/bricks.png", "textures/tile_roof.png"));
@@ -105,8 +102,8 @@ void main()
         camera.intakeMouseInput(mouse);
 
         /// Simulate higher FPS precision
-        double timeAccumalator = physicsEngine.getTimeAccumulator() + delta;
-        immutable double lockedTick = physicsEngine.getLockedTick();
+        double timeAccumalator = map.getTimeAccumulator() + delta;
+        immutable double lockedTick = map.getLockedTick();
 
         /// Literally all IO with the physics engine NEEDS to happen here!
         while(timeAccumalator >= lockedTick) {
@@ -114,7 +111,7 @@ void main()
             timeAccumalator -= lockedTick;
         }
 
-        physicsEngine.setTimeAccumulator(timeAccumalator);
+        map.setTimeAccumulator(timeAccumalator);
 
         player.processFootsteps(soundEngine);
         
