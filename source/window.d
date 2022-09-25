@@ -12,7 +12,10 @@ public class Window {
     private int width = 0;
     private int height = 0;
 
-    private string title = "D Raylib Zombie Game 0.0.0";
+    private int fullScreenHeight = 0;
+    private int fullScreenWidth  = 0;
+
+    private string title = "Hello Youtube";//"D Raylib Zombie Game 0.0.0";
 
     private bool fullScreen = false;
 
@@ -38,18 +41,28 @@ public class Window {
             SetWindowSize(this.width, this.height);
         } else {
             int currentMonitor = GetCurrentMonitor();
-            SetWindowSize(GetMonitorWidth(currentMonitor), GetMonitorWidth(currentMonitor));
+            this.fullScreenWidth = GetMonitorWidth(currentMonitor);
+            this.fullScreenHeight= GetMonitorHeight(currentMonitor);
+            SetWindowSize(this.fullScreenWidth, this.fullScreenHeight);
             ToggleFullscreen();
         }
         fullScreen = !fullScreen;   
     }
 
     float getWidth() {
-        return this.width;
+        if (this.fullScreen) {
+            return this.fullScreenWidth;
+        } else {
+            return this.width;
+        }
     }
 
     float getHeight() {
-        return this.height;
+        if (this.fullScreen) {
+            return this.fullScreenHeight;
+        } else {
+            return this.height;
+        }
     }
 
     void update(GameCamera camera) {

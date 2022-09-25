@@ -90,7 +90,8 @@ public class GameCamera {
 
     }
 
-    void updateTarget(Vector2 position) {
+    void updateTarget(Vector2 position, Window window) {
+        this.camera.offset = Vector2(window.getWidth() / 2.0, window.getHeight() / 2.0);
         this.camera.target = position;
     }
 
