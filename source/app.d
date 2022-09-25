@@ -135,7 +135,7 @@ void main()
             { // Begin 2d
                 BeginMode2D(camera.get());
 
-                map.draw(Vector2(0,0));
+                map.draw(player.getCenter());
 
                 Rectangle aabb = player.getBoundingBox();
                 DrawRectangle(cast(int)aabb.x, cast(int)aabb.y, cast(int)aabb.width, cast(int)aabb.height, Colors.RED);

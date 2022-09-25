@@ -40,14 +40,14 @@ public class Map {
         this.buildings ~= newStruct;
     }
 
-    void draw(Vector2 offset) {
-        this.drawGround(offset);
-        this.drawBuildings(offset);
+    void draw(Vector2 playerPosition) {
+        this.drawGround(playerPosition);
+        this.drawBuildings(playerPosition);
     }
 
-    private void drawBuildings(Vector2 offset) {
+    private void drawBuildings(Vector2 playerPosition) {
         foreach (Structure building; this.buildings) {
-            building.draw(true);
+            building.draw(CheckCollisionPointRec(playerPosition, building.boundingBox));
         }
     }
 
@@ -56,7 +56,7 @@ public class Map {
             this.groundTexture,
             this.groundTextureSource,
             this.boundingBox,
-            offset,
+            Vector2(0,0),
             0,
             1, 
             Colors.WHITE
