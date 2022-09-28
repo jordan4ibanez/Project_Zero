@@ -119,9 +119,9 @@ public class Line {
     }
 }
 
-bool collidePointToLine(Point point, Line line) {
-    float pointX = point.position.x;
-    float pointY = point.position.y;
+float collidePointToLine(Vector2 point, Line line) {
+    float pointX = point.x;
+    float pointY = point.y;
 
     float startX = line.start.x;
     float startY = line.start.y;
@@ -144,12 +144,31 @@ bool collidePointToLine(Point point, Line line) {
         float diff = pointY - collisionHeight;
 
         if (diff <= 0) {
-            point.position.y = collisionHeight + 0.01;
-
+            return collisionHeight + 0.01;
         }
     }
-    return true;
+    return float.nan;
 }
+
+public class Point3D {
+    Vector3 position;
+    Vector3 velocity;
+    this(float posX, float posY, float posZ) {
+        this.position = *new Vector3(posX, posY, posZ);
+        this.velocity = *new Vector3(0.0, -0.001, 0.0);
+    }
+
+    void update() {
+        this.position.x += this.velocity.x;
+        this.position.y += this.velocity.y;
+        this.position.z += this.velocity.z;
+    }
+
+    void draw() {
+        DrawSphere(this.position, 0.1, Colors.MAGENTA);
+    }
+}
+
 
 /**
  * The map's base is a heightmap based on quads, these are fixed size of 1x1.
@@ -157,6 +176,10 @@ bool collidePointToLine(Point point, Line line) {
  */
 public class MapQuad {
     float[] yPoints;
+    Line xMinLine;
+    Line xMaxLine;
+
+    Line zCrossRefLine;
     
     this( float yPosNXNZ, float yPosPXNZ, float yPosNXPZ, float yPosPXPZ){
         this.yPoints = new float[4];
@@ -168,6 +191,12 @@ public class MapQuad {
         this.yPoints[2] = yPosPXPZ;
         // y: positive x, negative z
         this.yPoints[3] = yPosPXNZ;
+
+        float posX = 0;
+        float posZ = 0;
+
+        this.xMinLine = new Line(Vector2(posX, yPosNXNZ), Vector2(posX + 1, yPosNXPZ));
+        this.zCrossRefLine = new Line(Vector2(posZ, yPosPXNZ), Vector2(posZ + 1, yPosPXPZ));
     }
 
     void draw() {
@@ -212,4 +241,20 @@ public class MapQuad {
             Colors.GOLD
         );
     }
+}
+
+
+void collide3DPointToMapQuad(Point3D point, MapQuad quad) {
+    float posX = point.position.x;
+    float posY = point.position.y;
+    float posZ = point.position.z;
+
+    Line minXLine = quad.xMinLine;
+    Line maxXLine = quad.xMaxLine;
+
+    // float minCalculation = collidePointToLine(Vector2(posX, posY),minXLine);
+    // float maxCalculation = collidePointToLine(Vector2(posX, posY),maxXLine);
+
+    //writeln(minCalculation, " ", maxCalculation);
+
 }

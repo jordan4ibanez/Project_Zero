@@ -28,7 +28,7 @@ void main()
     DeltaCalculator deltaCalculator = new DeltaCalculator();
 
 
-    GameCamera camera3d = new GameCamera(Vector3(0,0,0));
+    GameCamera camera3d = new GameCamera(Vector3(0,1,0));
 
     Mouse mouse = new Mouse();
     mouse.grab(camera3d);
@@ -59,7 +59,9 @@ void main()
 
     Line line = new Line(Vector2(50, 100), Vector2(150, 150));
 
-    MapQuad quad = new MapQuad(0,0,1,0.5);
+    MapQuad quad = new MapQuad(0,0,0,0);
+
+    Point3D point3d = new Point3D(0.5, 0.5, 0.5);
 
     while(!WindowShouldClose()) {
 
@@ -135,7 +137,7 @@ void main()
         camera3d.update();
 
         /// End internal calculations, begin draw
-
+        point3d.update();
 
         BeginDrawing();
         {
@@ -162,6 +164,7 @@ void main()
                 */
 
                 quad.draw();
+                point3d.draw();
             }
             EndMode3D();
 
@@ -170,7 +173,8 @@ void main()
             point.draw();
             line.draw();
 
-            collidePointToLine(point, line);
+            collidePointToLine(point.position, line);
+            collide3DPointToMapQuad(point3d, quad);
             // DrawText("hello there", 400, 300, 28, Colors.BLACK);
 
         }
