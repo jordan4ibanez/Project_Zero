@@ -4,7 +4,6 @@ import raylib;
 import std.string: toStringz;
 import std.stdio;
 import std.conv: to;
-import camera;
 
 /// Wrapper object for Raylib window
 public class Window {
@@ -12,10 +11,7 @@ public class Window {
     private int width = 0;
     private int height = 0;
 
-    private int fullScreenHeight = 0;
-    private int fullScreenWidth  = 0;
-
-    private string title = "Hello Youtube";//"D Raylib Zombie Game 0.0.0";
+    private string title = "D Raylib Zombie Game 0.0.0";
 
     private bool fullScreen = false;
 
@@ -35,37 +31,19 @@ public class Window {
         CloseWindow();
     }
 
-    void toggleFullScreen(GameCamera camera) {
+    void toggleFullScreen() {
         if (fullScreen) {
             ToggleFullscreen();
             SetWindowSize(this.width, this.height);
         } else {
             int currentMonitor = GetCurrentMonitor();
-            this.fullScreenWidth = GetMonitorWidth(currentMonitor);
-            this.fullScreenHeight= GetMonitorHeight(currentMonitor);
-            SetWindowSize(this.fullScreenWidth, this.fullScreenHeight);
+            SetWindowSize(GetMonitorWidth(currentMonitor), GetMonitorWidth(currentMonitor));
             ToggleFullscreen();
         }
-        fullScreen = !fullScreen;   
+        fullScreen = !fullScreen;
     }
 
-    float getWidth() {
-        if (this.fullScreen) {
-            return this.fullScreenWidth;
-        } else {
-            return this.width;
-        }
-    }
-
-    float getHeight() {
-        if (this.fullScreen) {
-            return this.fullScreenHeight;
-        } else {
-            return this.height;
-        }
-    }
-
-    void update(GameCamera camera) {
+    void update() {
         if (!fullScreen) {
             if (IsWindowResized()) {
                 this.width = GetRenderWidth();

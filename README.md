@@ -17,4 +17,5 @@ I'm also practicing pure OOP for this. So it might look strange!
 ## Project libraries:
 
 - **Rendering & input**: Raylib
+- **Physics**: bindbc-newton
 - **Audio**: bindbc-openal
