@@ -3,6 +3,8 @@ module world;
 import std.stdio;
 import raylib;
 import std.uuid;
+import std.math.algebraic: sqrt;
+import std.math.rounding: floor;
 
 /// This is an extremely basic physics engine that uses AABB physics to work
 public class World {
@@ -14,6 +16,7 @@ public class World {
     immutable double lockedTick = 1.0 / this.fpsPrecision;
 
     MapQuad[] heightMap;
+    int heightMapSize;
 
     Entity[UUID] entities;
     RigidBody[UUID] rigidBodies;
@@ -22,9 +25,49 @@ public class World {
 
     }
 
-    /// Size needs to be odd, heightmaps are created via quads, and they overlap data!
-    void uploadHeightMap(float[] heightMap, Vector2 size) {
+    /*
+     * Size needs to be odd, heightmaps are created via quads, and they overlap data!
+     * If not, this will absolutely crash!
+     */
+    void uploadHeightMap(float[] heightMap) {
+
+        /// This is error prone, but D has no integer sqrt function
+        this.heightMapSize = cast(int)floor(sqrt(floor(cast(float)heightMap.length)));
+
+        float get(int x, int z) {
+            if (x < 0 || x > this.heightMapSize - 1) {
+                throw new Exception("X getter is out of bounds for heightmap!");
+            }
+            if (z < 0 || z > this.heightMapSize - 1) {
+                throw new Exception("Z getter is out of bounds for heightmap!");
+            }
+            return heightMap[(x * this.heightMapSize) + z];
+        }
+
+
+        writeln("height map size: ", this.heightMapSize);
+
+        get(1,2);
+
         
+        for (int x = 0; x < this.heightMapSize - 1; x++) {
+            for (int z = 0; z < this.heightMapSize - 1; z++) {
+                
+                this.heightMap ~= new MapQuad(
+                    Vector2(x,z),
+                    get(x,z),
+                    get(x+1,z),
+                    get(x,z+1),
+                    get(x+1,z+1)
+                );
+            }
+        }        
+    }
+
+    void drawHeightMap() {
+        foreach (MapQuad quad; this.heightMap) {
+            quad.draw();
+        }
     }
 
     double getTimeAccumulator() {
