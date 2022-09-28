@@ -9,11 +9,14 @@ import world;
 import sound_engine;
 import delta;
 import window;
+import std.random;
 
 void main()
 {
 
     validateRaylibBinding();
+
+    SetTraceLogLevel(TraceLogLevel.LOG_NONE);
 
     /// Mod API & Integration
 	if (loadLuaLibrary()) {
@@ -37,7 +40,7 @@ void main()
     
     World world = new World();
 
-    SoundEngine soundEngine = new SoundEngine();
+    // SoundEngine soundEngine = new SoundEngine();
 
     // soundEngine.enableDebugging();
     
@@ -55,8 +58,22 @@ void main()
         // boxes ~= physicsEngine.addBox(Vector3(3, 1 + i * 10,0));
     }
 
+    float[] heightMap;
 
-    MapQuad quad = new MapQuad(Vector2(0,0), 1,0,0.5,0.75);
+    /// testing out a random map!
+
+    int size = 100;
+
+    Random randy = Random(unpredictableSeed());
+
+    for (int x = 0; x < size; x++) {
+        for (int z = 0; z < size; z++) {
+            heightMap ~= uniform(0.0, 1.0, randy);
+        }
+    }
+
+    world.uploadHeightMap(heightMap);
+    
 
 
     while(!WindowShouldClose()) {
@@ -149,6 +166,7 @@ void main()
                     box.drawCollisionBox();                
                 }
                 
+                world.drawHeightMap();
                 /*
                 DrawCube(Vector3(-10,0,0),2,2,2,Colors.RED);
                 DrawCube(Vector3(10,0,0),2,2,2,Colors.BLUE);
@@ -158,7 +176,6 @@ void main()
                 DrawCube(Vector3(0,0,-10),2,2,2,Colors.DARKGRAY);
                 */
 
-                quad.draw();
             }
             EndMode3D();
 
@@ -167,4 +184,5 @@ void main()
         }
         EndDrawing();
     }
+
 }
