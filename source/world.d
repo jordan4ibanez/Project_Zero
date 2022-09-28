@@ -58,7 +58,8 @@ public class World {
                     get(x,z),
                     get(x+1,z),
                     get(x,z+1),
-                    get(x+1,z+1)
+                    get(x+1,z+1),
+                    0.25
                 );
             }
         }        
@@ -150,7 +151,8 @@ public class MapQuad {
         float yPosNegativeXNegativeZ,
         float yPosPositiveXNegativeZ,
         float yPosNegativeXPositiveZ,
-        float yPosPositiveXPositiveZ
+        float yPosPositiveXPositiveZ,
+        float tileSize
     ){
         this.yPoints = new float[4];
         // y: negative x, negative z
@@ -163,7 +165,7 @@ public class MapQuad {
         this.yPoints[3] = yPosPositiveXNegativeZ;
 
         this.position = *new Vector2(position.x, position.y);
-        this.tileSize = 1;
+        this.tileSize = tileSize;
     }
 
     void draw() {
@@ -171,19 +173,19 @@ public class MapQuad {
         // Tri 1
         DrawTriangle3D(
             Vector3(
-                this.position.x,
+                this.position.x * this.tileSize,
                 yPoints[0],
-                this.position.y
+                this.position.y * this.tileSize
             ),
             Vector3(
-                this.position.x,
+                this.position.x * this.tileSize,
                 yPoints[1],
-                this.position.y + this.tileSize
+                (this.position.y + 1)  * this.tileSize
             ),
             Vector3(
-                this.position.x + this.tileSize,
+                (this.position.x + 1) * this.tileSize,
                 yPoints[2],
-                this.position.y + this.tileSize
+                (this.position.y + 1) * this.tileSize
             ),
             Colors.GREEN
         );
@@ -191,19 +193,19 @@ public class MapQuad {
         // Tri 2
         DrawTriangle3D(
             Vector3(
-                this.position.x + this.tileSize,
+                (this.position.x + 1) * this.tileSize,
                 yPoints[2],
-                this.position.y + this.tileSize
+                (this.position.y + 1) * this.tileSize
             ),
             Vector3(
-                this.position.x + this.tileSize,
+                (this.position.x + 1) * this.tileSize,
                 yPoints[3],
-                this.position.y
+                this.position.y * this.tileSize
             ),
             Vector3(
-                this.position.x,
+                this.position.x * this.tileSize,
                 yPoints[0],
-                this.position.y
+                this.position.y * this.tileSize
             ),
             Colors.GOLD
         );

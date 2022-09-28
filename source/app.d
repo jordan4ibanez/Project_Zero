@@ -68,7 +68,7 @@ void main()
 
     for (int x = 0; x < size; x++) {
         for (int z = 0; z < size; z++) {
-            heightMap ~= uniform(0.0, 1.0, randy);
+            heightMap ~= uniform(0.0, 0.25, randy);
         }
     }
 
@@ -98,7 +98,7 @@ void main()
 
         double delta = deltaCalculator.getDelta();
 
-        Vector3 movementSpeed = Vector3Multiply(Vector3(delta, delta, delta), Vector3(1, 1, 1));
+        Vector3 movementSpeed = Vector3Multiply(Vector3(delta, delta, delta), Vector3(10, 10, 10));
 
         /// Freecam 2d test
         if (keyboard.getForward()) {
