@@ -144,11 +144,72 @@ bool collidePointToLine(Point point, Line line) {
         float diff = pointY - collisionHeight;
 
         if (diff <= 0) {
-            point.position.y = collisionHeight + 0.01; 
-        }
+            point.position.y = collisionHeight + 0.01;
 
+        }
+    }
+    return true;
+}
+
+/**
+ * The map's base is a heightmap based on quads, these are fixed size of 1x1.
+ * Therefor, we only need the Y positions of the quads.
+ */
+public class MapQuad {
+    float[] yPoints;
+    
+    this( float yPosNXNZ, float yPosPXNZ, float yPosNXPZ, float yPosPXPZ){
+        this.yPoints = new float[4];
+        // y: negative x, negative z
+        this.yPoints[0] = yPosNXNZ;
+        // y: negative x, positive z
+        this.yPoints[1] = yPosNXPZ;
+        // y: positive x, positive z
+        this.yPoints[2] = yPosPXPZ;
+        // y: positive x, negative z
+        this.yPoints[3] = yPosPXNZ;
     }
 
+    void draw() {
 
-    return true;
+        // Tri 1
+        DrawTriangle3D(
+            Vector3(
+                0,
+                yPoints[0],
+                0
+            ),
+            Vector3(
+                0,
+                yPoints[1],
+                1
+            ),
+            Vector3(
+                1,
+                yPoints[2],
+                1
+            ),
+            Colors.GREEN
+        );
+
+        // Tri 2
+        DrawTriangle3D(
+            Vector3(
+                1,
+                yPoints[2],
+                1
+            ),
+            Vector3(
+                1,
+                yPoints[3],
+                0
+            ),
+            Vector3(
+                0,
+                yPoints[0],
+                0
+            ),
+            Colors.GOLD
+        );
+    }
 }

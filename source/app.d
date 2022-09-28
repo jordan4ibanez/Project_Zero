@@ -59,6 +59,8 @@ void main()
 
     Line line = new Line(Vector2(50, 100), Vector2(150, 150));
 
+    MapQuad quad = new MapQuad(0,0,1,0.5);
+
     while(!WindowShouldClose()) {
 
 
@@ -159,6 +161,7 @@ void main()
                 DrawCube(Vector3(0,0,-10),2,2,2,Colors.DARKGRAY);
                 */
 
+                quad.draw();
             }
             EndMode3D();
 
