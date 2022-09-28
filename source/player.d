@@ -51,7 +51,9 @@ public class Player : Entity {
         }
 
 
-        float rotation = camera.getRotation();
+        //float rotation = camera.getRotation();
+
+        float rotation = 0;
         
         Vector2 rotatedVelocity = Vector2(0,0);
 
