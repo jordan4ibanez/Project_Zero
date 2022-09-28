@@ -181,16 +181,22 @@ public class MapQuad {
 
     Line zCrossRefLine;
     
-    this( float yPosNXNZ, float yPosPXNZ, float yPosNXPZ, float yPosPXPZ){
+    /// This looks suspiciously like an OpenGL quad from 2 tris. Well that's because it is.
+    this(
+        float yPosNegativeXNegativeZ,
+        float yPosPositiveXNegativeZ,
+        float yPosNegativeXPositiveZ,
+        float yPosPositiveXPositiveZ
+    ){
         this.yPoints = new float[4];
         // y: negative x, negative z
-        this.yPoints[0] = yPosNXNZ;
+        this.yPoints[0] = yPosNegativeXNegativeZ;
         // y: negative x, positive z
-        this.yPoints[1] = yPosNXPZ;
+        this.yPoints[1] = yPosNegativeXPositiveZ;
         // y: positive x, positive z
-        this.yPoints[2] = yPosPXPZ;
+        this.yPoints[2] = yPosPositiveXPositiveZ;
         // y: positive x, negative z
-        this.yPoints[3] = yPosPXNZ;
+        this.yPoints[3] = yPosPositiveXNegativeZ;
 
         float posX = 0;
         float posZ = 0;
