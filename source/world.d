@@ -29,7 +29,7 @@ public class World {
      * Size needs to be odd, heightmaps are created via quads, and they overlap data!
      * If not, this will absolutely crash!
      */
-    void uploadHeightMap(float[] heightMap) {
+    void uploadHeightMap(float[] heightMap, float quadScale) {
 
         /// This is error prone, but D has no integer sqrt function
         this.heightMapSize = cast(int)floor(sqrt(floor(cast(float)heightMap.length)));
@@ -47,8 +47,6 @@ public class World {
 
         writeln("height map size: ", this.heightMapSize);
 
-        get(1,2);
-
         
         for (int x = 0; x < this.heightMapSize - 1; x++) {
             for (int z = 0; z < this.heightMapSize - 1; z++) {
@@ -59,10 +57,15 @@ public class World {
                     get(x+1,z),
                     get(x,z+1),
                     get(x+1,z+1),
-                    0.25
+                    quadScale
                 );
             }
-        }        
+        }
+
+        writeln("beginning heightmap terrain gen! This needs to be a separate function");
+        foreach (MapQuad quad; this.heightMap) {
+            
+        }     
     }
 
     void drawHeightMap() {

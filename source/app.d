@@ -10,6 +10,7 @@ import sound_engine;
 import delta;
 import window;
 import std.random;
+import fast_noise;
 
 void main()
 {
@@ -62,17 +63,20 @@ void main()
 
     /// testing out a random map!
 
-    int size = 100;
+    int size = 500;
 
-    Random randy = Random(unpredictableSeed());
+    FNLState noiseEngine = fnlCreateState(unpredictableSeed());
+    noiseEngine.noise_type = FNLNoiseType.FNL_NOISE_OPENSIMPLEX2;
+    noiseEngine.frequency = 0.01;
+    noiseEngine.octaves = 1;
 
     for (int x = 0; x < size; x++) {
         for (int z = 0; z < size; z++) {
-            heightMap ~= uniform(0.0, 0.25, randy);
+            heightMap ~= fnlGetNoise2D(&noiseEngine, x, z) * 5;
         }
     }
-
-    world.uploadHeightMap(heightMap);
+    
+    world.uploadHeightMap(heightMap, 1);
     
 
 

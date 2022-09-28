@@ -4,6 +4,7 @@
 		"bindbc-loader": "1.0.1",
 		"bindbc-lua": "0.5.0",
 		"bindbc-openal": "1.0.0",
+		"fast_noise": "1.0.5",
 		"raylib-d": "4.2.2",
 		"stb_vorbis": "1.0.0"
 	}
