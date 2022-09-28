@@ -13,12 +13,18 @@ public class World {
     immutable double fpsPrecision = 300;
     immutable double lockedTick = 1.0 / this.fpsPrecision;
 
-    
+    MapQuad[] heightMap;
+
     Entity[UUID] entities;
     RigidBody[UUID] rigidBodies;
 
     this() {
 
+    }
+
+    /// Size needs to be odd, heightmaps are created via quads, and they overlap data!
+    void uploadHeightMap(float[] heightMap, Vector2 size) {
+        
     }
 
     double getTimeAccumulator() {
@@ -86,103 +92,18 @@ public class RigidBody {
 }
 
 
-public class Point {
-    Vector2 position;
-    Vector2 velocity;
-    this(float posX, float posY) {
-        this.position = *new Vector2(posX, posY);
-        this.velocity = *new Vector2(0.01, -0.1);
-    }
-
-    void update() {
-        this.position.x += this.velocity.x;
-        this.position.y += this.velocity.y;
-    }
-
-    void draw() {
-        DrawCircle(cast(int)this.position.x, cast(int)this.position.y,3, Colors.GOLD);
-    }
-}
-
-public class Line {
-
-    Vector2 start;
-    Vector2 end;
-
-    this(Vector2 start, Vector2 end) {
-        this.start = start;
-        this.end   = end;
-    }
-
-    void draw() {
-        DrawLine(cast(int) this.start.x, cast(int) this.start.y, cast(int) this.end.x, cast(int) this.end.y, Colors.BLUE); 
-    }
-}
-
-float collidePointToLine(Vector2 point, Line line) {
-    float pointX = point.x;
-    float pointY = point.y;
-
-    float startX = line.start.x;
-    float startY = line.start.y;
-    float endX   = line.end.x;
-    float endY   = line.end.y;
-
-    /// First we must check if it's within bounds on the X axis
-    if (pointX >= startX && pointX <= endX) {
-
-        /// Next, we check the percentage of the line
-        float lineSize = endX - startX;
-        float distanceFromStart = pointX - startX;
-        float percentage = distanceFromStart / lineSize;
-
-        /// Now we need to check which is the high point on the Y axis
-        float yMax = endY - startY;
-
-        float collisionHeight = (yMax * percentage) + startY;
-
-        float diff = pointY - collisionHeight;
-
-        if (diff <= 0) {
-            return collisionHeight + 0.01;
-        }
-    }
-    return float.nan;
-}
-
-public class Point3D {
-    Vector3 position;
-    Vector3 velocity;
-    this(float posX, float posY, float posZ) {
-        this.position = *new Vector3(posX, posY, posZ);
-        this.velocity = *new Vector3(0.0, -0.001, 0.0);
-    }
-
-    void update() {
-        this.position.x += this.velocity.x;
-        this.position.y += this.velocity.y;
-        this.position.z += this.velocity.z;
-    }
-
-    void draw() {
-        DrawSphere(this.position, 0.1, Colors.MAGENTA);
-    }
-}
-
-
 /**
  * The map's base is a heightmap based on quads, these are fixed size of 1x1.
  * Therefor, we only need the Y positions of the quads.
  */
 public class MapQuad {
     float[] yPoints;
-    Line xMinLine;
-    Line xMaxLine;
+    Vector2 position;
+    float tileSize;
 
-    Line zCrossRefLine;
-    
     /// This looks suspiciously like an OpenGL quad from 2 tris. Well that's because it is.
     this(
+        Vector2 position,
         float yPosNegativeXNegativeZ,
         float yPosPositiveXNegativeZ,
         float yPosNegativeXPositiveZ,
@@ -198,11 +119,8 @@ public class MapQuad {
         // y: positive x, negative z
         this.yPoints[3] = yPosPositiveXNegativeZ;
 
-        float posX = 0;
-        float posZ = 0;
-
-        this.xMinLine = new Line(Vector2(posX, yPosNXNZ), Vector2(posX + 1, yPosNXPZ));
-        this.zCrossRefLine = new Line(Vector2(posZ, yPosPXNZ), Vector2(posZ + 1, yPosPXPZ));
+        this.position = *new Vector2(position.x, position.y);
+        this.tileSize = 1;
     }
 
     void draw() {
@@ -210,19 +128,19 @@ public class MapQuad {
         // Tri 1
         DrawTriangle3D(
             Vector3(
-                0,
+                this.position.x,
                 yPoints[0],
-                0
+                this.position.y
             ),
             Vector3(
-                0,
+                this.position.x,
                 yPoints[1],
-                1
+                this.position.y + this.tileSize
             ),
             Vector3(
-                1,
+                this.position.x + this.tileSize,
                 yPoints[2],
-                1
+                this.position.y + this.tileSize
             ),
             Colors.GREEN
         );
@@ -230,19 +148,19 @@ public class MapQuad {
         // Tri 2
         DrawTriangle3D(
             Vector3(
-                1,
+                this.position.x + this.tileSize,
                 yPoints[2],
-                1
+                this.position.y + this.tileSize
             ),
             Vector3(
-                1,
+                this.position.x + this.tileSize,
                 yPoints[3],
-                0
+                this.position.y
             ),
             Vector3(
-                0,
+                this.position.x,
                 yPoints[0],
-                0
+                this.position.y
             ),
             Colors.GOLD
         );
@@ -250,17 +168,20 @@ public class MapQuad {
 }
 
 
-void collide3DPointToMapQuad(Point3D point, MapQuad quad) {
-    float posX = point.position.x;
-    float posY = point.position.y;
-    float posZ = point.position.z;
+void collidePointToMapQuad(Vector3 point, MapQuad quad) {
+    float posX = point.x;
+    float posY = point.y;
+    float posZ = point.z;
 
-    Line minXLine = quad.xMinLine;
-    Line maxXLine = quad.xMaxLine;
+    float baseX = 0;
+    float baseZ = 0;
 
-    // float minCalculation = collidePointToLine(Vector2(posX, posY),minXLine);
-    // float maxCalculation = collidePointToLine(Vector2(posX, posY),maxXLine);
+    Vector3 lerpedMin = Vector3Lerp(Vector3(0, quad.yPoints[0], 0),Vector3(1,quad.yPoints[3]), posX - baseX);
+    Vector3 lerpedMax = Vector3Lerp(Vector3(0, quad.yPoints[1], 0),Vector3(1,quad.yPoints[2]), posX - baseX);
 
-    //writeln(minCalculation, " ", maxCalculation);
+    Vector3 combined = Vector3Lerp(lerpedMin, lerpedMax, posZ - baseZ);
 
+    if (posY < combined.y) {
+        point.y = combined.y + 0.00001;
+    }
 }

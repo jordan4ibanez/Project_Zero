@@ -55,13 +55,9 @@ void main()
         // boxes ~= physicsEngine.addBox(Vector3(3, 1 + i * 10,0));
     }
 
-    Point point = new Point(100,200);
 
-    Line line = new Line(Vector2(50, 100), Vector2(150, 150));
+    MapQuad quad = new MapQuad(Vector2(0,0), 1,0,0.5,0.75);
 
-    MapQuad quad = new MapQuad(0,0,0,0);
-
-    Point3D point3d = new Point3D(0.5, 0.5, 0.5);
 
     while(!WindowShouldClose()) {
 
@@ -85,7 +81,7 @@ void main()
 
         double delta = deltaCalculator.getDelta();
 
-        Vector3 movementSpeed = Vector3Multiply(Vector3(delta, delta, delta), Vector3(10, 10, 10));
+        Vector3 movementSpeed = Vector3Multiply(Vector3(delta, delta, delta), Vector3(1, 1, 1));
 
         /// Freecam 2d test
         if (keyboard.getForward()) {
@@ -137,7 +133,6 @@ void main()
         camera3d.update();
 
         /// End internal calculations, begin draw
-        point3d.update();
 
         BeginDrawing();
         {
@@ -164,17 +159,9 @@ void main()
                 */
 
                 quad.draw();
-                point3d.draw();
             }
             EndMode3D();
 
-
-            point.update();
-            point.draw();
-            line.draw();
-
-            collidePointToLine(point.position, line);
-            collide3DPointToMapQuad(point3d, quad);
             // DrawText("hello there", 400, 300, 28, Colors.BLACK);
 
         }
