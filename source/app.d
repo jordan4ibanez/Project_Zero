@@ -5,13 +5,10 @@ import lua;
 import camera;
 import mouse;
 import keyboard;
-import physics;
+import world;
 import sound_engine;
 import delta;
 import window;
-
-import dmech.rigidbody;
-import dmech.shape;
 
 void main()
 {
@@ -38,18 +35,7 @@ void main()
 
     Keyboard keyboard = new Keyboard();
     
-    PhysicsEngine physicsEngine = new PhysicsEngine();
-
-    RigidBody ground =  physicsEngine.addGround();
-
-    Vector3 groundPosition = cast(Vector3)ground.position;
-    Vector4 groundRotation = cast(Vector4)ground.orientation;
-
-    RigidBody ball = physicsEngine.addBody();
-
-    float oldSpeed = 0;
-
-    float oldY = 10_000;
+    World world = new World();
 
     SoundEngine soundEngine = new SoundEngine();
 
@@ -59,9 +45,19 @@ void main()
     // soundEngine.playSound("sounds/sounds_main_menu.ogg");
     // soundEngine.playSound("sounds/sounds_hurt.ogg");
 
-    soundEngine.playSound("sounds/sounds_hurt.ogg");
+    // soundEngine.playSound("sounds/sounds_hurt.ogg");
 
     bool wasToggle = false;
+
+    Entity[] boxes;
+    for (int i = 0; i < 10; i++) {
+        boxes ~= new Entity(Vector3(-3,i * 2,0), Vector3(1,1,1), Vector3(0,0,0));
+        // boxes ~= physicsEngine.addBox(Vector3(3, 1 + i * 10,0));
+    }
+
+    Point point = new Point(100,200);
+
+    Line line = new Line(Vector2(50, 100), Vector2(150, 150));
 
     while(!WindowShouldClose()) {
 
@@ -115,48 +111,22 @@ void main()
         /// Begin physics engine
         
         /// Simulate higher FPS precision
-        double timeAccumalator = physicsEngine.getTimeAccumulator() + delta;
-        immutable double lockedTick = physicsEngine.getLockedTick();
+        double timeAccumalator = world.getTimeAccumulator() + delta;
+        immutable double lockedTick = world.getLockedTick();
 
         /// Literally all IO with the physics engine NEEDS to happen here!
         while(timeAccumalator >= lockedTick) {
 
 
-            if(keyboard.getLeanRight()) {
-                ball.linearVelocity.y += lockedTick * 100;
-            }
-
-            physicsEngine.update();
-
             timeAccumalator -= lockedTick;
         }
 
-        physicsEngine.setTimeAccumulator(timeAccumalator);
+        world.setTimeAccumulator(timeAccumalator);
 
 
 
         /// Begin internal calculations
-
-        Vector3 ballPosition = cast(Vector3)ball.position;
-        Vector4 ballRotation = cast(Vector4)ball.orientation;
-
-
-        Vector3 ballSpeed = cast(Vector3)ball.linearVelocity;
-
-        float speed = ballSpeed.y;
-
-        if (oldSpeed < 0 && speed > 0) {
-            soundEngine.playSound("sounds/bonk.ogg");
-        }
         
-        oldSpeed = speed;
-
-        if (ballPosition.y > oldY) {
-            writeln("physics error?");
-            writeln(ballPosition.y, " ", oldY);
-        }
-
-        oldY = ballPosition.y;
 
         camera3d.firstPersonLook(mouse);
 
@@ -172,13 +142,13 @@ void main()
 
             BeginMode3D(camera3d.get());
             {
-                DrawCube(groundPosition, 40, 1, 40, Colors.GREEN);
+                // DrawCube(groundPosition, 40, 1, 40, Colors.GREEN);
 
 
-                ballPosition.y -= .5;
-
-                DrawSphere(ballPosition, 1, Colors.BLACK);
-
+                
+                foreach (Entity box; boxes) {
+                    box.drawCollisionBox();                
+                }
                 
                 /*
                 DrawCube(Vector3(-10,0,0),2,2,2,Colors.RED);
@@ -193,6 +163,11 @@ void main()
             EndMode3D();
 
 
+            point.update();
+            point.draw();
+            line.draw();
+
+            collidePointToLine(point, line);
             // DrawText("hello there", 400, 300, 28, Colors.BLACK);
 
         }
