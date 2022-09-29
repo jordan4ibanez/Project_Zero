@@ -63,12 +63,12 @@ void main()
 
     /// testing out a random map!
 
-    int size = 500;
+    int size = 250;
 
-    FNLState noiseEngine = fnlCreateState(unpredictableSeed());
+    FNLState noiseEngine = fnlCreateState(1234);
     noiseEngine.noise_type = FNLNoiseType.FNL_NOISE_OPENSIMPLEX2;
     noiseEngine.frequency = 0.01;
-    noiseEngine.octaves = 1;
+    noiseEngine.octaves = 10;
 
     for (int x = 0; x < size; x++) {
         for (int z = 0; z < size; z++) {
@@ -76,9 +76,7 @@ void main()
         }
     }
     
-    world.uploadHeightMap(heightMap, 1);
-    
-
+    world.uploadHeightMap(heightMap, 0.5);
 
     while(!WindowShouldClose()) {
 
@@ -138,7 +136,6 @@ void main()
         /// Literally all IO with the physics engine NEEDS to happen here!
         while(timeAccumalator >= lockedTick) {
 
-
             timeAccumalator -= lockedTick;
         }
 
@@ -152,6 +149,7 @@ void main()
         camera3d.firstPersonLook(mouse);
 
         camera3d.update();
+
 
         /// End internal calculations, begin draw
 
@@ -170,15 +168,7 @@ void main()
                     box.drawCollisionBox();                
                 }
                 
-                world.drawHeightMap();
-                /*
-                DrawCube(Vector3(-10,0,0),2,2,2,Colors.RED);
-                DrawCube(Vector3(10,0,0),2,2,2,Colors.BLUE);
-                DrawCube(Vector3(0,10,0),2,2,2,Colors.YELLOW);
-                DrawCube(Vector3(0,-10,0),2,2,2,Colors.GREEN);
-                DrawCube(Vector3(0,0,10),2,2,2,Colors.BEIGE);
-                DrawCube(Vector3(0,0,-10),2,2,2,Colors.DARKGRAY);
-                */
+                world.drawTerrain();
 
             }
             EndMode3D();
