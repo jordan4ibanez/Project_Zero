@@ -54,6 +54,7 @@ public class World {
             throw new Exception("Map size must be multiple of 250!");
         }
 
+
         float get(int x, int z) {
             if (x < 0 || x > this.heightMapSize - 1) {
                 throw new Exception("X getter is out of bounds for heightmap!");
@@ -76,7 +77,6 @@ public class World {
         
         for (int x = 0; x < this.heightMapSize - 1; x++) {
             for (int z = 0; z < this.heightMapSize - 1; z++) {
-                
                 this.heightMap ~= new MapQuad(
                     Vector2(x,z),
                     get(x,z),
@@ -86,7 +86,7 @@ public class World {
                     quadScale
                 );
             }
-        }        
+        }
 
         writeln("beginning heightmap terrain gen! This needs to be a separate function");
 
@@ -142,36 +142,49 @@ public class World {
     }
 
     MapQuad getQuad(float x, float z) {
-        if (x < 0 || x > this.heightMapSize) {
+        if (x < 0 || x > (this.heightMapSize - 1) * this.quadScale) {
             throw new Exception("X getter is out of bounds for heightmap!");
         }
-        if (z < 0 || z > this.heightMapSize) {
+        if (z < 0 || z > (this.heightMapSize - 1) * this.quadScale) {
             throw new Exception("Z getter is out of bounds for heightmap!");
         }
 
         int newX = cast(int)(floor(x / this.quadScale));
         int newZ = cast(int)(floor(z / this.quadScale));
 
-        return heightMap[(newX * this.heightMapSize) + newZ];
+        // writeln("----------------");
+        // writeln("NewXZ: ", newX, " ", newZ);
+
+        int index = (newX * (this.heightMapSize - 1)) + newZ;
+        // writeln("Index: ", index);
+        return heightMap[index];
     }
 
-    void collidePointToMap(Vector3 point) {
+    void collidePointToMap(ref Vector3 point, ref Vector3 velocity) {
         float posX = point.x;
         float posY = point.y;
         float posZ = point.z;
 
         MapQuad quad = this.getQuad(posX, posZ);
 
-        float baseX = 0;
-        float baseZ = 0;
+        float baseX = quad.position.x * this.quadScale;
+        float baseZ = quad.position.y * this.quadScale;
 
-        Vector3 lerpedMin = Vector3Lerp(Vector3(0, quad.yPoints[0], 0),Vector3(1,quad.yPoints[3]), posX - baseX);
-        Vector3 lerpedMax = Vector3Lerp(Vector3(0, quad.yPoints[1], 0),Vector3(1,quad.yPoints[2]), posX - baseX);
+        // writeln("quad position: ", quad.position);
+
+        // writeln("subtraction: ",  posX - baseX);
+
+        Vector3 lerpedMin = Vector3Lerp(Vector3(0, quad.yPoints[0], 0),Vector3(1,quad.yPoints[3], 0), posX - baseX);
+        Vector3 lerpedMax = Vector3Lerp(Vector3(0, quad.yPoints[1], 0),Vector3(1,quad.yPoints[2], 0), posX - baseX);
+        // writeln("--------------------");
+        // writeln(lerpedMin, " ", lerpedMax);
 
         Vector3 combined = Vector3Lerp(lerpedMin, lerpedMax, posZ - baseZ);
 
         if (posY < combined.y) {
+            writeln("collisionPointY: ", combined.y);
             point.y = combined.y + 0.00001;
+            velocity.y = 0;
         }
     }
 

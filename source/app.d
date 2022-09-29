@@ -76,7 +76,24 @@ void main()
         }
     }
     
-    world.uploadHeightMap(heightMap, 0.5);
+    world.uploadHeightMap(heightMap, 1);
+
+    Vector3 velocity = Vector3(0,0,0);
+
+    Vector3 playerPos = Vector3(50,10,51);
+
+    // MapQuad begin = world.heightMap[0];
+    // MapQuad end   = world.heightMap[62000];
+
+    // writeln(begin.position, " ", end.position);
+
+    // world.collidePointToMap(Vector3(0,0,0));
+    // world.collidePointToMap(Vector3(248,0,248));
+    world.getQuad(0, 248);
+    world.getQuad(1, 0);
+
+    // world.getQuad(1, 249);
+    // world.getQuad(2, 0);
 
     while(!WindowShouldClose()) {
 
@@ -87,6 +104,15 @@ void main()
 
         keyboard.update();
 
+        velocity.y -= 0.001;
+        playerPos = Vector3Add(playerPos, velocity);
+
+        writeln(playerPos.y);
+
+        camera3d.setPosition(Vector3(playerPos.x, playerPos.y + 1.5, playerPos.z));
+
+        world.collidePointToMap(playerPos, velocity);
+        
 
         bool togglingFullScreen = keyboard.getToggleFullScreen();
 
@@ -168,7 +194,8 @@ void main()
                     box.drawCollisionBox();                
                 }
                 
-                world.drawTerrain();
+                // world.drawTerrain();
+                world.drawHeightMap();
 
             }
             EndMode3D();
