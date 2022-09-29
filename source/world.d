@@ -5,6 +5,12 @@ import raylib;
 import std.uuid;
 import std.math.algebraic: sqrt;
 import std.math.rounding: floor;
+import image;
+
+struct Vec2 {
+    int x = 0;
+    int z = 0;
+}
 
 /// This is an extremely basic physics engine that uses AABB physics to work
 public class World {
@@ -17,22 +23,36 @@ public class World {
 
     MapQuad[] heightMap;
     int heightMapSize;
+    float quadScale;
 
     Entity[UUID] entities;
     RigidBody[UUID] rigidBodies;
 
+    Model terrainModel;
+
+    Texture groundTexture;
+
     this() {
 
+        Texture newGroundTexture = LoadTexture("textures/ground.png");
+        GenTextureMipmaps(&newGroundTexture);
+        SetTextureFilter(newGroundTexture, TextureFilter.TEXTURE_FILTER_TRILINEAR);
+        this.groundTexture = newGroundTexture;
     }
 
     /*
-     * Size needs to be odd, heightmaps are created via quads, and they overlap data!
-     * If not, this will absolutely crash!
+     * Size needs to be a multiple of 250!
      */
     void uploadHeightMap(float[] heightMap, float quadScale) {
 
         /// This is error prone, but D has no integer sqrt function
         this.heightMapSize = cast(int)floor(sqrt(floor(cast(float)heightMap.length)));
+
+        // int chunkSize = this.heightMapSize % 250;
+
+        if (heightMapSize <= 0 || heightMapSize % 250 != 0) {
+            throw new Exception("Map size must be multiple of 250!");
+        }
 
         float get(int x, int z) {
             if (x < 0 || x > this.heightMapSize - 1) {
@@ -44,6 +64,12 @@ public class World {
             return heightMap[(x * this.heightMapSize) + z];
         }
 
+        ushort getIndex(int x, int z) {
+            return cast(ushort)((x * this.heightMapSize) + z);
+        }
+
+
+        this.quadScale = quadScale;
 
         writeln("height map size: ", this.heightMapSize);
 
@@ -60,18 +86,104 @@ public class World {
                     quadScale
                 );
             }
-        }
+        }        
 
         writeln("beginning heightmap terrain gen! This needs to be a separate function");
-        foreach (MapQuad quad; this.heightMap) {
-            
-        }     
+
+        float[] vertices;
+        float[] textureCoordinates;
+        ushort[] indices;
+
+        for (int x = 0; x < this.heightMapSize; x++) {
+            for (int z = 0; z < this.heightMapSize; z++) {
+                
+                vertices ~= x * quadScale;
+                vertices ~= get(x,z); // Y
+                vertices ~= z * quadScale;
+            }
+        }
+
+        for (int x = 0; x < this.heightMapSize - 1; x++) {
+            for (int z = 0; z < this.heightMapSize - 1; z++) {
+                /// Tri 1
+                indices ~= getIndex(x,     z    );
+                indices ~= getIndex(x    , z + 1);
+                indices ~= getIndex(x + 1, z + 1);
+                /// Tri 2
+                indices ~= getIndex(x + 1, z + 1);
+                indices ~= getIndex(x + 1, z    );
+                indices ~= getIndex(x,     z    );
+            }
+        }
+
+        for (int x = 0; x < this.heightMapSize; x++) {
+            for (int z = 0; z < this.heightMapSize; z++) {
+                textureCoordinates ~= cast(float)x / cast(float)this.heightMapSize;
+                textureCoordinates ~= cast(float)z / cast(float)this.heightMapSize;
+            }
+        }
+
+        Mesh terrainMesh = *new Mesh();
+
+        terrainMesh.vertexCount = cast(int)vertices.length;
+        terrainMesh.triangleCount = cast(int)indices.length / 3;
+        writeln("vcount = ",terrainMesh.vertexCount);
+        writeln("tcount = ", terrainMesh.triangleCount);
+        terrainMesh.vertices  = vertices.ptr;
+        terrainMesh.texcoords = cast(float*)textureCoordinates;
+        terrainMesh.indices   = indices.ptr;
+
+        UploadMesh(&terrainMesh, false);
+
+        Model newTerrainModel = LoadModelFromMesh(terrainMesh);
+        newTerrainModel.materials[0].maps[MATERIAL_MAP_DIFFUSE].texture = this.groundTexture;
+
+        this.terrainModel = newTerrainModel;
     }
 
+    MapQuad getQuad(float x, float z) {
+        if (x < 0 || x > this.heightMapSize) {
+            throw new Exception("X getter is out of bounds for heightmap!");
+        }
+        if (z < 0 || z > this.heightMapSize) {
+            throw new Exception("Z getter is out of bounds for heightmap!");
+        }
+
+        int newX = cast(int)(floor(x / this.quadScale));
+        int newZ = cast(int)(floor(z / this.quadScale));
+
+        return heightMap[(newX * this.heightMapSize) + newZ];
+    }
+
+    void collidePointToMap(Vector3 point) {
+        float posX = point.x;
+        float posY = point.y;
+        float posZ = point.z;
+
+        MapQuad quad = this.getQuad(posX, posZ);
+
+        float baseX = 0;
+        float baseZ = 0;
+
+        Vector3 lerpedMin = Vector3Lerp(Vector3(0, quad.yPoints[0], 0),Vector3(1,quad.yPoints[3]), posX - baseX);
+        Vector3 lerpedMax = Vector3Lerp(Vector3(0, quad.yPoints[1], 0),Vector3(1,quad.yPoints[2]), posX - baseX);
+
+        Vector3 combined = Vector3Lerp(lerpedMin, lerpedMax, posZ - baseZ);
+
+        if (posY < combined.y) {
+            point.y = combined.y + 0.00001;
+        }
+    }
+
+    /// This function can be extremely laggy! Only use it for debugging on small terrains
     void drawHeightMap() {
         foreach (MapQuad quad; this.heightMap) {
             quad.draw();
         }
+    }
+
+    void drawTerrain() {
+        DrawModel(this.terrainModel, Vector3(0,0,0), 1, Colors.WHITE);
     }
 
     double getTimeAccumulator() {
@@ -212,24 +324,5 @@ public class MapQuad {
             ),
             Colors.GOLD
         );
-    }
-}
-
-
-void collidePointToMapQuad(Vector3 point, MapQuad quad) {
-    float posX = point.x;
-    float posY = point.y;
-    float posZ = point.z;
-
-    float baseX = 0;
-    float baseZ = 0;
-
-    Vector3 lerpedMin = Vector3Lerp(Vector3(0, quad.yPoints[0], 0),Vector3(1,quad.yPoints[3]), posX - baseX);
-    Vector3 lerpedMax = Vector3Lerp(Vector3(0, quad.yPoints[1], 0),Vector3(1,quad.yPoints[2]), posX - baseX);
-
-    Vector3 combined = Vector3Lerp(lerpedMin, lerpedMax, posZ - baseZ);
-
-    if (posY < combined.y) {
-        point.y = combined.y + 0.00001;
     }
 }
