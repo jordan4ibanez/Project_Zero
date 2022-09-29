@@ -74,11 +74,11 @@ void main()
 
     for (int x = 0; x < size; x++) {
         for (int z = 0; z < size; z++) {
-            heightMap ~= fnlGetNoise2D(&noiseEngine, x, z) * 5;
+            heightMap ~= fnlGetNoise2D(&noiseEngine, x, z) * 50;
         }
     }
     
-    world.uploadHeightMap(heightMap, 1);
+    world.uploadHeightMap(heightMap, 10);
 
     Vector3 velocity = Vector3(0,0,0);
 
@@ -101,6 +101,9 @@ void main()
 
     bool wasOnGround = false;
 
+    Vector3 fancyBox = Vector3(playerPos.x - 2, 20, playerPos.z);
+    Vector3 fancyBoxVelocity = Vector3(0,0,0);
+
     while(!WindowShouldClose()) {
 
         deltaCalculator.calculateDelta();
@@ -114,8 +117,90 @@ void main()
         keyboard.update();
 
         velocity.y -= 0.01;
+        fancyBoxVelocity.y -= 0.001;
 
-        writeln(playerPos.y);
+        fancyBox = Vector3Add(fancyBox, fancyBoxVelocity);
+
+        /// collliding that fancy box
+        BoundingBox fancyBoxBoundingBox = BoundingBox(
+            Vector3(fancyBox.x - 0.5, fancyBox.y - 0.5, fancyBox.z - 0.5),
+            Vector3(fancyBox.x + 0.5, fancyBox.y + 0.5, fancyBox.z + 0.5)
+        );
+
+        {
+            float collision = 0;
+
+            Vector3 min = fancyBoxBoundingBox.min;
+            Vector3 max = fancyBoxBoundingBox.max;
+
+            bool collide = false;
+
+            collision = world.collidePointToMap(
+                Vector3(
+                    min.x, 
+                    min.y, 
+                    min.z
+                )
+            );
+
+            if (!isNaN(collision) && collision >= fancyBox.y - 0.5) {
+                collide = true;
+                fancyBox.y = collision + 0.5;
+                fancyBoxVelocity.y = 0;
+            }
+
+            collision = world.collidePointToMap(
+                Vector3(
+                    min.x, 
+                    min.y, 
+                    max.z
+                )
+            );
+
+            if (!isNaN(collision) && collision >= fancyBox.y - 0.5) {
+                collide = true;
+                fancyBox.y = collision + 0.5;
+                fancyBoxVelocity.y = 0;
+            }
+
+            collision = world.collidePointToMap(
+                Vector3(
+                    max.x, 
+                    min.y, 
+                    min.z
+                )
+            );
+
+            if (!isNaN(collision) && collision >= fancyBox.y - 0.5) {
+                collide = true;
+                fancyBox.y = collision + 0.5;
+                fancyBoxVelocity.y = 0;
+            }
+
+            collision = world.collidePointToMap(
+                Vector3(
+                    max.x, 
+                    min.y, 
+                    max.z
+                )
+            );
+
+            if (!isNaN(collision) && collision >= fancyBox.y - 0.5) {
+                collide = true;
+                fancyBox.y = collision + 0.5;
+                fancyBoxVelocity.y = 0;
+            }
+
+            if (collide) {
+                fancyBoxVelocity.x = 0.01;
+                fancyBoxVelocity.z = 0.01;
+            }
+            
+        }
+
+        writeln(fancyBox);
+
+        /// writeln(playerPos.y);
         /// First person movement test
         Vector3 movementSpeed = Vector3Multiply(Vector3(delta, delta, delta), Vector3(0.1, 0.0, 0.1));
         if (keyboard.getForward()) {
@@ -141,10 +226,10 @@ void main()
         }
 
         Vector2 velocity2d = Vector2(velocity.x, velocity.z);
-        float speedLimit = 0.05;
+        float speedLimit = 0.025;
 
         if (Vector2Length(velocity2d) > speedLimit) {
-            writeln("slow down there buddy");
+            /// writeln("slow down there buddy");
             velocity2d = Vector2Normalize(velocity2d);
             velocity2d = Vector2Multiply(velocity2d, Vector2(speedLimit,speedLimit));
 
@@ -252,6 +337,32 @@ void main()
                 // world.drawHeightMap();
 
                 DrawSphere(playerPos, 0.1, Colors.RED);
+
+                DrawCube(fancyBox, 1,1,1, Colors.RED);
+
+                DrawSphere(Vector3(
+                    fancyBoxBoundingBox.min.x, 
+                    fancyBoxBoundingBox.min.y, 
+                    fancyBoxBoundingBox.min.z
+                ), 0.1, Colors.BLUE);
+
+                DrawSphere(Vector3(
+                    fancyBoxBoundingBox.min.x, 
+                    fancyBoxBoundingBox.min.y, 
+                    fancyBoxBoundingBox.max.z
+                ), 0.1, Colors.ORANGE);
+
+                DrawSphere(Vector3(
+                    fancyBoxBoundingBox.max.x, 
+                    fancyBoxBoundingBox.min.y, 
+                    fancyBoxBoundingBox.min.z
+                ), 0.1, Colors.DARKPURPLE);
+
+                DrawSphere(Vector3(
+                    fancyBoxBoundingBox.max.x, 
+                    fancyBoxBoundingBox.min.y, 
+                    fancyBoxBoundingBox.max.z
+                ), 0.1, Colors.BEIGE);
 
             }
             EndMode3D();
