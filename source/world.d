@@ -118,10 +118,12 @@ public class World {
 
         for (int x = 0; x < this.heightMapSize; x++) {
             for (int z = 0; z < this.heightMapSize; z++) {
-                /// This requires an ABSOLUTELY HUMONGOUS texture!!!
+                /// This requires an ABSOLUTELY HUMONGOUS texture!!! :( <literal map to texture location>
                 // textureCoordinates ~= cast(float)x / cast(float)this.heightMapSize;
                 // textureCoordinates ~= cast(float)z / cast(float)this.heightMapSize;
 
+
+                /// This just repeats :)
                 textureCoordinates ~= x;
                 textureCoordinates ~= z;
             }
