@@ -11,6 +11,7 @@ import delta;
 import window;
 import std.random;
 import fast_noise;
+import std.math.traits: isNaN;
 
 void main()
 {
@@ -99,18 +100,17 @@ void main()
 
         double delta = deltaCalculator.getDelta();
 
-        Vector3 movementSpeed = Vector3Multiply(Vector3(delta, delta, delta), Vector3(0.01, 0.01, 0.01));
-
         window.update();
 
         mouse.update();
 
         keyboard.update();
 
-        velocity.y -= 0.001;
+        velocity.y -= 0.01;
 
         writeln(playerPos.y);
         /// First person movement test
+        Vector3 movementSpeed = Vector3Multiply(Vector3(delta, delta, delta), Vector3(0.1, 0.0, 0.1));
         if (keyboard.getForward()) {
             Vector3 direction = Vector3Multiply(camera3d.getForward2d(), movementSpeed);
             velocity = Vector3Add(velocity, direction);
@@ -134,13 +134,45 @@ void main()
             velocity = Vector3Add(velocity, direction);
         }
 
-        writeln(velocity);
+        Vector2 velocity2d = Vector2(velocity.x, velocity.z);
+        float speedLimit = 0.05;
+
+        if (Vector2Length(velocity2d) > speedLimit) {
+            writeln("slow down there buddy");
+            velocity2d = Vector2Normalize(velocity2d);
+            velocity2d = Vector2Multiply(velocity2d, Vector2(speedLimit,speedLimit));
+
+            velocity.x = velocity2d.x;
+            velocity.z = velocity2d.y;
+        }
+
 
         playerPos = Vector3Add(playerPos, velocity);
-        
 
-        world.collidePointToMap(playerPos, velocity);
+        float collisionPoint = world.collidePointToMap(playerPos);
         
+        bool onGround = false;
+
+        if (!isNaN(collisionPoint)){
+            onGround = true;
+            playerPos.y = collisionPoint;
+            velocity.y = 0;
+        }
+
+        if (onGround) {
+            Vector3 inverseDirection = Vector3Normalize(Vector3(velocity.x, 0, velocity.z));
+            inverseDirection.x *= (-0.06 * delta);
+            inverseDirection.z *= (-0.06 * delta);
+            velocity = Vector3Add(velocity, inverseDirection);
+
+
+            if (Vector2Length(Vector2(velocity.x, velocity.z)) < 0.01 * delta) {
+                velocity.x = 0;
+                velocity.z = 0;
+            } 
+        }
+
+
         camera3d.setPosition(Vector3(playerPos.x, playerPos.y + 1.5, playerPos.z));
 
         bool togglingFullScreen = keyboard.getToggleFullScreen();
