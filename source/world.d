@@ -160,7 +160,7 @@ public class World {
         return heightMap[index];
     }
 
-    void collidePointToMap(ref Vector3 point, ref Vector3 velocity) {
+    float collidePointToMap(Vector3 point) {
         float posX = point.x;
         float posY = point.y;
         float posZ = point.z;
@@ -182,10 +182,10 @@ public class World {
         Vector3 combined = Vector3Lerp(lerpedMin, lerpedMax, posZ - baseZ);
 
         if (posY < combined.y) {
-            writeln("collisionPointY: ", combined.y);
-            point.y = combined.y + 0.00001;
-            velocity.y = 0;
+            return combined.y;
         }
+
+        return float.nan;
     }
 
     /// This function can be extremely laggy! Only use it for debugging on small terrains
