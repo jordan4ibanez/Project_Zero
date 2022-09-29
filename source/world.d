@@ -124,8 +124,8 @@ public class World {
 
 
                 /// This just repeats :)
-                textureCoordinates ~= x;
-                textureCoordinates ~= z;
+                textureCoordinates ~= x * this.quadScale;
+                textureCoordinates ~= z * this.quadScale;
             }
         }
 
@@ -180,12 +180,14 @@ public class World {
 
         // writeln("subtraction: ",  posX - baseX);
 
-        Vector3 lerpedMin = Vector3Lerp(Vector3(0, quad.yPoints[0], 0),Vector3(1,quad.yPoints[3], 0), posX - baseX);
-        Vector3 lerpedMax = Vector3Lerp(Vector3(0, quad.yPoints[1], 0),Vector3(1,quad.yPoints[2], 0), posX - baseX);
+        writeln("This blah: ", (posX - baseX) / this.quadScale);
+
+        Vector3 lerpedMin = Vector3Lerp(Vector3(0, quad.yPoints[0], 0),Vector3(1,quad.yPoints[3], 0), (posX - baseX) / this.quadScale);
+        Vector3 lerpedMax = Vector3Lerp(Vector3(0, quad.yPoints[1], 0),Vector3(1,quad.yPoints[2], 0), (posX - baseX) / this.quadScale);
         // writeln("--------------------");
         // writeln(lerpedMin, " ", lerpedMax);
 
-        Vector3 combined = Vector3Lerp(lerpedMin, lerpedMax, posZ - baseZ);
+        Vector3 combined = Vector3Lerp(lerpedMin, lerpedMax, (posZ - baseZ) / quadScale);
 
         if (posY < combined.y) {
             return combined.y;
