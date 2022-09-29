@@ -34,7 +34,7 @@ public class World {
 
     this() {
 
-        Texture newGroundTexture = LoadTexture("textures/ground.png");
+        Texture newGroundTexture = LoadTexture("textures/grass.png");
         GenTextureMipmaps(&newGroundTexture);
         SetTextureFilter(newGroundTexture, TextureFilter.TEXTURE_FILTER_TRILINEAR);
         this.groundTexture = newGroundTexture;
@@ -118,8 +118,12 @@ public class World {
 
         for (int x = 0; x < this.heightMapSize; x++) {
             for (int z = 0; z < this.heightMapSize; z++) {
-                textureCoordinates ~= cast(float)x / cast(float)this.heightMapSize;
-                textureCoordinates ~= cast(float)z / cast(float)this.heightMapSize;
+                /// This requires an ABSOLUTELY HUMONGOUS texture!!!
+                // textureCoordinates ~= cast(float)x / cast(float)this.heightMapSize;
+                // textureCoordinates ~= cast(float)z / cast(float)this.heightMapSize;
+
+                textureCoordinates ~= x;
+                textureCoordinates ~= z;
             }
         }
 
