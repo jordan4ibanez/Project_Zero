@@ -12,6 +12,7 @@ import window;
 import std.random;
 import fast_noise;
 import std.math.traits: isNaN;
+import std.conv: to;
 
 void main()
 {
@@ -42,7 +43,7 @@ void main()
     
     World world = new World();
 
-    // SoundEngine soundEngine = new SoundEngine();
+    SoundEngine soundEngine = new SoundEngine();
 
     // soundEngine.enableDebugging();
     
@@ -94,6 +95,12 @@ void main()
     // world.getQuad(1, 249);
     // world.getQuad(2, 0);
 
+    float stepAccumulator = 0;
+
+    Vector3 oldPosition = Vector3(playerPos.x,0, playerPos.z);
+
+    bool wasOnGround = false;
+
     while(!WindowShouldClose()) {
 
         deltaCalculator.calculateDelta();
@@ -126,12 +133,11 @@ void main()
             Vector3 direction = Vector3Multiply(camera3d.getLeft2d(), movementSpeed);
             velocity = Vector3Add(velocity, direction);
         }
-        if (keyboard.getJump()) {
-            Vector3 direction = Vector3Multiply(camera3d.getUp2d(), movementSpeed);
-            velocity = Vector3Add(velocity, direction);
+        if (wasOnGround && keyboard.getJump()) {
+            velocity = Vector3Add(velocity, Vector3(0,0.25,0));
         } else if (keyboard.getRun()) {
-            Vector3 direction = Vector3Multiply(camera3d.getDown2d(), movementSpeed);
-            velocity = Vector3Add(velocity, direction);
+            // Vector3 direction = Vector3Multiply(camera3d.getDown2d(), movementSpeed);
+            // velocity = Vector3Add(velocity, direction);
         }
 
         Vector2 velocity2d = Vector2(velocity.x, velocity.z);
@@ -169,7 +175,21 @@ void main()
             if (Vector2Length(Vector2(velocity.x, velocity.z)) < 0.01 * delta) {
                 velocity.x = 0;
                 velocity.z = 0;
-            } 
+            }
+
+            /// Finicky for now, but with fixed timestep won't have to worry about float issues like this
+
+            stepAccumulator += Vector3Distance(Vector3(playerPos.x, 0, playerPos.z), Vector3(oldPosition.x, 0, oldPosition.z));
+
+            if (stepAccumulator >= 2.5) {
+                stepAccumulator = 0;
+
+                Random randy = Random(unpredictableSeed());
+                int selection = uniform(1,6, randy);
+                soundEngine.playSound("sounds/hard_step_" ~ to!string(selection) ~ ".ogg");
+            }
+
+            oldPosition = playerPos;
         }
 
 
@@ -183,7 +203,7 @@ void main()
 
         wasToggle = togglingFullScreen;
 
-        
+        wasOnGround = onGround;
 
         
 
