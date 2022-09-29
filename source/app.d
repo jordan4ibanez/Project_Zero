@@ -89,14 +89,17 @@ void main()
 
     // world.collidePointToMap(Vector3(0,0,0));
     // world.collidePointToMap(Vector3(248,0,248));
-    world.getQuad(0, 248);
-    world.getQuad(1, 0);
 
     // world.getQuad(1, 249);
     // world.getQuad(2, 0);
 
     while(!WindowShouldClose()) {
 
+        deltaCalculator.calculateDelta();
+
+        double delta = deltaCalculator.getDelta();
+
+        Vector3 movementSpeed = Vector3Multiply(Vector3(delta, delta, delta), Vector3(0.01, 0.01, 0.01));
 
         window.update();
 
@@ -105,14 +108,40 @@ void main()
         keyboard.update();
 
         velocity.y -= 0.001;
-        playerPos = Vector3Add(playerPos, velocity);
 
         writeln(playerPos.y);
+        /// First person movement test
+        if (keyboard.getForward()) {
+            Vector3 direction = Vector3Multiply(camera3d.getForward2d(), movementSpeed);
+            velocity = Vector3Add(velocity, direction);
+            
+        } else if (keyboard.getBack()) {
+            Vector3 direction = Vector3Multiply(camera3d.getBackward2d(), movementSpeed);
+            velocity = Vector3Add(velocity, direction);
+        }
+        if (keyboard.getRight()) {
+            Vector3 direction = Vector3Multiply(camera3d.getRight2d(), movementSpeed);
+            velocity = Vector3Add(velocity, direction);
+        } else if (keyboard.getLeft()) {
+            Vector3 direction = Vector3Multiply(camera3d.getLeft2d(), movementSpeed);
+            velocity = Vector3Add(velocity, direction);
+        }
+        if (keyboard.getJump()) {
+            Vector3 direction = Vector3Multiply(camera3d.getUp2d(), movementSpeed);
+            velocity = Vector3Add(velocity, direction);
+        } else if (keyboard.getRun()) {
+            Vector3 direction = Vector3Multiply(camera3d.getDown2d(), movementSpeed);
+            velocity = Vector3Add(velocity, direction);
+        }
 
-        camera3d.setPosition(Vector3(playerPos.x, playerPos.y + 1.5, playerPos.z));
+        writeln(velocity);
+
+        playerPos = Vector3Add(playerPos, velocity);
+        
 
         world.collidePointToMap(playerPos, velocity);
         
+        camera3d.setPosition(Vector3(playerPos.x, playerPos.y + 1.5, playerPos.z));
 
         bool togglingFullScreen = keyboard.getToggleFullScreen();
 
@@ -122,35 +151,8 @@ void main()
 
         wasToggle = togglingFullScreen;
 
-        deltaCalculator.calculateDelta();
-
-        double delta = deltaCalculator.getDelta();
-
-        Vector3 movementSpeed = Vector3Multiply(Vector3(delta, delta, delta), Vector3(10, 10, 10));
-
-        /// Freecam 2d test
-        if (keyboard.getForward()) {
-            Vector3 direction = Vector3Multiply(camera3d.getForward2d(), movementSpeed);
-            camera3d.movePosition(direction);
         
-        } else if (keyboard.getBack()) {
-            Vector3 direction = Vector3Multiply(camera3d.getBackward2d(), movementSpeed);
-            camera3d.movePosition(direction);
-        }
-        if (keyboard.getRight()) {
-            Vector3 direction = Vector3Multiply(camera3d.getRight2d(), movementSpeed);
-            camera3d.movePosition(direction);
-        } else if (keyboard.getLeft()) {
-            Vector3 direction = Vector3Multiply(camera3d.getLeft2d(), movementSpeed);
-            camera3d.movePosition(direction);
-        }
-        if (keyboard.getJump()) {
-            Vector3 direction = Vector3Multiply(camera3d.getUp2d(), movementSpeed);
-            camera3d.movePosition(direction);
-        } else if (keyboard.getRun()) {
-            Vector3 direction = Vector3Multiply(camera3d.getDown2d(), movementSpeed);
-            camera3d.movePosition(direction);
-        }
+
         
 
         /// Begin physics engine
@@ -194,8 +196,10 @@ void main()
                     box.drawCollisionBox();                
                 }
                 
-                // world.drawTerrain();
-                world.drawHeightMap();
+                world.drawTerrain();
+                // world.drawHeightMap();
+
+                DrawSphere(playerPos, 0.1, Colors.RED);
 
             }
             EndMode3D();
