@@ -180,7 +180,7 @@ public class World {
 
         // writeln("subtraction: ",  posX - baseX);
 
-        writeln("This blah: ", (posX - baseX) / this.quadScale);
+        /// writeln("This lerp percentile: ", (posX - baseX) / this.quadScale);
 
         Vector3 lerpedMin = Vector3Lerp(Vector3(0, quad.yPoints[0], 0),Vector3(1,quad.yPoints[3], 0), (posX - baseX) / this.quadScale);
         Vector3 lerpedMax = Vector3Lerp(Vector3(0, quad.yPoints[1], 0),Vector3(1,quad.yPoints[2], 0), (posX - baseX) / this.quadScale);
