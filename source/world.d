@@ -5,7 +5,6 @@ import raylib;
 import std.uuid;
 import std.math.algebraic: sqrt;
 import std.math.rounding: floor;
-import image;
 
 struct Vec2 {
     int x = 0;
