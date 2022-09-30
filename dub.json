@@ -11,7 +11,7 @@
 		"raylib-d": "~>4.2.1",
 		"stb_vorbis": "~>1.0.0"
 	},
-	"description": "A post apocalyptic first person survival game written in D with Raylib",
+	"description": "An open source post apocalyptic first person survival game written in D with Raylib.",
 	"lflags-osx": [
 		"-rpath",
 		"@executable_path/"

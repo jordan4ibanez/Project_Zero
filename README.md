@@ -1,5 +1,5 @@
-# D_Raylib_Zombie_Game
- A post apocalyptic first person survival game written in D with Raylib
+# Project Zero
+ An open source post apocalyptic first person survival game written in D with Raylib.
 
 
 ### **Please note:** I am a programmer, not an artist. The base game will be an absolute bodge of assets for now.
