@@ -235,20 +235,6 @@ void main() {
 
         
 
-        /// Begin physics engine
-        
-        /// Simulate higher FPS precision
-        double timeAccumalator = world.getTimeAccumulator() + delta;
-        immutable double lockedTick = world.getLockedTick();
-
-        /// Literally all IO with the physics engine NEEDS to happen here!
-        while(timeAccumalator >= lockedTick) {
-
-            timeAccumalator -= lockedTick;
-        }
-
-        world.setTimeAccumulator(timeAccumalator);
-
 
 
         /// Begin internal calculations
