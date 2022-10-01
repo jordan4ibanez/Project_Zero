@@ -92,7 +92,9 @@ public class Game {
             keyboard.update();
 
             camera3d.firstPersonLook();
-            camera3d.update();        
+            camera3d.update();
+
+            world.update();
 
             this.render();
         }
