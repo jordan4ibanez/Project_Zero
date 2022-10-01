@@ -35,7 +35,7 @@ public class Game {
 
         /// Allow objects to communicate with eachother
         window      = new Window(this, 1280,720, 144);
-        camera3d    = new GameCamera(this);
+        camera3d    = new GameCamera(this, Vector3(0,50,0));
         keyboard    = new Keyboard(this);
         mouse       = new Mouse(this);
         player      = new Player(this);

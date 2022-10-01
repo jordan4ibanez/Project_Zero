@@ -32,12 +32,9 @@ public class GameCamera {
     private Vector3 cameraRight;
     private Vector3 cameraUp;
 
-    this(Game game) {
-        this(Vector3(0,0,0));
-        this.game = game;
-    }
 
-    this(Vector3 position) {
+    this(Game game, Vector3 position) {
+        this.game = game;
         this.camera            = Camera();
         this.camera.position   = position;
         this.camera.target     = Vector3(1,0,0);
