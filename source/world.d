@@ -5,6 +5,7 @@ import raylib;
 import std.uuid;
 import std.math.algebraic: sqrt;
 import std.math.rounding: floor;
+import std.math.traits: isNaN;
 
 import game;
 
@@ -246,6 +247,14 @@ public class World {
                 thisEntity.velocity.y -= this.gravity;
 
                 thisEntity.setPosition(Vector3Add(thisEntity.position, thisEntity.velocity));
+
+                float mapCollision = this.collidePointToMap(thisEntity.getCollisionBoxPosition());
+
+                if (!isNaN(mapCollision)) {
+                    thisEntity.velocity.y = 0;
+
+                    thisEntity.position.y = mapCollision + thisEntity.size.y;
+                }
             }
 
             updates++;
@@ -307,7 +316,18 @@ public class Entity {
         return this.position;
     }
 
+    Vector3 getCollisionBoxPosition() {
+        Vector3 updatedPosition = this.position;
+        updatedPosition.y -= this.size.y;
+        return updatedPosition;
+    }
+
     void setPosition(Vector3 newPosition) {
+        this.position = newPosition;
+    }
+
+    void setCollisionBoxPosition(Vector3 newPosition) {
+        newPosition.y += this.size.y;
         this.position = newPosition;
     }
 
