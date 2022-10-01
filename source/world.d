@@ -254,6 +254,8 @@ public class World {
         foreach (Entity thisEntity; this.entities) {
             thisEntity.drawCollisionBox();
         }
+
+        this.drawTerrain();
     }
 
 }
