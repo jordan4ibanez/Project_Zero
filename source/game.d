@@ -90,16 +90,19 @@ public class Game {
             window.update();
             mouse.update();
             keyboard.update();
-            camera3d.update();            
+
+            camera3d.firstPersonLook();
+            camera3d.update();        
 
             this.render();
-
         }
     }
 
     void render() {
         BeginDrawing();
-
+        {
+            camera3d.clear(Colors.RAYWHITE);
+        }
         EndDrawing();
     }
 
