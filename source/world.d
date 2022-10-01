@@ -249,6 +249,13 @@ public class World {
 
     }
 
+
+    void render() {
+        foreach (Entity thisEntity; this.entities) {
+            thisEntity.drawCollisionBox();
+        }
+    }
+
 }
 
 /// Entities are 3D boxes that can rotate their models. This is a base class that should be extended.
