@@ -29,7 +29,7 @@ public class GameCamera {
     private Vector3 cameraUp;
 
     this() {
-        throw new Exception("CANNOT INITIALIZE A CAMERA WITHOUT A POSITION!");
+        this(Vector3(0,0,0));
     }
 
     this(Vector3 position) {
