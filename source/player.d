@@ -24,7 +24,7 @@ public class Player {
     this(Game game) {
         this.game = game;
 
-        this.entity = new Entity(Vector3(50,20,50), Vector3(0.5,1,0.5),Vector3(0,0,0));
+        this.entity = new Entity(Vector3(40,20,50), Vector3(0.5,2,0.5),Vector3(0,0,0), true);
 
         game.world.addEntity(this.entity);
 

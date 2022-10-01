@@ -6,6 +6,7 @@ import std.uuid;
 import std.math.algebraic: sqrt;
 import std.math.rounding: floor;
 import std.math.traits: isNaN;
+import std.traits: Select, isFloatingPoint, isIntegral;
 
 import game;
 
@@ -244,9 +245,90 @@ public class World {
             // writeln("UPDATE! ", this.timeAccumalator);
             
             foreach (Entity thisEntity; this.entities) {
+
                 thisEntity.velocity.y -= this.gravity;
 
-                thisEntity.setPosition(Vector3Add(thisEntity.position, thisEntity.velocity));
+                /// Y check
+
+                thisEntity.position.y += thisEntity.velocity.y;
+
+                foreach (Entity otherEntity; this.entities) {
+
+                    BoundingBox thisBox = thisEntity.getBoundingBox();
+
+                    if (thisEntity != otherEntity) {
+
+                        if (Vector3Distance(thisEntity.position, otherEntity.position) < 4) {
+
+                            // float positionDiff = thisEntity.position.y - otherEntity.position.y;
+                            // positionDiff = positionDiff == 0 ? 0.0001 : positionDiff;
+
+                            BoundingBox otherBox = otherEntity.getBoundingBox();
+
+                            if (CheckCollisionBoxes(thisBox, otherBox)) {
+                                float diff = (thisEntity.size.y + otherEntity.size.y + 0.001) * signum(-thisEntity.velocity.y);
+                                thisEntity.position.y = otherEntity.position.y + diff;
+                                thisEntity.velocity.y = 0;
+                            }
+                        }
+                    }
+                }
+
+                /// X check
+                
+                thisEntity.position.x += thisEntity.velocity.x;
+
+                foreach (Entity otherEntity; this.entities) {
+
+                    BoundingBox thisBox = thisEntity.getBoundingBox();
+
+                    if (thisEntity != otherEntity) {
+
+                        if (Vector3Distance(thisEntity.position, otherEntity.position) < 4) {
+
+                            // float positionDiff = thisEntity.position.x - otherEntity.position.x;
+                            // positionDiff = positionDiff == 0 ? 0.0001 : positionDiff;
+
+                            BoundingBox otherBox = otherEntity.getBoundingBox();
+                            
+                            if (CheckCollisionBoxes(thisBox, otherBox)) {
+                                float diff = (thisEntity.size.x + otherEntity.size.x + 0.001) * signum(-thisEntity.velocity.x);
+                                thisEntity.position.x = otherEntity.position.x + diff;
+                                thisEntity.velocity.x = 0;
+                            }
+                        }
+                    }
+                }
+                
+                /// Z check
+
+                thisEntity.position.z += thisEntity.velocity.z;
+
+                foreach (Entity otherEntity; this.entities) {
+
+                    BoundingBox thisBox = thisEntity.getBoundingBox();
+
+                    if (thisEntity != otherEntity) {
+
+                        if (Vector3Distance(thisEntity.position, otherEntity.position) < 4) {
+
+                            // float positionDiff = thisEntity.position.z - otherEntity.position.z;
+                            // positionDiff = positionDiff == 0 ? 0.0001 : positionDiff;
+
+                            BoundingBox otherBox = otherEntity.getBoundingBox();
+                            
+                            if (CheckCollisionBoxes(thisBox, otherBox)) {
+                                float diff = (thisEntity.size.z + otherEntity.size.z + 0.001) * signum(-thisEntity.velocity.z);
+                                thisEntity.position.z = otherEntity.position.z + diff;
+                                thisEntity.velocity.z = 0;
+                            }
+                        }
+                    }
+                }
+
+
+                /// Collision check goes here
+
 
                 float mapCollision = this.collidePointToMap(thisEntity.getCollisionBoxPosition());
 
@@ -283,16 +365,18 @@ public class Entity {
     protected Vector3 size;
     protected Vector3 velocity;
     protected UUID uuid;
+    protected bool isPlayer;
     
     /// Rotation is only used for rotating the model of an entity
     protected float rotation;
 
-    this(Vector3 position, Vector3 size, Vector3 velocity) {
+    this(Vector3 position, Vector3 size, Vector3 velocity, bool isPlayer) {
         this.uuid = randomUUID();
         /// Moving these values off the stack
         this.position = *new Vector3(position.x, position.y, position.z);
         this.size     = *new Vector3(size.x / 2, size.y / 2, size.z / 2);
         this.velocity = *new Vector3(velocity.x, velocity.y, velocity.z);
+        this.isPlayer = isPlayer;
     }
 
     /// Allows quick rendering and collision detection.
@@ -348,7 +432,12 @@ public class Entity {
     }
 
     void drawCollisionBox() {
-        DrawBoundingBox(this.getBoundingBox(), Colors.RED);
+        if (isPlayer) {
+            DrawBoundingBox(this.getBoundingBox(), Colors.BLACK);
+        } else {
+            /// DrawCube(this.position, this.size.x * 2, this.size.y * 2, this.size.z * 2, Colors.YELLOW);
+            DrawBoundingBox(this.getBoundingBox(), Colors.RED);
+        }
     }
 }
 
@@ -428,4 +517,10 @@ public class MapQuad {
             Colors.GOLD
         );
     }
+}
+
+pragma(inline)
+@safe pure nothrow Select!(isFloatingPoint!T || isIntegral!T, T, float)
+signum(T)(in T x) {
+    return (T(0) < x) - (x < T(0));
 }

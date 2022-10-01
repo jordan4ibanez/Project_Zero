@@ -47,8 +47,8 @@ public class Game {
         /// Temporary debugging things
         mouse.grab();
 
-        for (int i = 0; i < 10; i++) {
-            Entity myNewEntity = new Entity(Vector3(50,i * 2, 50), Vector3(1,1,1), Vector3(0,0,0));
+        for (int i = 0; i < 200; i++) {
+            Entity myNewEntity = new Entity(Vector3(40,(i + 3) * 4, 50), Vector3(1,1,1), Vector3(0,0,0), false);
             world.addEntity(myNewEntity);
             writeln(myNewEntity.getUUID());
             // boxes ~= physicsEngine.addBox(Vector3(3, 1 + i * 10,0));
