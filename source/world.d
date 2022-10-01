@@ -43,6 +43,11 @@ public class World {
         SetTextureFilter(newGroundTexture, TextureFilter.TEXTURE_FILTER_TRILINEAR);
         this.groundTexture = newGroundTexture;
     }
+    
+    /// Add an entity into the entity associative array
+    void addEntity(Entity newEntity) {
+        this.entities[newEntity.getUUID()] = newEntity;
+    }
 
     /*
      * Size needs to be a multiple of 250!
@@ -236,11 +241,13 @@ public class Entity {
     protected Vector3 position;
     protected Vector3 size;
     protected Vector3 velocity;
+    protected UUID uuid;
     
     /// Rotation is only used for rotating the model of an entity
     protected float rotation;
 
     this(Vector3 position, Vector3 size, Vector3 velocity) {
+        this.uuid = randomUUID();
         /// Moving these values off the stack
         this.position = *new Vector3(position.x, position.y, position.z);
         this.size     = *new Vector3(size.x / 2, size.y / 2, size.z / 2);
@@ -266,6 +273,10 @@ public class Entity {
 
     void drawCollisionBox() {
         DrawBoundingBox(this.getBoundingBox(), Colors.RED);
+    }
+
+    UUID getUUID() {
+        return this.uuid;
     }
 }
 
