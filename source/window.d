@@ -17,10 +17,12 @@ public class Window {
 
     private bool updateWithFPS = true;
 
-    this(int width, int height) {
+    this(int width, int height, int targetFPS) {
 
         this.width = width;
         this.height = height;
+
+        SetTargetFPS(targetFPS);
 
         SetConfigFlags(ConfigFlags.FLAG_WINDOW_RESIZABLE);
 

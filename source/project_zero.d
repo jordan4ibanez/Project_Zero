@@ -24,7 +24,7 @@ void main() {
     
 
 
-    SetTargetFPS(144);
+    
 
     DeltaCalculator deltaCalculator = new DeltaCalculator();
 

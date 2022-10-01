@@ -27,7 +27,7 @@ public class Game {
         validateRaylibBinding();
         SetTraceLogLevel(TraceLogLevel.LOG_NONE);
 
-        window      = new Window(1280,720);
+        window      = new Window(1280,720, 144);
         camera      = new GameCamera();
         keyboard    = new Keyboard();
         mouse       = new Mouse();
