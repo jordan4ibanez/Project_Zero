@@ -15,7 +15,7 @@ import world;
 public class Game {
 
     Window window;
-    GameCamera camera;
+    GameCamera camera3d;
     Mouse mouse;
     Keyboard keyboard;
     TimeKeeper timeKeeper;
@@ -31,7 +31,7 @@ public class Game {
 
         /// Allow objects to communicate with eachother
         window      = new Window(this, 1280,720, 144);
-        camera      = new GameCamera(this);
+        camera3d    = new GameCamera(this);
         keyboard    = new Keyboard(this);
         mouse       = new Mouse(this);
         player      = new Player(this);
