@@ -1,34 +1,27 @@
 module project_zero;
 
-import std.stdio;
+import game;
 
-import raylib;
-import lua;
-import camera;
-import mouse;
-import keyboard;
-import world;
-import sound_engine;
-import delta;
-import window;
-import std.random;
-import fast_noise;
-import std.math.traits: isNaN;
-import std.conv: to;
+void main() {
 
-void main()
-{
+    Game game = new Game();
 
-    validateRaylibBinding();
+    game.run();
 
-    SetTraceLogLevel(TraceLogLevel.LOG_NONE);
+    // Game cleans itself up
+
+    /*
+
+    
+
+    
 
     /// Mod API & Integration
 	if (loadLuaLibrary()) {
         return;
     }
 
-    Window window = new Window(1280,720);
+    
 
 
     SetTargetFPS(144);
@@ -374,5 +367,5 @@ void main()
         }
         EndDrawing();
     }
-
+    */
 }
