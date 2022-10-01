@@ -1,8 +1,8 @@
-module delta;
+module time_keeper;
 
 import core.time;
 
-public class DeltaCalculator {
+public class TimeKeeper {
     // Start with delta of a HUGE amount, limited by maxDelta
     private MonoTime before;
     private MonoTime after;
