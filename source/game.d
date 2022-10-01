@@ -91,7 +91,6 @@ public class Game {
             mouse.update();
             keyboard.update();
 
-            
             player.update();
             camera3d.firstPersonLook();
             camera3d.update();
