@@ -39,6 +39,8 @@ public class Game {
         timeKeeper  = new TimeKeeper(this);
         world       = new World(this);
 
+        mouse.grab();
+
 
 
 

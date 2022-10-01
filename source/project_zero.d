@@ -21,9 +21,6 @@ void main() {
         return;
     }
 
-    Mouse mouse = new Mouse();
-    mouse.grab(camera3d);
-
     Keyboard keyboard = new Keyboard();
     
     World world = new World();
