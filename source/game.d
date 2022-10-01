@@ -103,7 +103,13 @@ public class Game {
     void render() {
         BeginDrawing();
         {
-            camera3d.clear(Colors.RAYWHITE);
+            BeginMode3D(this.camera3d.get());
+            {
+                camera3d.clear(Colors.RAYWHITE);
+
+                world.render();
+            }
+            EndMode3D();
         }
         EndDrawing();
     }
