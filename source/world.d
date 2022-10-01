@@ -296,12 +296,16 @@ public class Entity {
         );
     }
 
-    void drawCollisionBox() {
-        DrawBoundingBox(this.getBoundingBox(), Colors.RED);
+    Vector3 getPosition() {
+        return this.position;
     }
 
     UUID getUUID() {
         return this.uuid;
+    }
+
+    void drawCollisionBox() {
+        DrawBoundingBox(this.getBoundingBox(), Colors.RED);
     }
 }
 
