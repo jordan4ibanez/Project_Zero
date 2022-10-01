@@ -240,8 +240,11 @@ public class World {
 
             // writeln("UPDATE! ", this.timeAccumalator);
 
-            updates++;
 
+
+
+
+            updates++;
             this.timeAccumalator -= lockedTick;
         }
 
@@ -298,6 +301,17 @@ public class Entity {
 
     Vector3 getPosition() {
         return this.position;
+    }
+    Vector3 getVelocity() {
+        return this.velocity;
+    }
+
+    void setVelocity(Vector3 newVelocity) {
+        this.velocity = newVelocity;
+    }
+
+    void addVelocity(Vector3 addition) {
+        this.velocity = Vector3Add(this.velocity, addition);
     }
 
     UUID getUUID() {
