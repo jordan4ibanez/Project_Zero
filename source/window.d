@@ -5,8 +5,12 @@ import std.string: toStringz;
 import std.stdio;
 import std.conv: to;
 
+import game;
+
 /// Wrapper object for Raylib window
 public class Window {
+
+    private Game game;
 
     private int width = 0;
     private int height = 0;
@@ -17,8 +21,10 @@ public class Window {
 
     private bool updateWithFPS = true;
 
-    this(int width, int height, int targetFPS) {
+    this(Game game, int width, int height, int targetFPS) {
 
+        this.game = game;
+        
         this.width = width;
         this.height = height;
 

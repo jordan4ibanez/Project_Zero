@@ -1,19 +1,23 @@
 module camera;
 
 import raylib;
-import mouse;
 import std.math.trigonometry: cos, sin;
 import std.math.constants: PI;
 import std.algorithm.comparison: clamp;
 
+import mouse;
+import game;
+
 /// Wrapper class for the game camera
 public class GameCamera {
+
+    private Game game;
+    
+    private Camera3D camera;
 
     private immutable HALF_PI = PI / 2.0;
     private immutable DOUBLE_PI = PI * 2;
     private immutable RAYLIB_FLIP_FIX = 0.0001;
-
-    private Camera3D camera;
 
     private bool firstPerson = true;
 
@@ -28,8 +32,9 @@ public class GameCamera {
     private Vector3 cameraRight;
     private Vector3 cameraUp;
 
-    this() {
+    this(Game game) {
         this(Vector3(0,0,0));
+        this.game = game;
     }
 
     this(Vector3 position) {

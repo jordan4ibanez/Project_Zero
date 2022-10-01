@@ -1,8 +1,11 @@
 module keyboard;
 
 import raylib;
+import game;
 
 public class Keyboard {
+
+    private Game game;
 
     /// All possible assignments, for now. Soon to be a hashmap?
     private bool forward          = false;
@@ -30,6 +33,10 @@ public class Keyboard {
     private int leanRightAssignment        = KeyboardKey.KEY_E;
     private int leanLeftAssignment         = KeyboardKey.KEY_Q;
     private int toggleFullScreenAssignment = KeyboardKey.KEY_F11;
+
+    this(Game game) {
+        this.game = game;
+    }
 
     void update() {
         this.forward          = IsKeyDown(this.forwardAssignment);

@@ -3,11 +3,13 @@ module player;
 import raylib;
 import std.stdio;
 
+import game;
 
 public class Player {
 
+    private Game game;
 
-    this(Vector3 position) {
-        
+    this(Game game) {
+        this.game = game;
     }
 }

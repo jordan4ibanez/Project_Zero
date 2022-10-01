@@ -6,6 +6,8 @@ import std.uuid;
 import std.math.algebraic: sqrt;
 import std.math.rounding: floor;
 
+import game;
+
 struct Vec2 {
     int x = 0;
     int z = 0;
@@ -13,6 +15,8 @@ struct Vec2 {
 
 /// This is an extremely basic physics engine that uses AABB physics to work
 public class World {
+
+    private Game game;
 
     double timeAccumalator = 0.0;
 
@@ -31,7 +35,8 @@ public class World {
 
     Texture groundTexture;
 
-    this() {
+    this(Game game) {
+        this.game = game;
 
         Texture newGroundTexture = LoadTexture("textures/grass.png");
         GenTextureMipmaps(&newGroundTexture);

@@ -2,9 +2,12 @@ module mouse;
 
 import raylib;
 import camera;
+import game;
 
 /// Wrapper class for mouse interfacing
 public class Mouse {
+
+    private Game game;
 
     private Vector2 position;
     private Vector2 delta;
@@ -12,7 +15,8 @@ public class Mouse {
     private float sensitivity;
     private bool grabbed = false;
     /// Only initialize after the window has been created
-    this() {
+    this(Game game) {
+        this.game = game;
         this.position       = GetMousePosition();
         this.delta          = GetMouseDelta();
         this.mouseWheelMove = GetMouseWheelMove();

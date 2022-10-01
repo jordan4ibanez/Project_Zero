@@ -1,6 +1,5 @@
 module sound_engine;
 
-
 import bindbc.openal;
 import std.stdio;
 import stb_vorbis;
@@ -8,11 +7,16 @@ import std.conv: to;
 import raylib;
 import std.uuid;
 
+import game;
+
 /**
  *This is utilizing OpenAL Soft for maximum compatibility.
  */
 
 public class SoundEngine {
+
+    private Game game;
+
 
     /// Is the actual OpenAL existence
     private void* context;
@@ -29,7 +33,9 @@ public class SoundEngine {
     private SoundSource[UUID] sources;
 
 
-    this() {
+    this(Game game) {
+
+        this.game = game;
         
         ALSupport returnedError;
         

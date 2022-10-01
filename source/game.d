@@ -10,6 +10,7 @@ import player;
 import sound_engine;
 import window;
 import raylib;
+import world;
 
 public class Game {
 
@@ -19,21 +20,24 @@ public class Game {
     Keyboard keyboard;
     TimeKeeper timeKeeper;
     Player player;
-    // Lua lua <- lua will be OOP too!
+    //private  Lua lua <- lua will be OOP too!
     SoundEngine soundEngine;
+    World world;
 
     this() {
         /// Game sets up Raylib
         validateRaylibBinding();
         SetTraceLogLevel(TraceLogLevel.LOG_NONE);
 
-        window      = new Window(1280,720, 144);
-        camera      = new GameCamera();
-        keyboard    = new Keyboard();
-        mouse       = new Mouse();
-        player      = new Player(Vector3(0,0,0));
-        soundEngine = new SoundEngine();
-        timeKeeper  = new TimeKeeper();
+        /// Allow objects to communicate with eachother
+        window      = new Window(this, 1280,720, 144);
+        camera      = new GameCamera(this);
+        keyboard    = new Keyboard(this);
+        mouse       = new Mouse(this);
+        player      = new Player(this);
+        soundEngine = new SoundEngine(this);
+        timeKeeper  = new TimeKeeper(this);
+        world       = new World(this);
 
 
 

@@ -21,16 +21,6 @@ void main() {
         return;
     }
 
-    
-
-
-    
-
-    DeltaCalculator deltaCalculator = new DeltaCalculator();
-
-
-    GameCamera camera3d = new GameCamera(Vector3(0,1,0));
-
     Mouse mouse = new Mouse();
     mouse.grab(camera3d);
 

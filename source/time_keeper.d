@@ -2,7 +2,12 @@ module time_keeper;
 
 import core.time;
 
+import game;
+
 public class TimeKeeper {
+
+    private Game game;
+
     // Start with delta of a HUGE amount, limited by maxDelta
     private MonoTime before;
     private MonoTime after;
@@ -10,7 +15,8 @@ public class TimeKeeper {
     // High precision delta for users with powerful computers
     private double delta = 0;
 
-    this(){
+    this(Game game){
+        this.game = game;
         before = MonoTime.currTime();
         after = MonoTime.currTime();
     }
