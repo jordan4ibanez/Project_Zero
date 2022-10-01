@@ -34,7 +34,7 @@ public class Game {
         SetTraceLogLevel(TraceLogLevel.LOG_NONE);
 
         /// Allow objects to communicate with eachother
-        window      = new Window(this, 1280,720, 2000);
+        window      = new Window(this, 1280,720, 3000);
         camera3d    = new GameCamera(this, Vector3(0,50,0));
         keyboard    = new Keyboard(this);
         mouse       = new Mouse(this);
@@ -47,7 +47,7 @@ public class Game {
         /// Temporary debugging things
         mouse.grab();
 
-        for (int i = 0; i < 600; i++) {
+        for (int i = 0; i < 800; i++) {
             Entity myNewEntity = new Entity(Vector3(40,(i + 3) * 4, 50), Vector3(1,1,1), Vector3(0,0,0), false);
             world.addEntity(myNewEntity);
             /// writeln(myNewEntity.getUUID());

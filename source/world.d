@@ -7,6 +7,8 @@ import std.math.algebraic: sqrt, abs;
 import std.math.rounding: floor;
 import std.math.traits: isNaN;
 import std.traits: Select, isFloatingPoint, isIntegral;
+import std.algorithm.iteration: filter, map;
+import std.array;
 
 import game;
 
@@ -247,13 +249,17 @@ public class World {
 
         this.ticked = false;
 
+        Entity[] entitiesArray = this.entities.array();
+
+        Entity[] awakeEntities = entitiesArray.filter!(o => o.awake).array();
+
         /// Literally all IO with the physics engine NEEDS to happen here!
         if (this.timeAccumalator >= lockedTick) {
             this.ticked = true;
 
             // writeln("UPDATE! ", this.timeAccumalator);
             
-            foreach (Entity thisEntity; this.entities) {
+            foreach (thisEntity; awakeEntities[0..awakeEntities.length]) {
 
                 thisEntity.velocity.y -= this.gravity;
 
@@ -262,28 +268,26 @@ public class World {
                 float[3] velocity3 = Vector3ToFloatV(thisEntity.velocity).v[0..3];
                 float[3] size = Vector3ToFloatV(thisEntity.size).v[0..3];
 
+                
                 foreach (i; 0..3) {
 
                     position3[i] += velocity3[i];
 
-                    foreach (otherEntity; this.entities) {
+                    // Entity[] otherEntityArray = .array();
+
+                    foreach (otherEntity; entitiesArray.filter!(o => o != thisEntity && Vector3Distance(o.position, thisEntity.position) < 3)) {
 
                         BoundingBox thisBox = boundingBoxFromArray(position3, size);
 
-                        if (thisEntity != otherEntity) {
+                        BoundingBox otherBox = otherEntity.getBoundingBox();
 
-                            if (Vector3Distance(thisEntity.position, otherEntity.position) < 3) {
+                        if (CheckCollisionBoxes(thisBox, otherBox)) {
 
-                                BoundingBox otherBox = otherEntity.getBoundingBox();
-
-                                if (CheckCollisionBoxes(thisBox, otherBox)) {
-
-                                    float diff = (size[i] + otherEntity.getSizeIndex(i) + 0.001) * signum(-velocity3[i]);
-                                    position3[i] = otherEntity.getPositionIndex(i) + diff;
-                                    velocity3[i] = 0;
-                                }
-                            }
+                            float diff = (size[i] + otherEntity.getSizeIndex(i) + 0.001) * signum(-velocity3[i]);
+                            position3[i] = otherEntity.getPositionIndex(i) + diff;
+                            velocity3[i] = 0;
                         }
+                            
                     }
                 }
 
@@ -295,8 +299,11 @@ public class World {
 
                 if (!isNaN(mapCollision)) {
                     thisEntity.velocity.y = 0;
-
                     thisEntity.position.y = mapCollision + thisEntity.size.y;
+                }
+
+                if (!thisEntity.isPlayer && thisEntity.velocity.y == 0) {
+                    thisEntity.sleep();
                 }
             }
 
@@ -327,6 +334,7 @@ public class Entity {
     private Vector3 velocity;
     private UUID uuid;
     private bool isPlayer;
+    private bool awake = true;
     
     /// Rotation is only used for rotating the model of an entity
     private float rotation;
@@ -355,6 +363,10 @@ public class Entity {
                 this.position.z + this.size.z
             )
         );
+    }
+
+    void sleep() {
+        this.awake = false;
     }
 
     Vector3 getPosition() {

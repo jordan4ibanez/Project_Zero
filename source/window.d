@@ -28,11 +28,11 @@ public class Window {
         this.width = width;
         this.height = height;
 
-        SetTargetFPS(targetFPS);
-
         SetConfigFlags(ConfigFlags.FLAG_WINDOW_RESIZABLE);
 
         InitWindow(this.width,this.height, this.convertTitle());
+
+        SetTargetFPS(targetFPS);
     }
 
     ~this() {
