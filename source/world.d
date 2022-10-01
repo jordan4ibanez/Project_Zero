@@ -302,9 +302,11 @@ public class World {
                     thisEntity.position.y = mapCollision + thisEntity.size.y;
                 }
 
+                /*
                 if (!thisEntity.isPlayer && thisEntity.velocity.y == 0) {
                     thisEntity.sleep();
                 }
+                */
             }
 
             updates++;
