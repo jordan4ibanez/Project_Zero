@@ -29,7 +29,11 @@ public class Player {
         game.world.addEntity(this.entity);
 
         this.physicsEngineDelta = game.world.getLockedTick();
-        this.movementSpeed = *new Vector3(this.physicsEngineDelta,this.physicsEngineDelta,this.physicsEngineDelta);
+        this.movementSpeed = *new Vector3(
+            this.physicsEngineDelta / 10.0,
+            this.physicsEngineDelta / 10.0,
+            this.physicsEngineDelta / 10.0
+        );
     }
 
     void update() {
