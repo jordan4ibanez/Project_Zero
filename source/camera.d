@@ -81,13 +81,13 @@ public class GameCamera {
     }
 
 
-    void firstPersonLook(Mouse mouse) {
+    void firstPersonLook() {
 
-        if (!mouse.isGrabbed()) {
+        if (!game.mouse.isGrabbed()) {
             return;
         }
 
-        Vector2 mouseDelta = mouse.getDelta();
+        Vector2 mouseDelta = game.mouse.getDelta();
 
         /// This is a workaround for initial delta being crazy
         if (this.ignoreMouseInput) {
@@ -97,7 +97,7 @@ public class GameCamera {
             return;
         }
 
-        float sensitivity = mouse.getSensitivity();
+        float sensitivity = game.mouse.getSensitivity();
 
         float yaw = this.cameraLookRotation.y += mouseDelta.x * sensitivity;
 
