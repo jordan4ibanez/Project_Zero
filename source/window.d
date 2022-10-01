@@ -67,6 +67,10 @@ public class Window {
 
     }
 
+    bool shouldClose() {
+        return WindowShouldClose();
+    }
+
     private const(char)* convertTitleWithFPS(){
         return toStringz(this.title ~ " | FPS: " ~ to!string(GetFPS()));
     }
