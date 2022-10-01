@@ -273,9 +273,9 @@ public class World {
 
                     position3[i] += velocity3[i];
 
-                    // Entity[] otherEntityArray = .array();
+                    thisEntity.setPositionIndex(i, position3[i]);
 
-                    foreach (otherEntity; entitiesArray.filter!(o => o != thisEntity && Vector3Distance(o.position, thisEntity.position) < 3)) {
+                    foreach (otherEntity; entitiesArray.filter!(o => o != thisEntity && Vector3DistanceSqr(o.position, thisEntity.position) < 3)) {
 
                         BoundingBox thisBox = boundingBoxFromArray(position3, size);
 
@@ -285,7 +285,7 @@ public class World {
 
                             float diff = (size[i] + otherEntity.getSizeIndex(i) + 0.001) * signum(-velocity3[i]);
                             position3[i] = otherEntity.getPositionIndex(i) + diff;
-                            velocity3[i] = 0;
+                            velocity3[i] = otherEntity.getVelocityIndex(i);
                         }
                             
                     }
@@ -385,6 +385,14 @@ public class Entity {
         this.position = newPosition;
     }
 
+    void setPositionIndex(int index, float value) {
+        final switch(index) {
+            case 0: this.position.x = value; break;
+            case 1: this.position.y = value; break;
+            case 2: this.position.z = value; break;
+        }
+    }
+
     void setCollisionBoxPosition(Vector3 newPosition) {
         newPosition.y += this.size.y;
         this.position = newPosition;
@@ -392,6 +400,14 @@ public class Entity {
 
     Vector3 getVelocity() {
         return this.velocity;
+    }
+
+    float getVelocityIndex(int index) {
+        final switch(index) {
+            case 0: return this.velocity.x;
+            case 1: return this.velocity.y;
+            case 2: return this.velocity.z;
+        }
     }
 
     void setVelocity(Vector3 newVelocity) {
@@ -524,3 +540,4 @@ BoundingBox boundingBoxFromArray(float[3] position, float[3] size) {
         )
     );
 }
+
