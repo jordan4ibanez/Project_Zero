@@ -251,7 +251,7 @@ public class World {
 
         Entity[] entitiesArray = this.entities.array();
 
-        Entity[] awakeEntities = entitiesArray.filter!(o => o.awake).array();
+        // Entity[] awakeEntities = entitiesArray.filter!(o => o.awake).array();
 
         /// Literally all IO with the physics engine NEEDS to happen here!
         if (this.timeAccumalator >= lockedTick) {
@@ -259,7 +259,7 @@ public class World {
 
             // writeln("UPDATE! ", this.timeAccumalator);
             
-            foreach (thisEntity; awakeEntities[0..awakeEntities.length]) {
+            foreach (thisEntity; entitiesArray[0..entitiesArray.length]) {
 
                 thisEntity.velocity.y -= this.gravity;
 
