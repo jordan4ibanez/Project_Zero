@@ -24,6 +24,8 @@ public class World {
     immutable double fpsPrecision = 300;
     immutable double lockedTick = 1.0 / this.fpsPrecision;
 
+    immutable double gravity = lockedTick / 9.81;
+
     MapQuad[] heightMap;
     int heightMapSize;
     float quadScale;
@@ -239,10 +241,12 @@ public class World {
         while(this.timeAccumalator >= lockedTick) {
 
             // writeln("UPDATE! ", this.timeAccumalator);
+            
+            foreach (Entity thisEntity; this.entities) {
+                thisEntity.velocity.y -= this.gravity;
 
-
-
-
+                thisEntity.setPosition(Vector3Add(thisEntity.position, thisEntity.velocity));
+            }
 
             updates++;
             this.timeAccumalator -= lockedTick;
@@ -302,6 +306,11 @@ public class Entity {
     Vector3 getPosition() {
         return this.position;
     }
+
+    void setPosition(Vector3 newPosition) {
+        this.position = newPosition;
+    }
+
     Vector3 getVelocity() {
         return this.velocity;
     }
