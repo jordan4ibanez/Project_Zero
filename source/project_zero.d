@@ -261,10 +261,8 @@ void main() {
 
         /// End internal calculations, begin draw
 
-        BeginDrawing();
         {
             
-            camera3d.clear(Colors.RAYWHITE);
 
             BeginMode3D(camera3d.get());
             {
