@@ -38,10 +38,10 @@ public class Game {
         camera3d    = new GameCamera(this, Vector3(0,50,0));
         keyboard    = new Keyboard(this);
         mouse       = new Mouse(this);
-        player      = new Player(this);
         soundEngine = new SoundEngine(this);
         timeKeeper  = new TimeKeeper(this);
         world       = new World(this);
+        player      = new Player(this);
 
 
         /// Temporary debugging things
@@ -91,6 +91,8 @@ public class Game {
             mouse.update();
             keyboard.update();
 
+            
+            player.update();
             camera3d.firstPersonLook();
             camera3d.update();
 
