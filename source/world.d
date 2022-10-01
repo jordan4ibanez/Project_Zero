@@ -29,7 +29,7 @@ public class World {
     float quadScale;
 
     Entity[UUID] entities;
-    RigidBody[UUID] rigidBodies;
+    // Structure[UUID] structures;
 
     Model terrainModel;
 
@@ -230,6 +230,22 @@ public class World {
 
     /// Remember: this needs an external handler for fixed time stamps!
     void update() {
+        /// Simulate higher FPS precision
+        this.timeAccumalator += game.timeKeeper.getDelta();
+
+        int updates = 0;
+
+        /// Literally all IO with the physics engine NEEDS to happen here!
+        while(this.timeAccumalator >= lockedTick) {
+
+            // writeln("UPDATE! ", this.timeAccumalator);
+
+            updates++;
+
+            this.timeAccumalator -= lockedTick;
+        }
+
+        /// writeln("Physics updates in this frame: ", updates);
 
     }
 
@@ -280,11 +296,6 @@ public class Entity {
     }
 }
 
-/// Rigid bodies are simply cuboids that contain other rigid bodies
-public class RigidBody {
-    BoundingBox boundingBox;
-    Vector3 position;
-}
 
 
 /**
