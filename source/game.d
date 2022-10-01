@@ -5,7 +5,7 @@ import std.stdio;
 import camera;
 import keyboard;
 import mouse;
-import delta;
+import time_keeper;
 import player;
 import sound_engine;
 import window;
@@ -17,7 +17,7 @@ public class Game {
     GameCamera camera;
     Mouse mouse;
     Keyboard keyboard;
-    DeltaCalculator deltaCalculator;
+    TimeKeeper timeKeeper;
     Player player;
     // Lua lua <- lua will be OOP too!
     SoundEngine soundEngine;
@@ -27,10 +27,13 @@ public class Game {
         validateRaylibBinding();
         SetTraceLogLevel(TraceLogLevel.LOG_NONE);
 
-        window = new Window(1280,720);
-        camera = new GameCamera();
-        keyboard = new Keyboard();
-        mouse = new Mouse();
+        window      = new Window(1280,720);
+        camera      = new GameCamera();
+        keyboard    = new Keyboard();
+        mouse       = new Mouse();
+        player      = new Player(Vector3(0,0,0));
+        soundEngine = new SoundEngine();
+        timeKeeper  = new TimeKeeper();
 
 
 
