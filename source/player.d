@@ -50,6 +50,10 @@ public class Player {
 
     void intakeControls() {
 
+        if (!game.world.didTick()) {
+            return;
+        }
+
         Vector3 velocity = this.entity.getVelocity();
 
         Keyboard keyboard = game.keyboard;
