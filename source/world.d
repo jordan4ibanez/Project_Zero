@@ -3,7 +3,7 @@ module world;
 import std.stdio;
 import raylib;
 import std.uuid;
-import std.math.algebraic: sqrt;
+import std.math.algebraic: sqrt, abs;
 import std.math.rounding: floor;
 import std.math.traits: isNaN;
 import std.traits: Select, isFloatingPoint, isIntegral;
@@ -23,10 +23,10 @@ public class World {
     double timeAccumalator = 0.0;
 
     /// 300 FPS physics simulation
-    immutable double fpsPrecision = 300;
+    immutable double fpsPrecision = 60;
     immutable double lockedTick = 1.0 / this.fpsPrecision;
 
-    immutable double gravity = lockedTick / 9.81;
+    immutable double gravity = lockedTick * 0.5;
 
     MapQuad[] heightMap;
     int heightMapSize;
@@ -38,6 +38,8 @@ public class World {
     Model terrainModel;
 
     Texture groundTexture;
+
+    private bool ticked = false;
 
     this(Game game) {
         this.game = game;
@@ -232,6 +234,10 @@ public class World {
         return this.lockedTick;
     }
 
+    bool didTick() {
+        return this.ticked;
+    }
+
     /// Remember: this needs an external handler for fixed time stamps!
     void update() {
         /// Simulate higher FPS precision
@@ -239,8 +245,11 @@ public class World {
 
         int updates = 0;
 
+        this.ticked = false;
+
         /// Literally all IO with the physics engine NEEDS to happen here!
-        while(this.timeAccumalator >= lockedTick) {
+        if (this.timeAccumalator >= lockedTick) {
+            this.ticked = true;
 
             // writeln("UPDATE! ", this.timeAccumalator);
             
@@ -248,86 +257,38 @@ public class World {
 
                 thisEntity.velocity.y -= this.gravity;
 
-                /// Y check
+                // Grab a slice of this sweet data wooo
+                float[3] position3 = Vector3ToFloatV(thisEntity.position).v[0..3];
+                float[3] velocity3 = Vector3ToFloatV(thisEntity.velocity).v[0..3];
+                float[3] size = Vector3ToFloatV(thisEntity.size).v[0..3];
 
-                thisEntity.position.y += thisEntity.velocity.y;
+                foreach (i; 0..3) {
 
-                foreach (Entity otherEntity; this.entities) {
+                    position3[i] += velocity3[i];
 
-                    BoundingBox thisBox = thisEntity.getBoundingBox();
+                    foreach (otherEntity; this.entities) {
 
-                    if (thisEntity != otherEntity) {
+                        BoundingBox thisBox = boundingBoxFromArray(position3, size);
 
-                        if (Vector3Distance(thisEntity.position, otherEntity.position) < 4) {
+                        if (thisEntity != otherEntity) {
 
-                            // float positionDiff = thisEntity.position.y - otherEntity.position.y;
-                            // positionDiff = positionDiff == 0 ? 0.0001 : positionDiff;
+                            if (Vector3Distance(thisEntity.position, otherEntity.position) < 3) {
 
-                            BoundingBox otherBox = otherEntity.getBoundingBox();
+                                BoundingBox otherBox = otherEntity.getBoundingBox();
 
-                            if (CheckCollisionBoxes(thisBox, otherBox)) {
-                                float diff = (thisEntity.size.y + otherEntity.size.y + 0.001) * signum(-thisEntity.velocity.y);
-                                thisEntity.position.y = otherEntity.position.y + diff;
-                                thisEntity.velocity.y = 0;
+                                if (CheckCollisionBoxes(thisBox, otherBox)) {
+
+                                    float diff = (size[i] + otherEntity.getSizeIndex(i) + 0.001) * signum(-velocity3[i]);
+                                    position3[i] = otherEntity.getPositionIndex(i) + diff;
+                                    velocity3[i] = 0;
+                                }
                             }
                         }
                     }
                 }
 
-                /// X check
-                
-                thisEntity.position.x += thisEntity.velocity.x;
-
-                foreach (Entity otherEntity; this.entities) {
-
-                    BoundingBox thisBox = thisEntity.getBoundingBox();
-
-                    if (thisEntity != otherEntity) {
-
-                        if (Vector3Distance(thisEntity.position, otherEntity.position) < 4) {
-
-                            // float positionDiff = thisEntity.position.x - otherEntity.position.x;
-                            // positionDiff = positionDiff == 0 ? 0.0001 : positionDiff;
-
-                            BoundingBox otherBox = otherEntity.getBoundingBox();
-                            
-                            if (CheckCollisionBoxes(thisBox, otherBox)) {
-                                float diff = (thisEntity.size.x + otherEntity.size.x + 0.001) * signum(-thisEntity.velocity.x);
-                                thisEntity.position.x = otherEntity.position.x + diff;
-                                thisEntity.velocity.x = 0;
-                            }
-                        }
-                    }
-                }
-                
-                /// Z check
-
-                thisEntity.position.z += thisEntity.velocity.z;
-
-                foreach (Entity otherEntity; this.entities) {
-
-                    BoundingBox thisBox = thisEntity.getBoundingBox();
-
-                    if (thisEntity != otherEntity) {
-
-                        if (Vector3Distance(thisEntity.position, otherEntity.position) < 4) {
-
-                            // float positionDiff = thisEntity.position.z - otherEntity.position.z;
-                            // positionDiff = positionDiff == 0 ? 0.0001 : positionDiff;
-
-                            BoundingBox otherBox = otherEntity.getBoundingBox();
-                            
-                            if (CheckCollisionBoxes(thisBox, otherBox)) {
-                                float diff = (thisEntity.size.z + otherEntity.size.z + 0.001) * signum(-thisEntity.velocity.z);
-                                thisEntity.position.z = otherEntity.position.z + diff;
-                                thisEntity.velocity.z = 0;
-                            }
-                        }
-                    }
-                }
-
-
-                /// Collision check goes here
+                thisEntity.position = Vector3(position3[0], position3[1], position3[2]);
+                thisEntity.velocity = Vector3(velocity3[0], velocity3[1], velocity3[2]);
 
 
                 float mapCollision = this.collidePointToMap(thisEntity.getCollisionBoxPosition());
@@ -361,14 +322,14 @@ public class World {
 /// Entities are 3D boxes that can rotate their models. This is a base class that should be extended.
 public class Entity {
     
-    protected Vector3 position;
-    protected Vector3 size;
-    protected Vector3 velocity;
-    protected UUID uuid;
-    protected bool isPlayer;
+    private Vector3 position;
+    private Vector3 size;
+    private Vector3 velocity;
+    private UUID uuid;
+    private bool isPlayer;
     
     /// Rotation is only used for rotating the model of an entity
-    protected float rotation;
+    private float rotation;
 
     this(Vector3 position, Vector3 size, Vector3 velocity, bool isPlayer) {
         this.uuid = randomUUID();
@@ -421,6 +382,14 @@ public class Entity {
 
     void setVelocity(Vector3 newVelocity) {
         this.velocity = newVelocity;
+    }
+
+    float getSizeIndex(int index) {
+        return Vector3ToFloatV(this.size).v[index];
+    }
+
+    float getPositionIndex(int index) {
+        return Vector3ToFloatV(this.position).v[index];
     }
 
     void addVelocity(Vector3 addition) {
@@ -523,4 +492,21 @@ pragma(inline)
 @safe pure nothrow Select!(isFloatingPoint!T || isIntegral!T, T, float)
 signum(T)(in T x) {
     return (T(0) < x) - (x < T(0));
+}
+
+pragma(inline)
+@safe pure nothrow @nogc
+BoundingBox boundingBoxFromArray(float[3] position, float[3] size) {
+    return BoundingBox(
+        Vector3(
+            position[0] - size[0],
+            position[1] - size[1],
+            position[2] - size[2]
+        ),
+        Vector3(
+            position[0] + size[0],
+            position[1] + size[1],
+            position[2] + size[2]
+        )
+    );
 }
