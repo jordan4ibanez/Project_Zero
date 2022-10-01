@@ -21,12 +21,6 @@ void main() {
         return;
     }
 
-    Keyboard keyboard = new Keyboard();
-    
-    World world = new World();
-
-    SoundEngine soundEngine = new SoundEngine();
-
     // soundEngine.enableDebugging();
     
     // soundEngine.cacheSound("sounds/sounds_main_menu.ogg");
@@ -36,31 +30,6 @@ void main() {
     // soundEngine.playSound("sounds/sounds_hurt.ogg");
 
     bool wasToggle = false;
-
-    Entity[] boxes;
-    for (int i = 0; i < 10; i++) {
-        boxes ~= new Entity(Vector3(-3,i * 2,0), Vector3(1,1,1), Vector3(0,0,0));
-        // boxes ~= physicsEngine.addBox(Vector3(3, 1 + i * 10,0));
-    }
-
-    float[] heightMap;
-
-    /// testing out a random map!
-
-    int size = 250;
-
-    FNLState noiseEngine = fnlCreateState(1234);
-    noiseEngine.noise_type = FNLNoiseType.FNL_NOISE_OPENSIMPLEX2;
-    noiseEngine.frequency = 0.01;
-    noiseEngine.octaves = 10;
-
-    for (int x = 0; x < size; x++) {
-        for (int z = 0; z < size; z++) {
-            heightMap ~= fnlGetNoise2D(&noiseEngine, x, z) * 50;
-        }
-    }
-    
-    world.uploadHeightMap(heightMap, 10);
 
     Vector3 velocity = Vector3(0,0,0);
 
@@ -88,15 +57,7 @@ void main() {
 
     while(!WindowShouldClose()) {
 
-        deltaCalculator.calculateDelta();
-
         double delta = deltaCalculator.getDelta();
-
-        window.update();
-
-        mouse.update();
-
-        keyboard.update();
 
         velocity.y -= 0.01;
         fancyBoxVelocity.y -= 0.001;
