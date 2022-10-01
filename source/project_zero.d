@@ -1,3 +1,5 @@
+module project_zero;
+
 import std.stdio;
 
 import raylib;

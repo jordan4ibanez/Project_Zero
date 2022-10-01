@@ -3,6 +3,8 @@
 		"jordan4ibanez"
 	],
 	"copyright": "Copyright © 2022, jordan4ibanez",
+    "mainSourceFile": "source/project_zero.d",
+    "targetType": "executable",
 	"dependencies": {
 		"bindbc-lua": "~>0.5.0",
 		"bindbc-openal": "~>1.0.0",
