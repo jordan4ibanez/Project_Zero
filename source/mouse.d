@@ -58,10 +58,10 @@ public class Mouse {
         return this.grabbed;
     }
 
-    void grab(GameCamera camera) {
+    void grab() {
         DisableCursor();
         this.grabbed = true;
-        camera.ignoreFrame();
+        game.camera3d.ignoreFrame();
     }
 
     void release() {
