@@ -45,7 +45,7 @@ public class Window {
             SetWindowSize(this.width, this.height);
         } else {
             int currentMonitor = GetCurrentMonitor();
-            SetWindowSize(GetMonitorWidth(currentMonitor), GetMonitorWidth(currentMonitor));
+            SetWindowSize(GetMonitorWidth(currentMonitor),GetMonitorHeight(currentMonitor));
             ToggleFullscreen();
         }
         fullScreen = !fullScreen;
