@@ -45,7 +45,7 @@ public class World {
     private bool ticked = false;
 
     /// This also sets the max entity size!
-    private immutable float quadrantSize = 5;
+    private immutable float quadrantSize = 1;
 
     this(Game game) {
         this.game = game;
@@ -313,14 +313,15 @@ public class World {
             }
 
             immutable Vector3I[] quadrantNeighbors = [
+                /// 0,0,0 is current quadrant, no check
                 Vector3I( 1, 0, 0),
                 Vector3I(-1, 0, 0),
                 Vector3I( 1, 1, 0),
                 Vector3I(-1, 1, 0),
                 Vector3I( 1,-1, 0),
                 Vector3I(-1,-1, 0),
-                Vector3I( 0, 0, 1),
                 /// This is where x and z loop
+                Vector3I( 0, 0, 1),
                 Vector3I( 1, 0, 1),
                 Vector3I(-1, 0, 1),
                 Vector3I( 1, 1, 1),
@@ -337,41 +338,94 @@ public class World {
                 Vector3I(-1,-1,-1),
             ];
             
-
             foreach (thisEntity; entitiesArray) {
 
+                thisEntity.applied = false;
 
-                thisEntity.velocity.y -= this.gravity;
+                BoundingBox thisBoundingBox = thisEntity.getBoundingBox();
 
-                // Grab a slice of this sweet data wooo
-                float[3] position3 = Vector3ToFloatV(thisEntity.position).v[0..3];
-                float[3] velocity3 = Vector3ToFloatV(thisEntity.velocity).v[0..3];
-                float[3] size = Vector3ToFloatV(thisEntity.size).v[0..3];
+                // Quadrant of current position
+                Vector3I currentQuadrant = Vector3I(
+                    cast(int)floor(
+                        thisEntity.position.x / this.quadrantSize
+                    ),
+                    cast(int)floor(
+                        thisEntity.position.y / this.quadrantSize
+                    ),
+                    cast(int)floor(
+                        thisEntity.position.z / this.quadrantSize
+                    )
+                );
 
-                
-                if (thisEntity.isPlayer) {
-                    // Quadrant of current position
-                    Vector3I currentQuadrant = Vector3I(
-                        cast(int)floor(
-                            position3[0] / this.quadrantSize
-                        ),
-                        cast(int)floor(
-                            position3[1] / this.quadrantSize
-                        ),
-                        cast(int)floor(
-                            position3[2] / this.quadrantSize
-                        )
+                quadrantsInsert(currentQuadrant, thisEntity);
+
+                /// Generate neighbors
+                foreach (quadPos; quadrantNeighbors) {
+                    Vector3I neighbor = Vector3I(
+                        currentQuadrant.x + quadPos.x,
+                        currentQuadrant.y + quadPos.y,
+                        currentQuadrant.z + quadPos.z
                     );
 
-                    /// Generate neighbors
-                    
+                    BoundingBox neighborBox = quadrantToBoundingBox(neighbor);
 
-                    
+                    // plop em into the quadrant
+                    if (CheckCollisionBoxes(thisBoundingBox, neighborBox)) {
+                        quadrantsInsert(neighbor, thisEntity);
+                    }
                 }
-                
+            }
 
-                
+            foreach (thisQuadrant; quadrants) {
+                foreach (thisEntity; thisQuadrant.entitiesWithin) {
+
+                    if (!thisEntity.applied) {
+                        thisEntity.velocity.y -= this.gravity;
+                    }
+
+                    // Grab a slice of this sweet data wooo
+                    float[3] position3 = Vector3ToFloatV(thisEntity.position).v[0..3];
+                    float[3] velocity3 = Vector3ToFloatV(thisEntity.velocity).v[0..3];
+                    float[3] size      = Vector3ToFloatV(thisEntity.size).v[0..3];
+
+                    foreach (i; 0..3) {
+
+                        if (!thisEntity.applied) {
+                            position3[i] += velocity3[i];
+                        }
+
+                        foreach (otherEntity; thisQuadrant.entitiesWithin.filter!(o => o != thisEntity)) {
+
+                            BoundingBox thisBox = boundingBoxFromArray(position3, size);
+
+                            BoundingBox otherBox = otherEntity.getBoundingBox();
+
+                            if (CheckCollisionBoxes(thisBox, otherBox)) {
+
+                                float diff = (size[i] + otherEntity.getSizeIndex(i) + 0.001) * signum(-velocity3[i]);
+                                position3[i] = otherEntity.getPositionIndex(i) + diff;
+                                velocity3[i] = 0;///otherEntity.getVelocityIndex(i);
+                                
+                            }
+                                
+                        }                        
+                    }
+                    thisEntity.position = Vector3(position3[0], position3[1], position3[2]);
+                    thisEntity.velocity = Vector3(velocity3[0], velocity3[1], velocity3[2]);
+
+                    float mapCollision = this.collidePointToMap(thisEntity.getCollisionBoxPosition());
+
+                    if (!isNaN(mapCollision)) {
+                        thisEntity.velocity.y = 0;
+                        thisEntity.position.y = mapCollision + thisEntity.size.y;
+                    }                
+                }
+            }
+
+            /*
                 foreach (i; 0..3) {
+
+                    
 
                     position3[i] += velocity3[i];
 
@@ -409,8 +463,9 @@ public class World {
                 if (!thisEntity.isPlayer && thisEntity.velocity.y == 0) {
                     thisEntity.sleep();
                 }
-                */
+                // was * /
             }
+            */
 
             updates++;
             this.timeAccumalator -= lockedTick;
@@ -440,6 +495,9 @@ public class Entity {
     private UUID uuid;
     private bool isPlayer;
     private bool awake = true;
+
+    private bool applied = false;
+    
     
     /// Rotation is only used for rotating the model of an entity
     private float rotation;
@@ -470,24 +528,29 @@ public class Entity {
         );
     }
 
+    final
     void sleep() {
         this.awake = false;
     }
 
+    final
     Vector3 getPosition() {
         return this.position;
     }
 
+    final
     Vector3 getCollisionBoxPosition() {
         Vector3 updatedPosition = this.position;
         updatedPosition.y -= this.size.y;
         return updatedPosition;
     }
 
+    final
     void setPosition(Vector3 newPosition) {
         this.position = newPosition;
     }
 
+    final
     void setPositionIndex(int index, float value) {
         final switch(index) {
             case 0: this.position.x = value; break;
@@ -496,15 +559,18 @@ public class Entity {
         }
     }
 
+    final
     void setCollisionBoxPosition(Vector3 newPosition) {
         newPosition.y += this.size.y;
         this.position = newPosition;
     }
 
+    final
     Vector3 getVelocity() {
         return this.velocity;
     }
 
+    final
     float getVelocityIndex(int index) {
         final switch(index) {
             case 0: return this.velocity.x;
@@ -513,26 +579,32 @@ public class Entity {
         }
     }
 
+    final
     void setVelocity(Vector3 newVelocity) {
         this.velocity = newVelocity;
     }
 
+    final
     float getSizeIndex(int index) {
         return Vector3ToFloatV(this.size).v[index];
     }
 
+    final
     float getPositionIndex(int index) {
         return Vector3ToFloatV(this.position).v[index];
     }
 
+    final
     void addVelocity(Vector3 addition) {
         this.velocity = Vector3Add(this.velocity, addition);
     }
 
+    final
     UUID getUUID() {
         return this.uuid;
     }
 
+    final
     void drawCollisionBox() {
         if (isPlayer) {
             DrawBoundingBox(this.getBoundingBox(), Colors.BLACK);
