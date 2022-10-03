@@ -43,7 +43,8 @@ public class World {
 
     private bool ticked = false;
 
-    private immutable float collisionQuadrantSize = 10;
+    /// This also sets the max entity size!
+    private immutable float quadrantSize = 5;
 
     this(Game game) {
         this.game = game;
@@ -56,6 +57,9 @@ public class World {
     
     /// Add an entity into the entity associative array
     void addEntity(Entity newEntity) {
+        if (newEntity.size.x > this.quadrantSize || newEntity.size.y > this.quadrantSize || newEntity.size.z > this.quadrantSize) {
+            throw new Exception ("Entity size is limited to 5.0 on all axis!");
+        }
         this.entities[newEntity.getUUID()] = newEntity;
     }
 
@@ -244,6 +248,7 @@ public class World {
 
     /// Remember: this needs an external handler for fixed time stamps!
     void update() {
+
         /// Simulate higher FPS precision
         this.timeAccumalator += game.timeKeeper.getDelta();
 
@@ -257,13 +262,25 @@ public class World {
         /// Literally all IO with the physics engine NEEDS to happen here!
         if (this.timeAccumalator >= lockedTick) {
 
-            Entity[] entitiesArray = this.entities.array();
-            
+            auto entitiesArray = this.entities.values;
+
             this.ticked = true;
 
             // writeln("UPDATE! ", this.timeAccumalator);
+
+            struct Vector3I {
+                int x = 0;
+                int y = 0;
+                int z = 0;
+            }
+            struct Quadrant {
+                Entity[] entitiesWithin;
+            }
+
+            Quadrant[Vector3I] quadrants;
             
-            foreach (thisEntity; entitiesArray[0..entitiesArray.length]) {
+            foreach (thisEntity; entitiesArray) {
+
 
                 thisEntity.velocity.y -= this.gravity;
 
@@ -271,6 +288,16 @@ public class World {
                 float[3] position3 = Vector3ToFloatV(thisEntity.position).v[0..3];
                 float[3] velocity3 = Vector3ToFloatV(thisEntity.velocity).v[0..3];
                 float[3] size = Vector3ToFloatV(thisEntity.size).v[0..3];
+
+                
+                if (thisEntity.isPlayer) {
+                    writeln("---");
+                    foreach (i; 0..3) {
+                        
+
+                    }
+                }
+                
 
                 
                 foreach (i; 0..3) {

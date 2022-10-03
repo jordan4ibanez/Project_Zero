@@ -52,7 +52,6 @@ public class Game {
             world.addEntity(myNewEntity);
             /// writeln(myNewEntity.getUUID());
             // boxes ~= physicsEngine.addBox(Vector3(3, 1 + i * 10,0));
-
         }
 
         float[] heightMap;
