@@ -39,6 +39,9 @@ public class Keyboard {
     }
 
     void update() {
+        
+        bool wasToggleFullScreen = this.toggleFullScreen;
+
         this.forward          = IsKeyDown(this.forwardAssignment);
         this.left             = IsKeyDown(this.leftAssignment);
         this.back             = IsKeyDown(this.backAssignment);
@@ -51,6 +54,10 @@ public class Keyboard {
         this.leanRight        = IsKeyDown(this.leanRightAssignment);
         this.leanLeft         = IsKeyDown(this.leanLeftAssignment);
         this.toggleFullScreen = IsKeyDown(this.toggleFullScreenAssignment);
+
+        if (!wasToggleFullScreen && toggleFullScreen) {
+            game.window.toggleFullScreen();
+        }
     }
 
     bool getForward() {
