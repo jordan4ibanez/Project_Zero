@@ -50,7 +50,7 @@ public class World {
     private immutable float speedLimit = 0.5;
 
     /// This also sets the max entity size!
-    private immutable float quadrantSize = 40;
+    private immutable float quadrantSize = 20;
 
     this(Game game) {
         this.game = game;
@@ -488,8 +488,9 @@ public class World {
 
 
     void render() {
+        Vector3 cameraPos = game.camera3d.getPosition();
         foreach (Entity thisEntity; this.entities) {
-            thisEntity.drawCollisionBox();
+            thisEntity.drawCollisionBox(cameraPos);
         }
 
         this.drawTerrain();
@@ -661,13 +662,15 @@ public class Entity {
     }
 
     final
-    void drawCollisionBox() {
+    void drawCollisionBox(Vector3 cameraPos) {
         if (isPlayer) {
             DrawBoundingBox(this.getBoundingBox(), Colors.BLACK);
         } else {
             /// DrawCube(this.position, this.size.x * 2, this.size.y * 2, this.size.z * 2, Colors.YELLOW);
             // DrawBoundingBox(this.getBoundingBox(), this.color);
-            DrawCube(this.position, this.size.x * 2, this.size.y * 2, this.size.z * 2, this.color);
+            if (Vector3Distance(this.position, cameraPos) < 150) {
+                DrawCube(this.position, this.size.x * 2, this.size.y * 2, this.size.z * 2, this.color);
+            }
         }
     }
 }
