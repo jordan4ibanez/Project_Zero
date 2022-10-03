@@ -43,6 +43,8 @@ public class World {
 
     private bool ticked = false;
 
+    private immutable float collisionQuadrantSize = 10;
+
     this(Game game) {
         this.game = game;
 
@@ -249,12 +251,14 @@ public class World {
 
         this.ticked = false;
 
-        Entity[] entitiesArray = this.entities.array();
 
         // Entity[] awakeEntities = entitiesArray.filter!(o => o.awake).array();
 
         /// Literally all IO with the physics engine NEEDS to happen here!
         if (this.timeAccumalator >= lockedTick) {
+
+            Entity[] entitiesArray = this.entities.array();
+            
             this.ticked = true;
 
             // writeln("UPDATE! ", this.timeAccumalator);
@@ -285,7 +289,8 @@ public class World {
 
                             float diff = (size[i] + otherEntity.getSizeIndex(i) + 0.001) * signum(-velocity3[i]);
                             position3[i] = otherEntity.getPositionIndex(i) + diff;
-                            velocity3[i] = otherEntity.getVelocityIndex(i);
+                            velocity3[i] = 0;///otherEntity.getVelocityIndex(i);
+                            
                         }
                             
                     }
