@@ -9,6 +9,7 @@ import std.math.traits: isNaN;
 import std.traits: Select, isFloatingPoint, isIntegral;
 import std.algorithm.iteration: filter, map;
 import std.array;
+import std.algorithm.searching: canFind;
 
 import game;
 
@@ -278,7 +279,65 @@ public class World {
             }
 
             Quadrant[Vector3I] quadrants;
+
+            void quadrantsInsert(Vector3I index, Entity entity) {
+                bool quickPlop = false;
+                if (index !in quadrants) {
+                    quickPlop = true;
+                    quadrants[index] = Quadrant();
+                }
+                // avoid duplicates
+                if (quickPlop || !canFind(quadrants[index].entitiesWithin, entity)) {
+                    quadrants[index].entitiesWithin ~= entity;
+                }
+            }
+
+            BoundingBox quadrantToBoundingBox(Vector3I input) {
+                Vector3 basePosition = Vector3(
+                    input.x * this.quadrantSize,
+                    input.y * this.quadrantSize,
+                    input.z * this.quadrantSize
+                );
+                return BoundingBox(
+                    Vector3(
+                        basePosition.x,
+                        basePosition.y,
+                        basePosition.z
+                    ),
+                    Vector3(
+                        basePosition.x + this.quadrantSize,
+                        basePosition.y + this.quadrantSize,
+                        basePosition.z + this.quadrantSize
+                    )
+                );
+            }
+
+            immutable Vector3I[] quadrantNeighbors = [
+                Vector3I( 1, 0, 0),
+                Vector3I(-1, 0, 0),
+                Vector3I( 1, 1, 0),
+                Vector3I(-1, 1, 0),
+                Vector3I( 1,-1, 0),
+                Vector3I(-1,-1, 0),
+                Vector3I( 0, 0, 1),
+                /// This is where x and z loop
+                Vector3I( 1, 0, 1),
+                Vector3I(-1, 0, 1),
+                Vector3I( 1, 1, 1),
+                Vector3I(-1, 1, 1),
+                Vector3I( 1,-1, 1),
+                Vector3I(-1,-1, 1),
+                /// This is where x and z loop
+                Vector3I( 0, 0,-1),
+                Vector3I( 1, 0,-1),
+                Vector3I(-1, 0,-1),
+                Vector3I( 1, 1,-1),
+                Vector3I(-1, 1,-1),
+                Vector3I( 1,-1,-1),
+                Vector3I(-1,-1,-1),
+            ];
             
+
             foreach (thisEntity; entitiesArray) {
 
 
@@ -291,11 +350,23 @@ public class World {
 
                 
                 if (thisEntity.isPlayer) {
-                    writeln("---");
-                    foreach (i; 0..3) {
-                        
+                    // Quadrant of current position
+                    Vector3I currentQuadrant = Vector3I(
+                        cast(int)floor(
+                            position3[0] / this.quadrantSize
+                        ),
+                        cast(int)floor(
+                            position3[1] / this.quadrantSize
+                        ),
+                        cast(int)floor(
+                            position3[2] / this.quadrantSize
+                        )
+                    );
 
-                    }
+                    /// Generate neighbors
+                    
+
+                    
                 }
                 
 
