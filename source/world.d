@@ -11,6 +11,7 @@ import std.algorithm.iteration: filter, map;
 import std.array;
 import std.algorithm.searching: canFind;
 import std.conv: to;
+import std.random;
 
 import game;
 
@@ -46,7 +47,7 @@ public class World {
     private bool ticked = false;
 
     /// This also sets the max entity size!
-    private immutable float quadrantSize = 2;
+    private immutable float quadrantSize = 1;
 
     private immutable float speedLimit = 0.5;
 
@@ -466,51 +467,6 @@ public class World {
                 }
             }
 
-            /*
-                foreach (i; 0..3) {
-
-                    
-
-                    position3[i] += velocity3[i];
-
-                    thisEntity.setPositionIndex(i, position3[i]);
-
-                    foreach (otherEntity; entitiesArray.filter!(o => o != thisEntity && Vector3DistanceSqr(o.position, thisEntity.position) < 3)) {
-
-                        BoundingBox thisBox = boundingBoxFromArray(position3, size);
-
-                        BoundingBox otherBox = otherEntity.getBoundingBox();
-
-                        if (CheckCollisionBoxes(thisBox, otherBox)) {
-
-                            float diff = (size[i] + otherEntity.getSizeIndex(i) + 0.001) * signum(-velocity3[i]);
-                            position3[i] = otherEntity.getPositionIndex(i) + diff;
-                            velocity3[i] = 0;///otherEntity.getVelocityIndex(i);
-                            
-                        }
-                            
-                    }
-                }
-
-                thisEntity.position = Vector3(position3[0], position3[1], position3[2]);
-                thisEntity.velocity = Vector3(velocity3[0], velocity3[1], velocity3[2]);
-
-
-                float mapCollision = this.collidePointToMap(thisEntity.getCollisionBoxPosition());
-
-                if (!isNaN(mapCollision)) {
-                    thisEntity.velocity.y = 0;
-                    thisEntity.position.y = mapCollision + thisEntity.size.y;
-                }
-
-                /*
-                if (!thisEntity.isPlayer && thisEntity.velocity.y == 0) {
-                    thisEntity.sleep();
-                }
-                // was * /
-            }
-            */
-
             updates++;
             this.timeAccumalator -= lockedTick;
         }
@@ -543,6 +499,7 @@ public class Entity {
     bool wasOnGround = false;
     private bool applied = false;
     private immutable float overProvision = 0.5;
+    private immutable Color color;
     
     
     /// Rotation is only used for rotating the model of an entity
@@ -556,6 +513,14 @@ public class Entity {
         this.size     = *new Vector3(size.x / 2, size.y / 2, size.z / 2);
         this.velocity = *new Vector3(velocity.x, velocity.y, velocity.z);
         this.isPlayer = isPlayer;
+
+        Random randy = Random(unpredictableSeed());
+        this.color = Color(
+            cast(ubyte)uniform(0,255,randy),
+            cast(ubyte)uniform(0,255,randy),
+            cast(ubyte)uniform(0,255,randy),
+            255
+        );
     }
 
     /// Allows quick rendering and collision detection.
@@ -690,7 +655,7 @@ public class Entity {
             DrawBoundingBox(this.getBoundingBox(), Colors.BLACK);
         } else {
             /// DrawCube(this.position, this.size.x * 2, this.size.y * 2, this.size.z * 2, Colors.YELLOW);
-            DrawBoundingBox(this.getBoundingBox(), Colors.RED);
+            DrawBoundingBox(this.getBoundingBox(), this.color);
         }
     }
 }
