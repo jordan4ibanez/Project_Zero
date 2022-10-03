@@ -431,6 +431,7 @@ public class World {
                             // This allows entities to clip, but this isn't a voxel game so we won't worry about that
                             if (bottomWasNotIn && bottomIsNowIn) {
                                 thisEntity.position.y = otherBox.max.y + thisEntity.size.y + 0.001;
+                                thisEntity.wasOnGround = true;
 
                                 thisEntity.velocity.y = 0;
                             } else if (topWasNotIn && topIsNowIn) {
