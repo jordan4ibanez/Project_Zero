@@ -41,14 +41,14 @@ public class Game {
         soundEngine = new SoundEngine(this);
         timeKeeper  = new TimeKeeper(this);
         world       = new World(this);
-        player      = new Player(this);
+        player      = new Player(this, Vector3(50,0,50));
 
 
         /// Temporary debugging things
         mouse.grab();
 
-        for (int i = 0; i < 800; i++) {
-            Entity myNewEntity = new Entity(Vector3(i ,(i + 3) * 4, 50), Vector3(1,1,1), Vector3(0,0,0), false);
+        for (int i = 0; i < 2; i++) {
+            Entity myNewEntity = new Entity(Vector3(50 ,(i + 3) * 4, 50), Vector3(1,1,1), Vector3(0,0,0), false);
             world.addEntity(myNewEntity);
             /// writeln(myNewEntity.getUUID());
             // boxes ~= physicsEngine.addBox(Vector3(3, 1 + i * 10,0));

@@ -21,10 +21,10 @@ public class Player {
 
     private bool wasOnGround = false;
 
-    this(Game game) {
+    this(Game game, Vector3 position) {
         this.game = game;
 
-        this.entity = new Entity(Vector3(40,20,50), Vector3(0.5,2,0.5),Vector3(0,0,0), true);
+        this.entity = new Entity(position, Vector3(0.5,2,0.5),Vector3(0,0,0), true);
 
         game.world.addEntity(this.entity);
 
