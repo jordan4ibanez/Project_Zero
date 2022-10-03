@@ -660,6 +660,10 @@ public class Entity {
     UUID getUUID() {
         return this.uuid;
     }
+    final 
+    bool wasOnTheGround() {
+        return this.wasOnGround;
+    }
 
     final
     void drawCollisionBox(Vector3 cameraPos) {

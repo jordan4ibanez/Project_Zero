@@ -92,6 +92,14 @@ public class Player {
 
         if (changed) {
             this.entity.setVelocity(velocity);
+        } else {
+            if (this.entity.wasOnTheGround()) {
+                Vector3 inverse = this.entity.getVelocity();
+                inverse.x *= -0.1;
+                inverse.y = 0;
+                inverse.z *= -0.1;
+                this.entity.setVelocity(Vector3Add(this.entity.getVelocity(), inverse));
+            }
         }
     }
 }
