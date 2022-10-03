@@ -47,7 +47,7 @@ public class Game {
         /// Temporary debugging things
         mouse.grab();
 
-        for (int i = 0; i < 1; i++) {
+        for (int i = 0; i < 1000; i++) {
             Entity myNewEntity = new Entity(Vector3(50 ,(i + 3) * 4, 50), Vector3(1,1,1), Vector3(0,0,0), false);
             world.addEntity(myNewEntity);
             /// writeln(myNewEntity.getUUID());

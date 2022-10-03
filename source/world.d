@@ -340,8 +340,77 @@ public class World {
             
             foreach (thisEntity; entitiesArray) {
 
-                thisEntity.applied = false;
+                thisEntity.wasOnGround = false;
 
+                thisEntity.velocity.y -= this.gravity;
+                
+                BoundingBox oldBox = thisEntity.getBoundingBox();
+
+                thisEntity.position = Vector3Add(thisEntity.position, thisEntity.velocity);
+
+                BoundingBox thisBox = thisEntity.getBoundingBox();
+
+                foreach (otherEntity; entitiesArray.filter!(o => o != thisEntity)) {
+
+                    BoundingBox otherBox = otherEntity.getBoundingBox();
+
+                    if(CheckCollisionBoxes(thisBox, otherBox)) {
+
+                        // These are 1D collision detections
+                        bool bottomWasNotIn = oldBox.min.y > otherBox.max.y;
+                        bool bottomIsNowIn = thisBox.min.y <= otherBox.max.y && thisBox.min.y >= otherBox.min.y;
+                        bool topWasNotIn = oldBox.max.y < otherBox.min.y;
+                        bool topIsNowIn = thisBox.max.y <= otherBox.max.y && thisBox.max.y >= otherBox.min.y;
+
+                        bool leftWasNotIn = oldBox.min.x > otherBox.max.x;
+                        bool leftIsNowIn = thisBox.min.x <= otherBox.max.x && thisBox.min.x >= otherBox.min.x;
+                        bool rightWasNotIn = oldBox.max.x < otherBox.min.x;
+                        bool rightIsNowIn = thisBox.max.x <= otherBox.max.x && thisBox.max.x >= otherBox.min.x;
+
+                        bool backWasNotIn = oldBox.min.z > otherBox.max.z;
+                        bool backIsNowIn = thisBox.min.z <= otherBox.max.z && thisBox.min.z >= otherBox.min.z;
+                        bool frontWasNotIn = oldBox.max.z < otherBox.min.z;
+                        bool frontIsNowIn = thisBox.max.z <= otherBox.max.z && thisBox.max.z >= otherBox.min.z;
+
+
+
+                        /// y check first
+                        // This allows entities to clip, but this isn't a voxel game so we won't worry about that
+                        if (bottomWasNotIn && bottomIsNowIn) {
+                            thisEntity.position.y = otherBox.max.y + thisEntity.size.y + 0.001;
+
+                            thisEntity.velocity.y = 0;
+                        } else if (topWasNotIn && topIsNowIn) {
+                            thisEntity.position.y = otherBox.min.y - thisEntity.size.y - 0.001;
+                            thisEntity.velocity.y = 0;
+                        } 
+                        // then x
+                        else if (leftWasNotIn && leftIsNowIn) {
+                            thisEntity.position.x = otherBox.max.x +thisEntity.size.x + 0.001;
+                            thisEntity.velocity.x = 0;
+                        } else if (rightWasNotIn && rightIsNowIn) {
+                            thisEntity.position.x = otherBox.min.x - thisEntity.size.x - 0.001;
+                            thisEntity.velocity.x = 0;
+                        }
+                        
+                        // finally z
+                        else if (backWasNotIn && backIsNowIn) {
+                            thisEntity.position.z = otherBox.max.z +thisEntity.size.z + 0.001;
+                            thisEntity.velocity.z = 0;
+                        } else if (frontWasNotIn && frontIsNowIn) {
+                            thisEntity.position.z = otherBox.min.z - thisEntity.size.z - 0.001;
+                            thisEntity.velocity.z = 0;
+                        } 
+                        
+                        
+                    }
+
+                    
+                }
+
+                //thisEntity.applied = false;
+
+                /*
                 BoundingBox thisBoundingBox = thisEntity.getBoundingBox();
 
                 // Quadrant of current position
@@ -374,8 +443,18 @@ public class World {
                         quadrantsInsert(neighbor, thisEntity);
                     }
                 }
+                */
+
+                float mapCollision = this.collidePointToMap(thisEntity.getCollisionBoxPosition());
+
+                if (!isNaN(mapCollision)) {
+                    thisEntity.wasOnGround = true;
+                    thisEntity.velocity.y = 0;
+                    thisEntity.position.y = mapCollision + thisEntity.size.y;
+                }
             }
 
+            /*
             foreach (thisQuadrant; quadrants) {
                 foreach (thisEntity; thisQuadrant.entitiesWithin) {
 
@@ -421,6 +500,7 @@ public class World {
                     }                
                 }
             }
+            */
 
             /*
                 foreach (i; 0..3) {
@@ -495,7 +575,7 @@ public class Entity {
     private UUID uuid;
     private bool isPlayer;
     private bool awake = true;
-
+    bool wasOnGround = false;
     private bool applied = false;
     
     

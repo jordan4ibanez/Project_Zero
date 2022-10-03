@@ -81,9 +81,10 @@ public class Player {
             Vector3 direction = Vector3Multiply(camera3d.getLeft2d(), this.movementSpeed);
             velocity = Vector3Add(velocity, direction);
         }
-        if (wasOnGround && keyboard.getJump()) {
+        if (this.entity.wasOnGround && keyboard.getJump()) {
             changed = true;
             velocity = Vector3Add(velocity, Vector3(0,0.25,0));
+            writeln("jumped");
         } else if (keyboard.getRun()) {
             // Vector3 direction = Vector3Multiply(camera3d.getDown2d(), movementSpeed);
             // velocity = Vector3Add(velocity, direction);
