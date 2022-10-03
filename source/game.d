@@ -51,9 +51,15 @@ public class Game {
 
         Random randy = Random(unpredictableSeed());
 
-        for (int i = 0; i < 4000; i++) {
+        float[] heightMap;
+
+        /// testing out a random map!
+
+        int size = 250;
+
+        for (int i = 0; i < 10_000; i++) {
             Entity myNewEntity = new Entity(
-                Vector3(((i + 50) / 2) + uniform(-3.0, 3.0, randy) ,(i + 3) * 4, 50 + uniform(-3.0, 3.0, randy)),
+                Vector3((i % size) + uniform(-3.0, 3.0, randy) + 3 ,(i + 3) * 4, 50 + uniform(-3.0, 3.0, randy)),
                 // Vector3(((i + 50) / 10) + uniform(-0.1, 0.1, randy) ,(i + 3) * 4, 50 + uniform(-0.1, 0.1, randy)),
                 Vector3(uniform(0.51, 3.9, randy), uniform(0.51, 3.9, randy),uniform(0.51, 3.9, randy)),
                 // Vector3(0.51,0.51,0.51),
@@ -62,12 +68,6 @@ public class Game {
             /// writeln(myNewEntity.getUUID());
             // boxes ~= physicsEngine.addBox(Vector3(3, 1 + i * 10,0));
         }
-
-        float[] heightMap;
-
-        /// testing out a random map!
-
-        int size = 250;
 
         FNLState noiseEngine = fnlCreateState(1234);
         noiseEngine.noise_type = FNLNoiseType.FNL_NOISE_OPENSIMPLEX2;
