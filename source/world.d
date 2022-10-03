@@ -10,6 +10,7 @@ import std.traits: Select, isFloatingPoint, isIntegral;
 import std.algorithm.iteration: filter, map;
 import std.array;
 import std.algorithm.searching: canFind;
+import std.conv: to;
 
 import game;
 
@@ -45,7 +46,9 @@ public class World {
     private bool ticked = false;
 
     /// This also sets the max entity size!
-    private immutable float quadrantSize = 1;
+    private immutable float quadrantSize = 2;
+
+    private immutable float speedLimit = 0.5;
 
     this(Game game) {
         this.game = game;
@@ -58,8 +61,8 @@ public class World {
     
     /// Add an entity into the entity associative array
     void addEntity(Entity newEntity) {
-        if (newEntity.size.x > this.quadrantSize || newEntity.size.y > this.quadrantSize || newEntity.size.z > this.quadrantSize) {
-            throw new Exception ("Entity size is limited to 5.0 on all axis!");
+        if (newEntity.size.x >= this.quadrantSize / 2 || newEntity.size.y >= this.quadrantSize / 2 || newEntity.size.z >= this.quadrantSize / 2) {
+            throw new Exception ("Entity size is limited to less than " ~ to!string(this.quadrantSize / 2) ~ " units x,y,z!!");
         }
         this.entities[newEntity.getUUID()] = newEntity;
     }
@@ -263,8 +266,6 @@ public class World {
         /// Literally all IO with the physics engine NEEDS to happen here!
         if (this.timeAccumalator >= lockedTick) {
 
-            auto entitiesArray = this.entities.values;
-
             this.ticked = true;
 
             // writeln("UPDATE! ", this.timeAccumalator);
@@ -338,80 +339,22 @@ public class World {
                 Vector3I(-1,-1,-1),
             ];
             
-            foreach (thisEntity; entitiesArray) {
+            foreach (thisEntity; this.entities.values) {
 
-                thisEntity.wasOnGround = false;
-
-                thisEntity.velocity.y -= this.gravity;
-                
-                BoundingBox oldBox = thisEntity.getBoundingBox();
-
-                thisEntity.position = Vector3Add(thisEntity.position, thisEntity.velocity);
-
-                BoundingBox thisBox = thisEntity.getBoundingBox();
-
-                foreach (otherEntity; entitiesArray.filter!(o => o != thisEntity)) {
-
-                    BoundingBox otherBox = otherEntity.getBoundingBox();
-
-                    if(CheckCollisionBoxes(thisBox, otherBox)) {
-
-                        // These are 1D collision detections
-                        bool bottomWasNotIn = oldBox.min.y > otherBox.max.y;
-                        bool bottomIsNowIn = thisBox.min.y <= otherBox.max.y && thisBox.min.y >= otherBox.min.y;
-                        bool topWasNotIn = oldBox.max.y < otherBox.min.y;
-                        bool topIsNowIn = thisBox.max.y <= otherBox.max.y && thisBox.max.y >= otherBox.min.y;
-
-                        bool leftWasNotIn = oldBox.min.x > otherBox.max.x;
-                        bool leftIsNowIn = thisBox.min.x <= otherBox.max.x && thisBox.min.x >= otherBox.min.x;
-                        bool rightWasNotIn = oldBox.max.x < otherBox.min.x;
-                        bool rightIsNowIn = thisBox.max.x <= otherBox.max.x && thisBox.max.x >= otherBox.min.x;
-
-                        bool backWasNotIn = oldBox.min.z > otherBox.max.z;
-                        bool backIsNowIn = thisBox.min.z <= otherBox.max.z && thisBox.min.z >= otherBox.min.z;
-                        bool frontWasNotIn = oldBox.max.z < otherBox.min.z;
-                        bool frontIsNowIn = thisBox.max.z <= otherBox.max.z && thisBox.max.z >= otherBox.min.z;
-
-
-
-                        /// y check first
-                        // This allows entities to clip, but this isn't a voxel game so we won't worry about that
-                        if (bottomWasNotIn && bottomIsNowIn) {
-                            thisEntity.position.y = otherBox.max.y + thisEntity.size.y + 0.001;
-
-                            thisEntity.velocity.y = 0;
-                        } else if (topWasNotIn && topIsNowIn) {
-                            thisEntity.position.y = otherBox.min.y - thisEntity.size.y - 0.001;
-                            thisEntity.velocity.y = 0;
-                        } 
-                        // then x
-                        else if (leftWasNotIn && leftIsNowIn) {
-                            thisEntity.position.x = otherBox.max.x +thisEntity.size.x + 0.001;
-                            thisEntity.velocity.x = 0;
-                        } else if (rightWasNotIn && rightIsNowIn) {
-                            thisEntity.position.x = otherBox.min.x - thisEntity.size.x - 0.001;
-                            thisEntity.velocity.x = 0;
-                        }
-                        
-                        // finally z
-                        else if (backWasNotIn && backIsNowIn) {
-                            thisEntity.position.z = otherBox.max.z +thisEntity.size.z + 0.001;
-                            thisEntity.velocity.z = 0;
-                        } else if (frontWasNotIn && frontIsNowIn) {
-                            thisEntity.position.z = otherBox.min.z - thisEntity.size.z - 0.001;
-                            thisEntity.velocity.z = 0;
-                        } 
-                        
-                        
-                    }
-
-                    
+                // enforce speed limit
+                if (Vector3Length(thisEntity.velocity) > this.speedLimit) {
+                    // writeln("Entity ", thisEntity.uuid, " is breaking the speed limit!");
+                    thisEntity.velocity = Vector3Multiply(Vector3Normalize(thisEntity.velocity), Vector3(this.speedLimit,this.speedLimit,this.speedLimit));
                 }
 
-                //thisEntity.applied = false;
+                // set up each entity
+                thisEntity.wasOnGround = false;
+                thisEntity.velocity.y -= this.gravity;
 
-                /*
-                BoundingBox thisBoundingBox = thisEntity.getBoundingBox();
+                thisEntity.applied = false;
+                thisEntity.oldPosition = thisEntity.position;
+
+                BoundingBox futureBoundingBox = thisEntity.getBoundingBoxWithVelocity();
 
                 // Quadrant of current position
                 Vector3I currentQuadrant = Vector3I(
@@ -439,68 +382,89 @@ public class World {
                     BoundingBox neighborBox = quadrantToBoundingBox(neighbor);
 
                     // plop em into the quadrant
-                    if (CheckCollisionBoxes(thisBoundingBox, neighborBox)) {
+                    if (CheckCollisionBoxes(futureBoundingBox, neighborBox)) {
                         quadrantsInsert(neighbor, thisEntity);
                     }
                 }
-                */
-
-                float mapCollision = this.collidePointToMap(thisEntity.getCollisionBoxPosition());
-
-                if (!isNaN(mapCollision)) {
-                    thisEntity.wasOnGround = true;
-                    thisEntity.velocity.y = 0;
-                    thisEntity.position.y = mapCollision + thisEntity.size.y;
-                }
             }
 
-            /*
+            
             foreach (thisQuadrant; quadrants) {
+
                 foreach (thisEntity; thisQuadrant.entitiesWithin) {
 
+                    BoundingBox oldBox = thisEntity.getOldBoundingBox();
+
                     if (!thisEntity.applied) {
-                        thisEntity.velocity.y -= this.gravity;
+                        thisEntity.position = Vector3Add(thisEntity.position, thisEntity.velocity);
+                        thisEntity.applied = true;
                     }
 
-                    // Grab a slice of this sweet data wooo
-                    float[3] position3 = Vector3ToFloatV(thisEntity.position).v[0..3];
-                    float[3] velocity3 = Vector3ToFloatV(thisEntity.velocity).v[0..3];
-                    float[3] size      = Vector3ToFloatV(thisEntity.size).v[0..3];
+                    BoundingBox thisBox = thisEntity.getBoundingBox();
 
-                    foreach (i; 0..3) {
+                    foreach (otherEntity; thisQuadrant.entitiesWithin.filter!(o => o != thisEntity)) {
 
-                        if (!thisEntity.applied) {
-                            position3[i] += velocity3[i];
-                        }
+                        BoundingBox otherBox = otherEntity.getBoundingBox();
 
-                        foreach (otherEntity; thisQuadrant.entitiesWithin.filter!(o => o != thisEntity)) {
+                        if(CheckCollisionBoxes(thisBox, otherBox)) {
 
-                            BoundingBox thisBox = boundingBoxFromArray(position3, size);
+                            // These are 1D collision detections
+                            bool bottomWasNotIn = oldBox.min.y > otherBox.max.y;
+                            bool bottomIsNowIn = thisBox.min.y <= otherBox.max.y && thisBox.min.y >= otherBox.min.y;
+                            bool topWasNotIn = oldBox.max.y < otherBox.min.y;
+                            bool topIsNowIn = thisBox.max.y <= otherBox.max.y && thisBox.max.y >= otherBox.min.y;
 
-                            BoundingBox otherBox = otherEntity.getBoundingBox();
+                            bool leftWasNotIn = oldBox.min.x > otherBox.max.x;
+                            bool leftIsNowIn = thisBox.min.x <= otherBox.max.x && thisBox.min.x >= otherBox.min.x;
+                            bool rightWasNotIn = oldBox.max.x < otherBox.min.x;
+                            bool rightIsNowIn = thisBox.max.x <= otherBox.max.x && thisBox.max.x >= otherBox.min.x;
 
-                            if (CheckCollisionBoxes(thisBox, otherBox)) {
+                            bool backWasNotIn = oldBox.min.z > otherBox.max.z;
+                            bool backIsNowIn = thisBox.min.z <= otherBox.max.z && thisBox.min.z >= otherBox.min.z;
+                            bool frontWasNotIn = oldBox.max.z < otherBox.min.z;
+                            bool frontIsNowIn = thisBox.max.z <= otherBox.max.z && thisBox.max.z >= otherBox.min.z;
 
-                                float diff = (size[i] + otherEntity.getSizeIndex(i) + 0.001) * signum(-velocity3[i]);
-                                position3[i] = otherEntity.getPositionIndex(i) + diff;
-                                velocity3[i] = 0;///otherEntity.getVelocityIndex(i);
-                                
+
+
+                            /// y check first
+                            // This allows entities to clip, but this isn't a voxel game so we won't worry about that
+                            if (bottomWasNotIn && bottomIsNowIn) {
+                                thisEntity.position.y = otherBox.max.y + thisEntity.size.y + 0.001;
+
+                                thisEntity.velocity.y = 0;
+                            } else if (topWasNotIn && topIsNowIn) {
+                                thisEntity.position.y = otherBox.min.y - thisEntity.size.y - 0.001;
+                                thisEntity.velocity.y = 0;
+                            } 
+                            // then x
+                            else if (leftWasNotIn && leftIsNowIn) {
+                                thisEntity.position.x = otherBox.max.x +thisEntity.size.x + 0.001;
+                                thisEntity.velocity.x = 0;
+                            } else if (rightWasNotIn && rightIsNowIn) {
+                                thisEntity.position.x = otherBox.min.x - thisEntity.size.x - 0.001;
+                                thisEntity.velocity.x = 0;
                             }
-                                
-                        }                        
+                            
+                            // finally z
+                            else if (backWasNotIn && backIsNowIn) {
+                                thisEntity.position.z = otherBox.max.z +thisEntity.size.z + 0.001;
+                                thisEntity.velocity.z = 0;
+                            } else if (frontWasNotIn && frontIsNowIn) {
+                                thisEntity.position.z = otherBox.min.z - thisEntity.size.z - 0.001;
+                                thisEntity.velocity.z = 0;
+                            }   
+                        }
                     }
-                    thisEntity.position = Vector3(position3[0], position3[1], position3[2]);
-                    thisEntity.velocity = Vector3(velocity3[0], velocity3[1], velocity3[2]);
 
                     float mapCollision = this.collidePointToMap(thisEntity.getCollisionBoxPosition());
 
                     if (!isNaN(mapCollision)) {
+                        thisEntity.wasOnGround = true;
                         thisEntity.velocity.y = 0;
                         thisEntity.position.y = mapCollision + thisEntity.size.y;
-                    }                
+                    }                        
                 }
             }
-            */
 
             /*
                 foreach (i; 0..3) {
@@ -570,6 +534,7 @@ public class World {
 public class Entity {
     
     private Vector3 position;
+    private Vector3 oldPosition;
     private Vector3 size;
     private Vector3 velocity;
     private UUID uuid;
@@ -577,6 +542,7 @@ public class Entity {
     private bool awake = true;
     bool wasOnGround = false;
     private bool applied = false;
+    private immutable float overProvision = 0.5;
     
     
     /// Rotation is only used for rotating the model of an entity
@@ -586,6 +552,7 @@ public class Entity {
         this.uuid = randomUUID();
         /// Moving these values off the stack
         this.position = *new Vector3(position.x, position.y, position.z);
+        this.oldPosition = position;
         this.size     = *new Vector3(size.x / 2, size.y / 2, size.z / 2);
         this.velocity = *new Vector3(velocity.x, velocity.y, velocity.z);
         this.isPlayer = isPlayer;
@@ -604,6 +571,39 @@ public class Entity {
                 this.position.x + this.size.x,
                 this.position.y + this.size.y,
                 this.position.z + this.size.z
+            )
+        );
+    }
+
+    final
+    BoundingBox getOldBoundingBox() {
+        return BoundingBox(
+            Vector3(
+                this.oldPosition.x - this.size.x,
+                this.oldPosition.y - this.size.y,
+                this.oldPosition.z - this.size.z
+            ),
+            Vector3(
+                this.oldPosition.x + this.size.x,
+                this.oldPosition.y + this.size.y,
+                this.oldPosition.z + this.size.z
+            )
+        );
+    }
+
+    /// Allows the collision detection to look into the future
+    final
+    BoundingBox getBoundingBoxWithVelocity() {
+        return BoundingBox(
+            Vector3(
+                this.position.x - this.size.x + this.velocity.x - this.overProvision,
+                this.position.y - this.size.y + this.velocity.y - this.overProvision,
+                this.position.z - this.size.z + this.velocity.z - this.overProvision
+            ),
+            Vector3(
+                this.position.x + this.size.x + this.velocity.x + this.overProvision,
+                this.position.y + this.size.y + this.velocity.y + this.overProvision,
+                this.position.z + this.size.z + this.velocity.z + this.overProvision
             )
         );
     }
