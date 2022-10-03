@@ -46,10 +46,11 @@ public class World {
 
     private bool ticked = false;
 
-    /// This also sets the max entity size!
-    private immutable float quadrantSize = 1;
-
+    /// This also sets the min entity size!
     private immutable float speedLimit = 0.5;
+
+    /// This also sets the max entity size!
+    private immutable float quadrantSize = 40;
 
     this(Game game) {
         this.game = game;
@@ -65,6 +66,12 @@ public class World {
         if (newEntity.size.x >= this.quadrantSize / 2 || newEntity.size.y >= this.quadrantSize / 2 || newEntity.size.z >= this.quadrantSize / 2) {
             throw new Exception ("Entity size is limited to less than " ~ to!string(this.quadrantSize / 2) ~ " units x,y,z!!");
         }
+
+        if (newEntity.size.x <= this.speedLimit / 2.0 || newEntity.size.y <= this.speedLimit / 2.0 || newEntity.size.z <= this.speedLimit / 2.0) {
+            writeln(newEntity.size);
+            throw new Exception ("Entity must be bigger than " ~ to!string(this.speedLimit / 2.0) ~ " units x,y,z!");
+        }
+
         this.entities[newEntity.getUUID()] = newEntity;
     }
 
@@ -315,6 +322,9 @@ public class World {
             }
 
             immutable Vector3I[] quadrantNeighbors = [
+
+                Vector3I( 0, 1, 0),
+                Vector3I( 0,-1, 0),
                 /// 0,0,0 is current quadrant, no check
                 Vector3I( 1, 0, 0),
                 Vector3I(-1, 0, 0),
@@ -355,7 +365,7 @@ public class World {
                 thisEntity.applied = false;
                 thisEntity.oldPosition = thisEntity.position;
 
-                BoundingBox futureBoundingBox = thisEntity.getBoundingBoxWithVelocity();
+                BoundingBox futureBoundingBox = thisEntity.getBoundingBoxWithOverProvision();
 
                 // Quadrant of current position
                 Vector3I currentQuadrant = Vector3I(
@@ -499,7 +509,7 @@ public class Entity {
     private bool awake = true;
     bool wasOnGround = false;
     private bool applied = false;
-    private immutable float overProvision = 0.5;
+    private immutable float overProvision = 2.0;
     private immutable Color color;
     
     
@@ -559,17 +569,17 @@ public class Entity {
 
     /// Allows the collision detection to look into the future
     final
-    BoundingBox getBoundingBoxWithVelocity() {
+    BoundingBox getBoundingBoxWithOverProvision() {
         return BoundingBox(
             Vector3(
-                this.position.x - this.size.x + this.velocity.x - this.overProvision,
-                this.position.y - this.size.y + this.velocity.y - this.overProvision,
-                this.position.z - this.size.z + this.velocity.z - this.overProvision
+                this.position.x - this.size.x - this.overProvision + this.velocity.x,
+                this.position.y - this.size.y - this.overProvision + this.velocity.y,
+                this.position.z - this.size.z - this.overProvision + this.velocity.z
             ),
             Vector3(
-                this.position.x + this.size.x + this.velocity.x + this.overProvision,
-                this.position.y + this.size.y + this.velocity.y + this.overProvision,
-                this.position.z + this.size.z + this.velocity.z + this.overProvision
+                this.position.x + this.size.x + this.overProvision + this.velocity.x,
+                this.position.y + this.size.y + this.overProvision + this.velocity.y,
+                this.position.z + this.size.z + this.overProvision + this.velocity.z
             )
         );
     }
@@ -656,7 +666,8 @@ public class Entity {
             DrawBoundingBox(this.getBoundingBox(), Colors.BLACK);
         } else {
             /// DrawCube(this.position, this.size.x * 2, this.size.y * 2, this.size.z * 2, Colors.YELLOW);
-            DrawBoundingBox(this.getBoundingBox(), this.color);
+            // DrawBoundingBox(this.getBoundingBox(), this.color);
+            DrawCube(this.position, this.size.x * 2, this.size.y * 2, this.size.z * 2, this.color);
         }
     }
 }

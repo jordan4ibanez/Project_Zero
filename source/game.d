@@ -41,14 +41,23 @@ public class Game {
         soundEngine = new SoundEngine(this);
         timeKeeper  = new TimeKeeper(this);
         world       = new World(this);
-        player      = new Player(this, Vector3(50,0,50));
+        player      = new Player(this, Vector3(1,0,49));
 
 
         /// Temporary debugging things
         mouse.grab();
 
+        import std.random;
+
+        Random randy = Random(unpredictableSeed());
+
         for (int i = 0; i < 4000; i++) {
-            Entity myNewEntity = new Entity(Vector3(i / 10 ,(i + 3) * 4, 50), Vector3(0.49,0.49,0.49), Vector3(0,0,0), false);
+            Entity myNewEntity = new Entity(
+                Vector3(((i + 50) / 2) + uniform(-3.0, 3.0, randy) ,(i + 3) * 4, 50 + uniform(-3.0, 3.0, randy)),
+                // Vector3(((i + 50) / 10) + uniform(-0.1, 0.1, randy) ,(i + 3) * 4, 50 + uniform(-0.1, 0.1, randy)),
+                Vector3(uniform(0.51, 3.9, randy), uniform(0.51, 3.9, randy),uniform(0.51, 3.9, randy)),
+                // Vector3(0.51,0.51,0.51),
+                Vector3(0,0,0), false);
             world.addEntity(myNewEntity);
             /// writeln(myNewEntity.getUUID());
             // boxes ~= physicsEngine.addBox(Vector3(3, 1 + i * 10,0));
