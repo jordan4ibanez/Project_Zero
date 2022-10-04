@@ -357,22 +357,28 @@ public class World {
            
             foreach (thisEntity; this.entities.values) {
 
-                // enforce speed limit
+                // enforce simulation speed limit
                 if (Vector3Length(thisEntity.velocity) > this.speedLimit) {
                     // writeln("Entity ", thisEntity.uuid, " is breaking the speed limit!");
                     thisEntity.velocity = Vector3Multiply(Vector3Normalize(thisEntity.velocity), Vector3(this.speedLimit,this.speedLimit,this.speedLimit));
                 }
 
                 // enforce ground friction
-                if (thisEntity.wasOnTheGround()) {
+                if (thisEntity.wasOnTheGround() && !thisEntity.appliedForce) {
+                    if (thisEntity.isPlayer) {
+                        writeln("ground friction!");
+                    }
                     Vector3 inverse = thisEntity.velocity;
-                    inverse.y = 0;
+                    inverse.x /= 1.2;
+                    inverse.y /= 1.2;
+                    inverse.z /= 1.2;
 
-                    
 
+
+                    thisEntity.velocity = inverse;
                 }
 
-                // Enforce max speed
+                // Enforce entity speed limit
                 // This is what needs to be configured in the entity on creation
                 float maxSpeed = 0.04;
                 if (Vector3Length(Vector3(thisEntity.velocity.x, 0, thisEntity.velocity.z)) > maxSpeed) {
