@@ -63,8 +63,9 @@ public class Game {
             Entity myNewEntity = new Entity(
                 Vector3((i % size) + uniform(-3.0, 3.0, randy) + 3.5 ,(i + 3) * 4, 50 + uniform(-3.0, 3.0, randy) + 3.5),
                 // Vector3(((i + 50) / 10) + uniform(-0.1, 0.1, randy) ,(i + 3) * 4, 50 + uniform(-0.1, 0.1, randy)),
-                Vector2(uniform(0.51, 3.9, randy), uniform(0.51, 3.9, randy)),
-                // Vector3(0.51,0.51,0.51),
+                //Vector2(uniform(0.51, 3.9, randy), uniform(0.51, 3.9, randy)),
+                Vector2(0.51,1.51),
+
                 Vector3(0,0,0), false);
             world.addEntity(myNewEntity);
             /// writeln(myNewEntity.getUUID());

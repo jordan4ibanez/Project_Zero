@@ -415,7 +415,67 @@ public class World {
                         thisEntity.position = Vector3Add(thisEntity.position, thisEntity.velocity);
                         thisEntity.applied = true;
                     }
+                    /**
+                     * This is magnetic 3D detection 2D resolution cylindrical detection.
+                     * This allows for entities to bunch up and shove other entities out of the way.
+                     * This only affects the entity's velocity. This avoids some extremely strange behavior.
+                     */
 
+                    Vector2 thisCircle = Vector2(thisEntity.position.x, thisEntity.position.z);
+                    float thisRadius   = thisEntity.size.x;
+                    float thisTop      = thisEntity.position.y + thisEntity.size.y;
+                    float thisBottom   = thisEntity.position.y - thisEntity.size.y;
+
+                    foreach (otherEntity; thisQuadrant.entitiesWithin.filter!(o => o != thisEntity)) {
+
+                        Vector2 otherCircle = Vector2(otherEntity.position.x, otherEntity.position.z);
+                        float otherRadius   = otherEntity.size.x;
+
+                        /// First we check 2D
+                        if (CheckCollisionCircles(thisCircle, thisRadius, otherCircle, otherRadius)) {
+
+                            /// Next we check 1D
+                            float otherTop    = otherEntity.position.y + otherEntity.size.y;
+                            float otherBottom = otherEntity.position.y - otherEntity.size.y;
+
+                            bool within(float input) {
+                                return input <= otherTop && input >= otherBottom;
+                            }
+
+                            bool biggerWithin() {
+                                return thisTop > otherTop && thisBottom < otherBottom;
+                            }
+
+                            bool smallerWithin() {
+                                return thisTop < otherTop && thisBottom > otherBottom;
+                            }
+
+                            /// 2 cylinders have collided
+                            if (within(thisTop) || within(thisBottom) || biggerWithin() || smallerWithin() ) {
+                                float maxVelocity = thisRadius + otherRadius;
+                                float distance = Vector2Distance(thisCircle, otherCircle);
+                                float forceApplication = maxVelocity - distance;
+                                Vector2 forceDirection = Vector2Normalize(Vector2Subtract(thisCircle, otherCircle));
+
+                                // now we apply the velocity
+                                forceDirection.x *= forceApplication;
+                                forceDirection.y *= forceApplication;
+
+                                // Allows entities to slightly phase through eachother
+                                thisEntity.velocity.x += forceDirection.x / 100.0;
+                                thisEntity.velocity.z += forceDirection.y / 100.0;
+
+                            }
+                        }
+                    }
+
+
+                    /**
+                     * This is rigid AABB collision detection.
+                     * Only useful for colliding entities to structures.
+                     * Can cause extremely weird behavior for 2 moving objects.
+                     */
+                    /*
                     BoundingBox thisBox = thisEntity.getBoundingBox();
 
                     foreach (otherEntity; thisQuadrant.entitiesWithin.filter!(o => o != thisEntity)) {
@@ -472,6 +532,7 @@ public class World {
                             }   
                         }
                     }
+                    */
 
                     
                     // Finally, keep those entities within the simulation!
@@ -479,7 +540,7 @@ public class World {
                     // but it's better than the game crashing!
 
                     // Needs a fresh box, old box is now out of date
-                    thisBox = thisEntity.getBoundingBox();
+                    BoundingBox thisBox = thisEntity.getBoundingBox();
                     if (thisBox.max.x > this.maxPosition) {
                         thisEntity.position.x = this.maxPosition - thisEntity.size.x;
                         thisEntity.velocity.x = 0;
@@ -503,8 +564,8 @@ public class World {
                         thisEntity.position.y = mapCollision + thisEntity.size.y;
                         /* This is a test, delete this*/
                         if (!thisEntity.isPlayer) {
-                            thisEntity.deleteMe = true;
-                            deletionQueue ~= thisEntity.uuid;
+                            //thisEntity.deleteMe = true;
+                            // deletionQueue ~= thisEntity.uuid;
                         }
                         /* end this part of test*/
                     }
@@ -516,7 +577,7 @@ public class World {
             this.timeAccumalator -= lockedTick;
         }
 
-        /* this is a test, remove this*/
+        /* this is a test, remove this
         foreach (UUID key; deletionQueue) {
             this.entities.remove(key);
         }
