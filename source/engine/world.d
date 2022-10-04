@@ -710,15 +710,20 @@ public class Entity {
     void drawCollisionBox(Vector3 cameraPos) {
         if (isPlayer) {
             DrawBoundingBox(this.getBoundingBox(), Colors.BLACK);
+            /// This is the collision with other entities (magnetic)
+            Vector3 moddedPosition = this.position;
+            moddedPosition.y -= this.size.y;
+            DrawCylinderWires(moddedPosition, this.size.x, this.size.x, this.size.y * 2, 50, this.color);
         } else {
             /// DrawCube(this.position, this.size.x * 2, this.size.y * 2, this.size.z * 2, Colors.YELLOW);
             
             if (Vector3Distance(this.position, cameraPos) < 150) {
                 DrawBoundingBox(this.getBoundingBox(), this.color);
                 // DrawCube(this.position, this.size.x * 2, this.size.y * 2, this.size.z * 2, this.color);
+                /// This is the collision with other entities (magnetic)
                 Vector3 moddedPosition = this.position;
                 moddedPosition.y -= this.size.y;
-                DrawCylinderWires(moddedPosition, this.size.x, this.size.x, this.size.y * 2, 10, this.color);
+                DrawCylinderWires(moddedPosition, this.size.x, this.size.x, this.size.y * 2, 50, this.color);
             }
         }
     }
