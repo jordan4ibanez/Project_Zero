@@ -31,9 +31,9 @@ public class Player {
 
         this.physicsEngineDelta = game.world.getLockedTick();
         this.movementSpeed = Vector3(
-            this.physicsEngineDelta / 5.0,
-            this.physicsEngineDelta / 5.0,
-            this.physicsEngineDelta / 5.0
+            this.physicsEngineDelta / 4.0,
+            this.physicsEngineDelta / 4.0,
+            this.physicsEngineDelta / 4.0
         );
     }
 
