@@ -15,7 +15,7 @@ public class Window {
     private int width = 0;
     private int height = 0;
 
-    private string title = "D Raylib Zombie Game 0.0.0";
+    private string title = "Project Zero - 0.0.0";
 
     private bool fullScreen = false;
 
