@@ -15,11 +15,6 @@ import std.random;
 
 import game;
 
-struct Vec2 {
-    int x = 0;
-    int z = 0;
-}
-
 /// This is an extremely basic physics engine that uses AABB physics to work
 public class World {
 
