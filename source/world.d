@@ -52,6 +52,9 @@ public class World {
     /// This also sets the max entity size!
     private immutable float quadrantSize = 20;
 
+    private immutable float minPosition = 0;
+    private float maxPosition; // unknown until heightmap uploaded
+
     this(Game game) {
         this.game = game;
 
@@ -89,6 +92,7 @@ public class World {
             throw new Exception("Map size must be multiple of 250!");
         }
 
+        this.maxPosition = (this.heightMapSize - 1) * quadScale;
 
         float get(int x, int z) {
             if (x < 0 || x > this.heightMapSize - 1) {
@@ -468,13 +472,36 @@ public class World {
                         }
                     }
 
+                    
+                    // Finally, keep those entities within the simulation!
+                    // This can cause some extremely weird behavior on the border.
+                    // but it's better than the game crashing!
+
+                    // Needs a fresh box, old box is now out of date
+                    thisBox = thisEntity.getBoundingBox();
+                    if (thisBox.max.x > this.maxPosition) {
+                        thisEntity.position.x = this.maxPosition - thisEntity.size.x;
+                        thisEntity.velocity.x = 0;
+                    } else if (thisBox.min.x < this.minPosition) {
+                        thisEntity.position.x = this.minPosition + thisEntity.size.x;
+                        thisEntity.velocity.x = 0;
+                    }
+                    if (thisBox.max.z > this.maxPosition) {
+                        thisEntity.position.z = this.maxPosition - thisEntity.size.z;
+                        thisEntity.velocity.z = 0;
+                    } else if (thisBox.min.z < this.minPosition) {
+                        thisEntity.position.z = this.minPosition + thisEntity.size.z;
+                        thisEntity.velocity.z = 0;
+                    }
+
                     float mapCollision = this.collidePointToMap(thisEntity.getCollisionBoxPosition());
 
                     if (!isNaN(mapCollision)) {
                         thisEntity.wasOnGround = true;
                         thisEntity.velocity.y = 0;
                         thisEntity.position.y = mapCollision + thisEntity.size.y;
-                    }                        
+                    }
+
                 }
             }
 
