@@ -24,7 +24,7 @@
 		"raylib"
 	],
 	"license": "MIT",
-	"name": "d_raylib_zombie_game",
+	"name": "project_zero",
 	"versions": [
 		"LUA_54"
 	]

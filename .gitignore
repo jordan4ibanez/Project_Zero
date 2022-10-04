@@ -9,6 +9,13 @@ d_raylib_zombie_game.dll
 d_raylib_zombie_game.a
 d_raylib_zombie_game.lib
 d_raylib_zombie_game-test-*
+/project_zero
+project_zero.so
+project_zero.dylib
+project_zero.dll
+project_zero.a
+project_zero.lib
+project_zero-test-*
 *.exe
 *.o
 *.obj
