@@ -50,7 +50,7 @@ public class World {
     private immutable float speedLimit = 0.5;
 
     /// This also sets the max entity size!
-    private immutable float quadrantSize = 20;
+    private immutable float quadrantSize = 30;
 
     private immutable float minPosition = 0;
     private float maxPosition; // unknown until heightmap uploaded
