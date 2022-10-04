@@ -305,7 +305,7 @@ public class World {
         );
     }
 
-    private immutable Vector3I[] quadrantNeighbors = [
+    private static immutable Vector3I[] quadrantNeighbors = [
 
         Vector3I( 0, 1, 0),
         Vector3I( 0,-1, 0),
@@ -356,7 +356,6 @@ public class World {
             // writeln("UPDATE! ", this.timeAccumalator);
 
            
-            
             foreach (thisEntity; this.entities.values) {
 
                 // enforce speed limit
@@ -407,7 +406,7 @@ public class World {
             }
 
             
-            foreach (thisQuadrant; quadrants) {
+            foreach (thisQuadrant; quadrants.byValue) {
 
                 foreach (thisEntity; thisQuadrant.entitiesWithin) {
 
