@@ -714,7 +714,7 @@ public class Entity {
  * The map's base is a heightmap based on quads, these are fixed size of 1x1.
  * Therefor, we only need the Y positions of the quads.
  */
-public class MapQuad {
+public immutable class MapQuad {
     float[] yPoints;
     Vector2 position;
     float tileSize;
@@ -728,15 +728,18 @@ public class MapQuad {
         float yPosPositiveXPositiveZ,
         float tileSize
     ){
-        this.yPoints = new float[4];
+        float[] newYPoints = new float[4];
         // y: negative x, negative z
-        this.yPoints[0] = yPosNegativeXNegativeZ;
+        newYPoints[0] = yPosNegativeXNegativeZ;
         // y: negative x, positive z
-        this.yPoints[1] = yPosNegativeXPositiveZ;
+        newYPoints[1] = yPosNegativeXPositiveZ;
         // y: positive x, positive z
-        this.yPoints[2] = yPosPositiveXPositiveZ;
+        newYPoints[2] = yPosPositiveXPositiveZ;
         // y: positive x, negative z
-        this.yPoints[3] = yPosPositiveXNegativeZ;
+        newYPoints[3] = yPosPositiveXNegativeZ;
+
+        this.yPoints = newYPoints;
+
 
         this.position = Vector2(position.x, position.y);
         this.tileSize = tileSize;
