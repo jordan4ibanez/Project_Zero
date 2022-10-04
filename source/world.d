@@ -262,6 +262,78 @@ public class World {
         return this.ticked;
     }
 
+    private struct Vector3I {
+        int x = 0;
+        int y = 0;
+        int z = 0;
+    }
+    private struct Quadrant {
+        Entity[] entitiesWithin;
+    }
+
+    private Quadrant[Vector3I] quadrants;
+
+    private void quadrantsInsert(Vector3I index, Entity entity) {
+        bool quickPlop = false;
+        if (index !in quadrants) {
+            quickPlop = true;
+            quadrants[index] = Quadrant();
+        }
+        // avoid duplicates
+        if (quickPlop || !canFind(quadrants[index].entitiesWithin, entity)) {
+            quadrants[index].entitiesWithin ~= entity;
+        }
+    }
+
+    private BoundingBox quadrantToBoundingBox(Vector3I input) {
+        Vector3 basePosition = Vector3(
+            input.x * this.quadrantSize,
+            input.y * this.quadrantSize,
+            input.z * this.quadrantSize
+        );
+        return BoundingBox(
+            Vector3(
+                basePosition.x,
+                basePosition.y,
+                basePosition.z
+            ),
+            Vector3(
+                basePosition.x + this.quadrantSize,
+                basePosition.y + this.quadrantSize,
+                basePosition.z + this.quadrantSize
+            )
+        );
+    }
+
+    private immutable Vector3I[] quadrantNeighbors = [
+
+        Vector3I( 0, 1, 0),
+        Vector3I( 0,-1, 0),
+        /// 0,0,0 is current quadrant, no check
+        Vector3I( 1, 0, 0),
+        Vector3I(-1, 0, 0),
+        Vector3I( 1, 1, 0),
+        Vector3I(-1, 1, 0),
+        Vector3I( 1,-1, 0),
+        Vector3I(-1,-1, 0),
+        /// This is where x and z loop
+        Vector3I( 0, 0, 1),
+        Vector3I( 1, 0, 1),
+        Vector3I(-1, 0, 1),
+        Vector3I( 1, 1, 1),
+        Vector3I(-1, 1, 1),
+        Vector3I( 1,-1, 1),
+        Vector3I(-1,-1, 1),
+        /// This is where x and z loop
+        Vector3I( 0, 0,-1),
+        Vector3I( 1, 0,-1),
+        Vector3I(-1, 0,-1),
+        Vector3I( 1, 1,-1),
+        Vector3I(-1, 1,-1),
+        Vector3I( 1,-1,-1),
+        Vector3I(-1,-1,-1),
+    ];
+
     /// Remember: this needs an external handler for fixed time stamps!
     void update() {
 
@@ -272,6 +344,7 @@ public class World {
 
         this.ticked = false;
 
+        this.quadrants.clear();
 
         // Entity[] awakeEntities = entitiesArray.filter!(o => o.awake).array();
 
@@ -282,77 +355,7 @@ public class World {
 
             // writeln("UPDATE! ", this.timeAccumalator);
 
-            struct Vector3I {
-                int x = 0;
-                int y = 0;
-                int z = 0;
-            }
-            struct Quadrant {
-                Entity[] entitiesWithin;
-            }
-
-            Quadrant[Vector3I] quadrants;
-
-            void quadrantsInsert(Vector3I index, Entity entity) {
-                bool quickPlop = false;
-                if (index !in quadrants) {
-                    quickPlop = true;
-                    quadrants[index] = Quadrant();
-                }
-                // avoid duplicates
-                if (quickPlop || !canFind(quadrants[index].entitiesWithin, entity)) {
-                    quadrants[index].entitiesWithin ~= entity;
-                }
-            }
-
-            BoundingBox quadrantToBoundingBox(Vector3I input) {
-                Vector3 basePosition = Vector3(
-                    input.x * this.quadrantSize,
-                    input.y * this.quadrantSize,
-                    input.z * this.quadrantSize
-                );
-                return BoundingBox(
-                    Vector3(
-                        basePosition.x,
-                        basePosition.y,
-                        basePosition.z
-                    ),
-                    Vector3(
-                        basePosition.x + this.quadrantSize,
-                        basePosition.y + this.quadrantSize,
-                        basePosition.z + this.quadrantSize
-                    )
-                );
-            }
-
-            immutable Vector3I[] quadrantNeighbors = [
-
-                Vector3I( 0, 1, 0),
-                Vector3I( 0,-1, 0),
-                /// 0,0,0 is current quadrant, no check
-                Vector3I( 1, 0, 0),
-                Vector3I(-1, 0, 0),
-                Vector3I( 1, 1, 0),
-                Vector3I(-1, 1, 0),
-                Vector3I( 1,-1, 0),
-                Vector3I(-1,-1, 0),
-                /// This is where x and z loop
-                Vector3I( 0, 0, 1),
-                Vector3I( 1, 0, 1),
-                Vector3I(-1, 0, 1),
-                Vector3I( 1, 1, 1),
-                Vector3I(-1, 1, 1),
-                Vector3I( 1,-1, 1),
-                Vector3I(-1,-1, 1),
-                /// This is where x and z loop
-                Vector3I( 0, 0,-1),
-                Vector3I( 1, 0,-1),
-                Vector3I(-1, 0,-1),
-                Vector3I( 1, 1,-1),
-                Vector3I(-1, 1,-1),
-                Vector3I( 1,-1,-1),
-                Vector3I(-1,-1,-1),
-            ];
+           
             
             foreach (thisEntity; this.entities.values) {
 
