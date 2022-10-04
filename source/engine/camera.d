@@ -6,7 +6,7 @@ import std.math.constants: PI;
 import std.algorithm.comparison: clamp;
 
 import engine.mouse;
-import game;
+import game.game;
 
 /// Wrapper class for the game camera
 public class GameCamera {

@@ -1,12 +1,13 @@
-module player;
+module game.player;
 
 import raylib;
 import std.stdio;
 
-import game;
 import engine.world;
 import engine.keyboard;
 import engine.camera;
+
+import game.game;
 
 public class Player {
 

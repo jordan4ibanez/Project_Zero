@@ -1,4 +1,4 @@
-module game;
+module game.game;
 
 import std.stdio;
 
@@ -9,8 +9,8 @@ import engine.time_keeper;
 import engine.sound_engine;
 import engine.window;
 import engine.world;
+import game.player;
 import raylib;
-import player;
 
 
 

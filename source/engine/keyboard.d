@@ -1,7 +1,7 @@
 module engine.keyboard;
 
 import raylib;
-import game;
+import game.game;
 
 public class Keyboard {
 

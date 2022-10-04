@@ -1,6 +1,6 @@
 module project_zero;
 
-import game;
+import game.game;
 
 void main() {
 

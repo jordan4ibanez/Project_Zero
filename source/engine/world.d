@@ -13,7 +13,7 @@ import std.algorithm.searching: canFind;
 import std.conv: to;
 import std.random;
 
-import game;
+import game.game;
 
 /// This is an extremely basic physics engine that uses AABB physics to work
 public class World {

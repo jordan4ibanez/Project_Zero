@@ -5,7 +5,7 @@ import std.string: toStringz;
 import std.stdio;
 import std.conv: to;
 
-import game;
+import game.game;
 
 /// Wrapper object for Raylib window
 public class Window {

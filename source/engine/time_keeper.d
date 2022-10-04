@@ -2,7 +2,7 @@ module engine.time_keeper;
 
 import core.time;
 
-import game;
+import game.game;
 
 public class TimeKeeper {
 

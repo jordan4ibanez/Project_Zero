@@ -2,7 +2,7 @@ module engine.mouse;
 
 import raylib;
 import engine.camera;
-import game;
+import game.game;
 
 /// Wrapper class for mouse interfacing
 public class Mouse {

@@ -7,7 +7,7 @@ import std.conv: to;
 import raylib;
 import std.uuid;
 
-import game;
+import game.game;
 
 /**
  *This is utilizing OpenAL Soft for maximum compatibility.
