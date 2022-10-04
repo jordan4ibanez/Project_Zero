@@ -51,8 +51,6 @@ public class Player {
 
     void intakeControls() {
 
-        this.entity.appliedForce = false;
-
         if (!game.world.didTick()) {
             return;
         }
@@ -60,6 +58,9 @@ public class Player {
         if (!this.entity.wasOnTheGround()) {
             return;
         }
+
+        // We're talking to the next engine steps here so it gets kinda weird
+        this.entity.appliedForce = false;
 
         Keyboard keyboard = game.keyboard;
         GameCamera camera3d = game.camera3d;
