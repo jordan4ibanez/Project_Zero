@@ -558,12 +558,12 @@ public class Entity {
     /// Rotation is only used for rotating the model of an entity
     private float rotation;
 
-    this(Vector3 position, Vector3 size, Vector3 velocity, bool isPlayer) {
+    this(Vector3 position, Vector2 size, Vector3 velocity, bool isPlayer) {
         this.uuid = randomUUID();
         /// Moving these values off the stack
         this.position = Vector3(position.x, position.y, position.z);
         this.oldPosition = position;
-        this.size     = Vector3(size.x / 2, size.y / 2, size.z / 2);
+        this.size     = Vector3(size.x / 2, size.y / 2, size.x / 2);
         this.velocity = Vector3(velocity.x, velocity.y, velocity.z);
         this.isPlayer = isPlayer;
 
