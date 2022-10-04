@@ -31,9 +31,9 @@ public class Player {
 
         this.physicsEngineDelta = game.world.getLockedTick();
         this.movementSpeed = Vector3(
-            this.physicsEngineDelta / 10.0,
-            this.physicsEngineDelta / 10.0,
-            this.physicsEngineDelta / 10.0
+            this.physicsEngineDelta / 5.0,
+            this.physicsEngineDelta / 5.0,
+            this.physicsEngineDelta / 5.0
         );
     }
 
@@ -51,40 +51,46 @@ public class Player {
 
     void intakeControls() {
 
+        this.entity.appliedForce = false;
+
         if (!game.world.didTick()) {
             return;
         }
-
-        Vector3 velocity = this.entity.getVelocity();
+        // Don't allow player to control in mid air
+        if (!this.entity.wasOnTheGround()) {
+            return;
+        }
 
         Keyboard keyboard = game.keyboard;
         GameCamera camera3d = game.camera3d;
 
         bool changed = false;
 
+        Vector3 addingVelocity = Vector3(0,0,0);
+
         if (keyboard.getForward()) {
             changed = true;
             Vector3 direction = Vector3Multiply(camera3d.getForward2d(), this.movementSpeed);
-            velocity = Vector3Add(velocity, direction);
+            addingVelocity = Vector3Add(addingVelocity, direction);
         }
         if (keyboard.getBack()) {
             changed = true;
             Vector3 direction = Vector3Multiply(camera3d.getBackward2d(), this.movementSpeed);
-            velocity = Vector3Add(velocity, direction);
+            addingVelocity = Vector3Add(addingVelocity, direction);
         }
         if (keyboard.getRight()) {
             changed = true;
             Vector3 direction = Vector3Multiply(camera3d.getRight2d(), this.movementSpeed);
-            velocity = Vector3Add(velocity, direction);
+            addingVelocity = Vector3Add(addingVelocity, direction);
         }
         if (keyboard.getLeft()) {
             changed = true;
             Vector3 direction = Vector3Multiply(camera3d.getLeft2d(), this.movementSpeed);
-            velocity = Vector3Add(velocity, direction);
+            addingVelocity = Vector3Add(addingVelocity, direction);
         }
-        if (this.entity.wasOnGround && keyboard.getJump()) {
+        if (keyboard.getJump()) {
             changed = true;
-            velocity = Vector3Add(velocity, Vector3(0,0.25,0));
+            addingVelocity = Vector3Add(addingVelocity, Vector3(0,0.25,0));
             writeln("jumped");
         } else if (keyboard.getRun()) {
             // Vector3 direction = Vector3Multiply(camera3d.getDown2d(), movementSpeed);
@@ -92,15 +98,8 @@ public class Player {
         }
 
         if (changed) {
-            this.entity.setVelocity(velocity);
-        } else {
-            if (this.entity.wasOnTheGround()) {
-                Vector3 inverse = this.entity.getVelocity();
-                inverse.x *= -0.1;
-                inverse.y = 0;
-                inverse.z *= -0.1;
-                this.entity.setVelocity(Vector3Add(this.entity.getVelocity(), inverse));
-            }
+            this.entity.addVelocity(addingVelocity);
+            this.entity.appliedForce = true;
         }
     }
 }

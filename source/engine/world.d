@@ -363,6 +363,31 @@ public class World {
                     thisEntity.velocity = Vector3Multiply(Vector3Normalize(thisEntity.velocity), Vector3(this.speedLimit,this.speedLimit,this.speedLimit));
                 }
 
+                // enforce ground friction
+                if (thisEntity.wasOnTheGround()) {
+                    Vector3 inverse = thisEntity.velocity;
+                    inverse.y = 0;
+
+                    
+
+                }
+
+                // Enforce max speed
+                // This is what needs to be configured in the entity on creation
+                float maxSpeed = 0.04;
+                if (Vector3Length(Vector3(thisEntity.velocity.x, 0, thisEntity.velocity.z)) > maxSpeed) {
+                    Vector3 inverse = thisEntity.velocity;
+                    inverse.y = 0;
+                    float currentSpeed = Vector3Length(inverse);
+                    currentSpeed = currentSpeed == float.infinity ? 0.0 : currentSpeed;
+                    float frictionApplication = currentSpeed / maxSpeed;
+                    frictionApplication = frictionApplication == float.infinity ? 0.0 : frictionApplication;
+                    inverse.x /= frictionApplication;
+                    inverse.z /= frictionApplication;
+                    // Entity needs to keep the y velocity
+                    thisEntity.velocity = Vector3(inverse.x, thisEntity.velocity.y, inverse.z);
+                }
+
                 // set up each entity
                 thisEntity.wasOnGround = false;
                 thisEntity.velocity.y -= this.gravity;
@@ -452,6 +477,17 @@ public class World {
 
                             /// 2 cylinders have collided
                             if (within(thisTop) || within(thisBottom) || biggerWithin() || smallerWithin() ) {
+                                // This is rigid
+                                /*
+                                float distance = thisRadius + otherRadius;
+                                Vector2 collisionDirection = Vector2Normalize(Vector2Subtract(thisCircle, otherCircle));
+                                collisionDirection.x *= distance;
+                                collisionDirection.y *= distance;
+                                thisEntity.position.x = otherCircle.x + collisionDirection.x;
+                                thisEntity.position.z = otherCircle.y + collisionDirection.y;
+                                */
+
+                                // this is magnetic
                                 float maxVelocity = thisRadius + otherRadius;
                                 float distance = Vector2Distance(thisCircle, otherCircle);
                                 float forceApplication = maxVelocity - distance;
@@ -464,7 +500,6 @@ public class World {
                                 // Allows entities to slightly phase through eachother
                                 thisEntity.velocity.x += forceDirection.x / 100.0;
                                 thisEntity.velocity.z += forceDirection.y / 100.0;
-
                             }
                         }
                     }
@@ -614,6 +649,7 @@ public class Entity {
     private immutable float overProvision = 2.0;
     private immutable Color color;
     bool deleteMe = false;
+    bool appliedForce = false;
     
     
     /// Rotation is only used for rotating the model of an entity
