@@ -21,7 +21,7 @@ public class Window {
 
     private bool updateWithFPS = true;
 
-    this(Game game, int width, int height, int targetFPS) {
+    this(Game game, int width, int height/*, int targetFPS*/) {
 
         this.game = game;
         
@@ -32,7 +32,7 @@ public class Window {
 
         InitWindow(this.width,this.height, this.convertTitle());
 
-        SetTargetFPS(targetFPS);
+        // SetTargetFPS(targetFPS);
     }
 
     ~this() {

@@ -34,7 +34,7 @@ public class Game {
         SetTraceLogLevel(TraceLogLevel.LOG_NONE);
 
         /// Allow objects to communicate with eachother
-        window      = new Window(this, 1280,720, 60);
+        window      = new Window(this, 1280,720);
         camera3d    = new GameCamera(this, Vector3(0,50,0));
         keyboard    = new Keyboard(this);
         mouse       = new Mouse(this);
