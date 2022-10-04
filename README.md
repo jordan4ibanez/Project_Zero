@@ -1,6 +1,7 @@
 # Project Zero
  An open source post apocalyptic first person survival game written in D with Raylib.
 
+### **Note:** Recommend utilizing LDC to compile this game!
 
 ### **Please note:** I am a programmer, not an artist. The base game will be an absolute bodge of assets for now.
 
