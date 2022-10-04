@@ -370,7 +370,7 @@ public class World {
                     inverse.x /= 1.2;
                     inverse.y /= 1.2;
                     inverse.z /= 1.2;
-                    
+
                     thisEntity.velocity = inverse;
                 }
 
@@ -501,8 +501,8 @@ public class World {
                                 // forceDirection.y *= forceApplication;
 
                                 // Allows entities to slightly phase through eachother
-                                thisEntity.velocity.x += forceDirection.x / 1500.0;
-                                thisEntity.velocity.z += forceDirection.y / 1500.0;
+                                thisEntity.velocity.x += forceDirection.x / 1000.0; // 1500.0 ghosting
+                                thisEntity.velocity.z += forceDirection.y / 1000.0;
                             }
                         }
                     }
@@ -809,21 +809,23 @@ public class Entity {
     final
     void drawCollisionBox(Vector3 cameraPos) {
         if (isPlayer) {
-            DrawBoundingBox(this.getBoundingBox(), Colors.BLACK);
+            // DrawBoundingBox(this.getBoundingBox(), Colors.BLACK);
             /// This is the collision with other entities (magnetic)
             Vector3 moddedPosition = this.position;
             moddedPosition.y -= this.size.y;
-            DrawCylinderWires(moddedPosition, this.size.x, this.size.x, this.size.y * 2, 50, this.color);
+            DrawCylinderWires(moddedPosition, this.size.x, this.size.x, this.size.y * 2, 5, this.color);
         } else {
             /// DrawCube(this.position, this.size.x * 2, this.size.y * 2, this.size.z * 2, Colors.YELLOW);
             
             if (Vector3Distance(this.position, cameraPos) < 150) {
-                DrawBoundingBox(this.getBoundingBox(), this.color);
+                // DrawBoundingBox(this.getBoundingBox(), this.color);
                 // DrawCube(this.position, this.size.x * 2, this.size.y * 2, this.size.z * 2, this.color);
                 /// This is the collision with other entities (magnetic)
+                
                 Vector3 moddedPosition = this.position;
                 moddedPosition.y -= this.size.y;
-                DrawCylinderWires(moddedPosition, this.size.x, this.size.x, this.size.y * 2, 50, this.color);
+                DrawCylinderWires(moddedPosition, this.size.x, this.size.x, this.size.y * 2, 5, this.color);
+                
             }
         }
     }
