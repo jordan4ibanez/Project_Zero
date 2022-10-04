@@ -712,9 +712,13 @@ public class Entity {
             DrawBoundingBox(this.getBoundingBox(), Colors.BLACK);
         } else {
             /// DrawCube(this.position, this.size.x * 2, this.size.y * 2, this.size.z * 2, Colors.YELLOW);
-            // DrawBoundingBox(this.getBoundingBox(), this.color);
+            
             if (Vector3Distance(this.position, cameraPos) < 150) {
-                DrawCube(this.position, this.size.x * 2, this.size.y * 2, this.size.z * 2, this.color);
+                DrawBoundingBox(this.getBoundingBox(), this.color);
+                // DrawCube(this.position, this.size.x * 2, this.size.y * 2, this.size.z * 2, this.color);
+                Vector3 moddedPosition = this.position;
+                moddedPosition.y -= this.size.y;
+                DrawCylinderWires(moddedPosition, this.size.x, this.size.x, this.size.y * 2, 10, this.color);
             }
         }
     }
