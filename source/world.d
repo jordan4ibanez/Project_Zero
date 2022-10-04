@@ -738,8 +738,7 @@ public immutable class MapQuad {
         // y: positive x, negative z
         newYPoints[3] = yPosPositiveXNegativeZ;
 
-        this.yPoints = newYPoints;
-
+        this.yPoints = cast(immutable)newYPoints;
 
         this.position = Vector2(position.x, position.y);
         this.tileSize = tileSize;
