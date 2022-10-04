@@ -547,10 +547,10 @@ public class Entity {
     this(Vector3 position, Vector3 size, Vector3 velocity, bool isPlayer) {
         this.uuid = randomUUID();
         /// Moving these values off the stack
-        this.position = *new Vector3(position.x, position.y, position.z);
+        this.position = Vector3(position.x, position.y, position.z);
         this.oldPosition = position;
-        this.size     = *new Vector3(size.x / 2, size.y / 2, size.z / 2);
-        this.velocity = *new Vector3(velocity.x, velocity.y, velocity.z);
+        this.size     = Vector3(size.x / 2, size.y / 2, size.z / 2);
+        this.velocity = Vector3(velocity.x, velocity.y, velocity.z);
         this.isPlayer = isPlayer;
 
         Random randy = Random(unpredictableSeed());
@@ -736,7 +736,7 @@ public class MapQuad {
         // y: positive x, negative z
         this.yPoints[3] = yPosPositiveXNegativeZ;
 
-        this.position = *new Vector2(position.x, position.y);
+        this.position = Vector2(position.x, position.y);
         this.tileSize = tileSize;
     }
 
