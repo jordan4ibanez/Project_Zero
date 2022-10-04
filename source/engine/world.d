@@ -365,16 +365,12 @@ public class World {
 
                 // enforce ground friction
                 if (thisEntity.wasOnTheGround() && !thisEntity.appliedForce) {
-                    if (thisEntity.isPlayer) {
-                        writeln("ground friction!");
-                    }
+
                     Vector3 inverse = thisEntity.velocity;
                     inverse.x /= 1.2;
                     inverse.y /= 1.2;
                     inverse.z /= 1.2;
-
-
-
+                    
                     thisEntity.velocity = inverse;
                 }
 
