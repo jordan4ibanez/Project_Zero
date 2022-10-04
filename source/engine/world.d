@@ -494,18 +494,19 @@ public class World {
                                 */
 
                                 // this is magnetic
-                                float maxVelocity = thisRadius + otherRadius;
-                                float distance = Vector2Distance(thisCircle, otherCircle);
-                                float forceApplication = maxVelocity - distance;
+                                // float maxVelocity = thisRadius + otherRadius;
+                                // float distance = Vector2Distance(thisCircle, otherCircle);
+                                // float forceApplication = maxVelocity - distance;
+
                                 Vector2 forceDirection = Vector2Normalize(Vector2Subtract(thisCircle, otherCircle));
 
                                 // now we apply the velocity
-                                forceDirection.x *= forceApplication;
-                                forceDirection.y *= forceApplication;
+                                //forceDirection.x *= forceApplication;
+                                // forceDirection.y *= forceApplication;
 
                                 // Allows entities to slightly phase through eachother
-                                thisEntity.velocity.x += forceDirection.x / 100.0;
-                                thisEntity.velocity.z += forceDirection.y / 100.0;
+                                thisEntity.velocity.x += forceDirection.x / 1500.0;
+                                thisEntity.velocity.z += forceDirection.y / 1500.0;
                             }
                         }
                     }
