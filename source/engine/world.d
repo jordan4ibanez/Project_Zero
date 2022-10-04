@@ -1,4 +1,4 @@
-module world;
+module engine.world;
 
 import std.stdio;
 import raylib;

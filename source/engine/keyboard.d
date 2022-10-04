@@ -1,4 +1,4 @@
-module keyboard;
+module engine.keyboard;
 
 import raylib;
 import game;

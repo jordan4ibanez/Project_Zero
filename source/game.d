@@ -2,15 +2,16 @@ module game;
 
 import std.stdio;
 
-import camera;
-import keyboard;
-import mouse;
-import time_keeper;
-import player;
-import sound_engine;
-import window;
+import engine.camera;
+import engine.keyboard;
+import engine.mouse;
+import engine.time_keeper;
+import engine.sound_engine;
+import engine.window;
+import engine.world;
 import raylib;
-import world;
+import player;
+
 
 
 /// This needs to be moved into it's own object

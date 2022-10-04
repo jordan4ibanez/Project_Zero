@@ -1,4 +1,4 @@
-module window;
+module engine.window;
 
 import raylib;
 import std.string: toStringz;

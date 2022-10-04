@@ -1,4 +1,4 @@
-module lua;
+module engine.lua;
 
 import bindbc.lua;
 import std.stdio;

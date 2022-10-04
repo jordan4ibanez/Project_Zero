@@ -1,4 +1,4 @@
-module sound_engine;
+module engine.sound_engine;
 
 import bindbc.openal;
 import std.stdio;

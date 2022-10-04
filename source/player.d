@@ -4,9 +4,9 @@ import raylib;
 import std.stdio;
 
 import game;
-import world;
-import keyboard;
-import camera;
+import engine.world;
+import engine.keyboard;
+import engine.camera;
 
 public class Player {
 

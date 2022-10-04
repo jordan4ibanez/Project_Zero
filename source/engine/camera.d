@@ -1,11 +1,11 @@
-module camera;
+module engine.camera;
 
 import raylib;
 import std.math.trigonometry: cos, sin;
 import std.math.constants: PI;
 import std.algorithm.comparison: clamp;
 
-import mouse;
+import engine.mouse;
 import game;
 
 /// Wrapper class for the game camera
