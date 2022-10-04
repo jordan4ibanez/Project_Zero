@@ -341,6 +341,10 @@ public class World {
 
         this.quadrants.clear();
 
+        /* This is a test remove this*/
+        UUID[] deletionQueue;
+        /*End part of test*/
+
         // Entity[] awakeEntities = entitiesArray.filter!(o => o.awake).array();
 
         /// Literally all IO with the physics engine NEEDS to happen here!
@@ -497,6 +501,12 @@ public class World {
                         thisEntity.wasOnGround = true;
                         thisEntity.velocity.y = 0;
                         thisEntity.position.y = mapCollision + thisEntity.size.y;
+                        /* This is a test, delete this*/
+                        if (!thisEntity.isPlayer) {
+                            thisEntity.deleteMe = true;
+                            deletionQueue ~= thisEntity.uuid;
+                        }
+                        /* end this part of test*/
                     }
 
                 }
@@ -505,6 +515,12 @@ public class World {
             updates++;
             this.timeAccumalator -= lockedTick;
         }
+
+        /* this is a test, remove this*/
+        foreach (UUID key; deletionQueue) {
+            this.entities.remove(key);
+        }
+        /* end this part of test*/
 
         /// writeln("Physics updates in this frame: ", updates);
 
@@ -536,6 +552,7 @@ public class Entity {
     private bool applied = false;
     private immutable float overProvision = 2.0;
     private immutable Color color;
+    bool deleteMe = false;
     
     
     /// Rotation is only used for rotating the model of an entity
