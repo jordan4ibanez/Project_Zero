@@ -29,6 +29,11 @@ public class Game {
     SoundEngine soundEngine;
     World world;
 
+    Model testModel;
+    Texture testTexture;
+    ModelAnimation* testAnimation;
+    uint animCount;
+
     this() {
         /// Game sets up Raylib
         validateRaylibBinding();
@@ -44,6 +49,12 @@ public class Game {
         world       = new World(this);
         player      = new Player(this, Vector3(1,0,1));
 
+        testModel = LoadModel("models/human.iqm"); 
+        testTexture = LoadTexture("textures/bricks.png");
+        testModel.materials[0].maps[MATERIAL_MAP_DIFFUSE].texture = testTexture;
+        this.testAnimation = LoadModelAnimations("models/human.iqm", &this.animCount);
+
+        writeln("ANIMATION COUNT: ", animCount);
 
         /// Temporary debugging things
         mouse.grab();
@@ -114,6 +125,8 @@ public class Game {
         }
     }
 
+    private uint frame = 0;
+
     void render() {
         BeginDrawing();
         {
@@ -122,6 +135,21 @@ public class Game {
                 camera3d.clear(Colors.RAYWHITE);
 
                 world.render();
+
+                frame++;
+                if (frame > 40) {
+                    frame = 0;
+                }
+
+                // Mesh test = testModel.meshes[0];
+                // writeln(test.boneIds[1]);
+                UpdateModelAnimation(testModel, *testAnimation, 0);
+                // writeln(*testModel.meshes[0].boneIds);
+                //DrawCube(anims[0].framePoses[animFrameCounter][i].translation, 0.2f, 0.2f, 0.2f, RED);
+
+                // DrawCube(anims[0].framePoses[animFrameCounter][i].translation, 0.2f, 0.2f, 0.2f, RED);
+
+                DrawModel(this.testModel, Vector3(0,1,0), 1, Colors.WHITE);
             }
             EndMode3D();
         }
