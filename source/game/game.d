@@ -29,10 +29,21 @@ public class Game {
     SoundEngine soundEngine;
     World world;
 
-    Model testModel;
+
     Texture testTexture;
-    ModelAnimation* testAnimation;
-    uint animCount;
+
+    Model torso;
+    ModelAnimation* torsoAnimation;
+
+    Model legs;
+    ModelAnimation* legsAnimation;
+
+    Model head;
+    ModelAnimation* headAnimation;
+
+    uint torsoAnimationCount;
+    uint legsAnimationCount;
+    uint headAnimationCount;
 
     this() {
         /// Game sets up Raylib
@@ -47,14 +58,25 @@ public class Game {
         soundEngine = new SoundEngine(this);
         timeKeeper  = new TimeKeeper(this);
         world       = new World(this);
-        player      = new Player(this, Vector3(1,0,1));
+        player      = new Player(this, Vector3(3,0,2));
 
-        testModel = LoadModel("models/human.iqm"); 
+
         testTexture = LoadTexture("textures/bricks.png");
-        testModel.materials[0].maps[MATERIAL_MAP_DIFFUSE].texture = testTexture;
-        this.testAnimation = LoadModelAnimations("models/human.iqm", &this.animCount);
 
-        writeln("ANIMATION COUNT: ", animCount);
+        torso = LoadModel("models/torso.iqm"); 
+        torso.materials[0].maps[MATERIAL_MAP_DIFFUSE].texture = testTexture;
+        this.torsoAnimation = LoadModelAnimations("models/torso.iqm", &this.torsoAnimationCount);
+
+        legs = LoadModel("models/legs.iqm"); 
+        legs.materials[0].maps[MATERIAL_MAP_DIFFUSE].texture = testTexture;
+        this.legsAnimation = LoadModelAnimations("models/legs.iqm", &this.legsAnimationCount);
+
+        head = LoadModel("models/head.iqm"); 
+        head.materials[0].maps[MATERIAL_MAP_DIFFUSE].texture = testTexture;
+        this.headAnimation = LoadModelAnimations("models/head.iqm", &this.headAnimationCount);
+
+        writeln("ANIMATION COUNT TORSO: ", torsoAnimationCount);
+        writeln("ANIMATION COUNT TORSO: ", legsAnimationCount);
 
         /// Temporary debugging things
         mouse.grab();
@@ -69,7 +91,7 @@ public class Game {
 
         int size = 250;
 
-        
+        /*
         for (int i = 0; i < 2; i++) {
             Entity myNewEntity = new Entity(
                 //Vector3((i % size) + uniform(-3.0, 3.0, randy) + 3.5 ,(i + 3) * 4, 50 + uniform(-3.0, 3.0, randy) + 3.5),
@@ -83,6 +105,7 @@ public class Game {
             /// writeln(myNewEntity.getUUID());
             // boxes ~= physicsEngine.addBox(Vector3(3, 1 + i * 10,0));
         }
+        */
         
 
         FNLState noiseEngine = fnlCreateState(1234);
@@ -98,9 +121,6 @@ public class Game {
 
         world.uploadHeightMap(heightMap, 10);
 
-
-
-        writeln("I'm alive!");
     }
 
     ~this() {
@@ -145,22 +165,73 @@ public class Game {
                     if (frame >= 60) {
                         frame = 1;
                     }
+
+                    writeln(frame*3);
                     frameAccumulator -= 1.0 / 60.0;
 
-                    UpdateModelAnimation(testModel, testAnimation[0], frame);
+                    UpdateModelAnimation(torso, torsoAnimation[0], frame);
+                    UpdateModelAnimation(legs, legsAnimation[0], frame);
+                    UpdateModelAnimation(head, headAnimation[0], frame * 3);
+
                 }
 
-                // Mesh test = testModel.meshes[0];
-                // writeln(test.boneIds[1]);
-                // writeln(testAnimation.frameCount);
-                
-                
-                // writeln(*testModel.meshes[0].boneIds);
-                //DrawCube(anims[0].framePoses[animFrameCounter][i].translation, 0.2f, 0.2f, 0.2f, RED);
+                DrawModelEx(
+                    this.torso,     // Model
+                    Vector3(2,0.25,2),//this.player.getModelPosition(), // Position Vector3(2,0.25,2),
+                    Vector3(0,1,0), // Rotation Axis
+                    45.0f,          // Rotation angle
+                    Vector3(1,1,1), // Scale
+                    Colors.WHITE    // Tint
+                );
+                DrawModelEx(
+                    this.legs,     // Model
+                    Vector3(2,0.25,2),//this.player.getModelPosition(), // Position  
+                    Vector3(0,1,0), // Rotation Axis
+                    45.0f,          // Rotation angle
+                    Vector3(1,1,1), // Scale
+                    Colors.WHITE    // Tint
+                );
 
-                // DrawCube(anims[0].framePoses[animFrameCounter][i].translation, 0.2f, 0.2f, 0.2f, RED);
+                DrawModelEx(
+                    this.head,     // Model
+                    Vector3(2,0.25,2),//this.player.getModelPosition(), // Position  
+                    Vector3(0,1,0), // Rotation Axis
+                    45.0f,          // Rotation angle
+                    Vector3(1,1,1), // Scale
+                    Colors.WHITE    // Tint
+                );
 
-                DrawModel(this.testModel, Vector3(0,1,0), 1, Colors.WHITE);
+                /*
+                Vector3 debugTest = this.player.getModelPosition();
+                debugTest.x += 3;
+
+                import std.math.traits: isNaN;
+                float collision = world.collidePointToMap(debugTest);
+                if (!isNaN(collision)) {
+                    debugTest.y = collision;
+                }
+
+                debugTest.y += 0.01;
+
+                DrawModelEx(
+                    this.torso,     // Model
+                    debugTest, // Position Vector3(2,0.25,2),
+                    Vector3(0,1,0), // Rotation Axis
+                    45.0f,          // Rotation angle
+                    Vector3(1,1,1), // Scale
+                    Colors.WHITE    // Tint
+                );
+                DrawModelEx(
+                    this.legs,     // Model
+                    debugTest, // Position Vector3(2,0.25,2),// 
+                    Vector3(0,1,0), // Rotation Axis
+                    45.0f,          // Rotation angle
+                    Vector3(1,1,1), // Scale
+                    Colors.WHITE    // Tint
+                );
+                */
+
+
             }
             EndMode3D();
         }
