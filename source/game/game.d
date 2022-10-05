@@ -142,12 +142,12 @@ public class Game {
                 frameAccumulator += timeKeeper.getDelta();
                 if (frameAccumulator > 1.0 / 60.0) {
                     frame++;
-                    if (frame > 60) {
+                    if (frame >= 60) {
                         frame = 1;
                     }
                     frameAccumulator -= 1.0 / 60.0;
 
-                    UpdateModelAnimation(testModel, *testAnimation, frame);
+                    UpdateModelAnimation(testModel, testAnimation[0], frame);
                 }
 
                 // Mesh test = testModel.meshes[0];
