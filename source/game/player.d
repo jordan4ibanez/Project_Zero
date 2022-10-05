@@ -9,13 +9,28 @@ import engine.camera;
 
 import game.game;
 
+/*
+torso:
+0 - stand
+
+legs:
+0 - stand
+1 - walk
+
+head:
+90 is the 0 so subtract by 90 or something
+0 to 180 : pitch
+
+*/
+
 public class Player {
 
     private Game game;
 
     private Entity entity;
 
-    private immutable float eyeHeight = 0.25;
+    private immutable float eyeHeight = 0.5;
+    private immutable float modelYAdjust = 0.075;
 
     private immutable float physicsEngineDelta;
     private immutable Vector3 movementSpeed;
@@ -102,5 +117,15 @@ public class Player {
             this.entity.addVelocity(addingVelocity);
             this.entity.appliedForce = true;
         }
+    }
+
+    Vector3 getPosition() {
+        return this.entity.getCollisionBoxPosition();
+    }
+
+    Vector3 getModelPosition() {
+        Vector3 modelPosition = this.entity.getCollisionBoxPosition();
+        modelPosition.y += modelYAdjust;
+        return modelPosition;
     }
 }
