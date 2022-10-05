@@ -479,7 +479,7 @@ public class World {
 
                             /// 2 cylinders have collided
                             if (within(thisTop) || within(thisBottom) || biggerWithin() || smallerWithin() ) {
-                                // This is rigid
+                                // This is rigid - has problems
                                 /*
                                 float distance = thisRadius + otherRadius;
                                 Vector2 collisionDirection = Vector2Normalize(Vector2Subtract(thisCircle, otherCircle));
@@ -489,17 +489,9 @@ public class World {
                                 thisEntity.position.z = otherCircle.y + collisionDirection.y;
                                 */
 
-                                // this is magnetic
-                                // float maxVelocity = thisRadius + otherRadius;
-                                // float distance = Vector2Distance(thisCircle, otherCircle);
-                                // float forceApplication = maxVelocity - distance;
-
-                                Vector2 forceDirection = Vector2Normalize(Vector2Subtract(thisCircle, otherCircle));
-
-                                // now we apply the velocity
-                                //forceDirection.x *= forceApplication;
-                                // forceDirection.y *= forceApplication;
-
+                                // this is magnetic - works okay
+                                Vector2 difference =  Vector2Subtract(thisCircle, otherCircle);
+                                Vector2 forceDirection = Vector2Normalize(difference);
                                 // Allows entities to slightly phase through eachother
                                 thisEntity.velocity.x += forceDirection.x / 1000.0; // 1500.0 ghosting
                                 thisEntity.velocity.z += forceDirection.y / 1000.0;

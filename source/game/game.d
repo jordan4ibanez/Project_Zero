@@ -59,10 +59,10 @@ public class Game {
         int size = 250;
 
         
-        for (int i = 0; i < 1; i++) {
+        for (int i = 0; i < 2; i++) {
             Entity myNewEntity = new Entity(
                 //Vector3((i % size) + uniform(-3.0, 3.0, randy) + 3.5 ,(i + 3) * 4, 50 + uniform(-3.0, 3.0, randy) + 3.5),
-                Vector3(1,0,1),
+                Vector3(1 + uniform(-1.0, 1.0, randy),0, 1 + uniform(-1.0, 1.0, randy)),
                 // Vector3(((i + 50) / 10) + uniform(-0.1, 0.1, randy) ,(i + 3) * 4, 50 + uniform(-0.1, 0.1, randy)),
                 //Vector2(uniform(0.51, 3.9, randy), uniform(0.51, 3.9, randy)),
                 Vector2(0.51,1.51),
