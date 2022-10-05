@@ -1,0 +1,9 @@
+When you export a new animation, you need to add these to the sauerbraten iqm exporter!
+
+head:
+
+torso:
+arms-stand
+
+legs:
+legs-stand,legs-walk
