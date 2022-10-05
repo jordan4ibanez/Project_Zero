@@ -125,7 +125,9 @@ public class Game {
         }
     }
 
-    private uint frame = 0;
+    // animation starts at 1 ends at 60
+    private uint frame = 1;
+    float frameAccumulator = 0;
 
     void render() {
         BeginDrawing();
@@ -136,14 +138,23 @@ public class Game {
 
                 world.render();
 
-                frame++;
-                if (frame > 40) {
-                    frame = 0;
+                // Animation is locked to 60 FPS
+                frameAccumulator += timeKeeper.getDelta();
+                if (frameAccumulator > 1.0 / 60.0) {
+                    frame++;
+                    if (frame > 60) {
+                        frame = 1;
+                    }
+                    frameAccumulator -= 1.0 / 60.0;
+
+                    UpdateModelAnimation(testModel, *testAnimation, frame);
                 }
 
                 // Mesh test = testModel.meshes[0];
                 // writeln(test.boneIds[1]);
-                UpdateModelAnimation(testModel, *testAnimation, 0);
+                // writeln(testAnimation.frameCount);
+                
+                
                 // writeln(*testModel.meshes[0].boneIds);
                 //DrawCube(anims[0].framePoses[animFrameCounter][i].translation, 0.2f, 0.2f, 0.2f, RED);
 
