@@ -170,7 +170,6 @@ public class Game {
                         frame = 1;
                         currentAnimation++;
                         if (currentAnimation >= torsoAnimationCount) {
-                            writeln("loop");
                             currentAnimation = 0;
                         }
                         
@@ -179,10 +178,8 @@ public class Game {
                     frameAccumulator -= 1.0 / 60.0;
 
                     UpdateModelAnimation(head,  headAnimation[2], frame /* * 3*/ );
-                    UpdateModelAnimation(torso, torsoAnimation[currentAnimation], frame);
-                    UpdateModelAnimation(legs,  legsAnimation[0], frame);
-
-                    writeln("update");
+                    UpdateModelAnimation(torso, torsoAnimation[15], frame);
+                    UpdateModelAnimation(legs,  legsAnimation[4], frame);
 
                 }
 
