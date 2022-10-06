@@ -12,14 +12,24 @@ import game.game;
 /*
 torso:
 0 - stand
+1 - walk
+2 - run
+
+
+todo this index - aim
 
 legs:
 0 - stand
 1 - walk
+2 - run
 
 head:
 90 is the 0 so subtract by 90 or something
 0 to 180 : pitch
+
+0 - stand pitch
+1 - stand to crouch animation
+2 - crouch pitch
 
 */
 
