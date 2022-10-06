@@ -130,7 +130,7 @@ public class GameCamera {
 
         cameraFront = Vector3Normalize(direction);
         cameraRight = Vector3Normalize(Vector3CrossProduct(cameraFront, camera.up));
-        cameraUp = Vector3CrossProduct(cameraRight, direction);
+        cameraUp    = Vector3CrossProduct(cameraRight, direction);
 
 
         Vector3 position = game.player.getPosition();
@@ -145,7 +145,7 @@ public class GameCamera {
         // End eye thing
 
         this.setPosition(position);
-
+        // rotation needs the position because of how raylib handles the camera
         this.setRotation(cameraFront);
 
     }
