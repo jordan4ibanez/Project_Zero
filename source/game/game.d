@@ -32,25 +32,18 @@ public class Game {
 
     Texture testTexture;
 
-    Model test;
-    ModelAnimation* testAnimation;
+    Model head;
+    ModelAnimation* headAnimation;
 
-    /*
     Model torso;
     ModelAnimation* torsoAnimation;
 
     Model legs;
     ModelAnimation* legsAnimation;
-
-    Model head;
-    ModelAnimation* headAnimation;
     
-
     uint torsoAnimationCount;
     uint legsAnimationCount;
     uint headAnimationCount;
-    */
-    uint testAnimationCount;
 
     this() {
         /// Game sets up Raylib
@@ -70,13 +63,6 @@ public class Game {
 
         testTexture = LoadTexture("textures/bricks.png");
 
-        
-        test = LoadModel("models/test.iqm"); 
-        test.materials[0].maps[MATERIAL_MAP_DIFFUSE].texture = testTexture;
-        this.testAnimation = LoadModelAnimations("models/test.iqm", &this.testAnimationCount);
-
-
-        /*
         torso = LoadModel("models/torso.iqm"); 
         torso.materials[0].maps[MATERIAL_MAP_DIFFUSE].texture = testTexture;
         this.torsoAnimation = LoadModelAnimations("models/torso.iqm", &this.torsoAnimationCount);
@@ -89,9 +75,9 @@ public class Game {
         head.materials[0].maps[MATERIAL_MAP_DIFFUSE].texture = testTexture;
         this.headAnimation = LoadModelAnimations("models/head.iqm", &this.headAnimationCount);
 
+        writeln("ANIMATION COUNT HEAD: ", headAnimationCount);
         writeln("ANIMATION COUNT TORSO: ", torsoAnimationCount);
-        writeln("ANIMATION COUNT TORSO: ", legsAnimationCount);
-        */
+        writeln("ANIMATION COUNT LEGS: ", legsAnimationCount);
 
         /// Temporary debugging things
         mouse.grab();
@@ -162,11 +148,9 @@ public class Game {
 
     // animation starts at 1 ends at 60
     private uint frame = 1;
-    // float frameAccumulator = 0;
+    float frameAccumulator = 0;
 
     int currentAnimation = 0;
-
-    float accumulator = 0;
 
     void render() {
         BeginDrawing();
@@ -178,15 +162,15 @@ public class Game {
                 world.render();
 
                 // Animation is locked to 60 FPS
-                accumulator += timeKeeper.getDelta();
-                /*
+                frameAccumulator += this.timeKeeper.getDelta();
                 if (frameAccumulator > 1.0 / 60.0) {
                     frame++;
+
                     if (frame >= 60) {
                         frame = 1;
                         currentAnimation++;
-                        /*
                         if (currentAnimation >= torsoAnimationCount) {
+                            writeln("loop");
                             currentAnimation = 0;
                         }
                         
@@ -194,75 +178,23 @@ public class Game {
 
                     frameAccumulator -= 1.0 / 60.0;
 
-                    // UpdateModelAnimation(head, headAnimation[2], frame /* * 3 );
-                    // UpdateModelAnimation(legs, legsAnimation[0], frame);
+                    UpdateModelAnimation(head,  headAnimation[2], frame /* * 3*/ );
+                    UpdateModelAnimation(torso, torsoAnimation[currentAnimation], frame);
+                    UpdateModelAnimation(legs,  legsAnimation[0], frame);
+
+                    writeln("update");
 
                 }
-                */
-
-
-                // boneId = test.boneIds[boneCounter];
-
-                Mesh testMesh = test.meshes[0];
-
-                
-
-                writeln("---");
-
-                for (int i = 0; i < test.boneCount; i++) {
-                    // writeln(testMesh.boneIds[i]);
-                }
-
-                uint[string] boneMap;
-                for (int i = 0; i < test.boneCount; i++) {
-                    BoneInfo blah = test.bones[i];
-                    string boneName;
-                    foreach (character; blah.name) {
-                        if (character == cast(char)"\0") {
-                            break;
-                        }
-                        boneName ~= character;
-                    }
-                    boneMap[boneName] = i;
-                }
-                // writeln(boneMap["neck"]);
-
-                /// This is an animation frame
-                Transform* animationCell = &testAnimation.framePoses[0][boneMap["chest"]];
-                writeln(accumulator);
-                if (accumulator > 3.14) {
-                    accumulator = -3.14;
-                }
-                Quaternion goal = QuaternionFromEuler(accumulator,0,0);
-                animationCell.rotation = goal;
-                
-
-
-                // outRotation = testAnimation.framePoses[0][boneId].rotation;
-                // outScale = testAnimation.framePoses[0][boneId].scale;
-                
-
-
-
-                /*
-                ModelAnimation animation = testAnimation[0];
-                auto outTranslation = animation.framePoses[0][boneId].translation;
-                auto outRotation = animation.framePoses[0][boneId].rotation;
-                auto outScale = animation.framePoses[0][boneId].scale;
-                */
-
-                UpdateModelAnimation(test, testAnimation[0], 0);
 
                 DrawModelEx(
-                    this.test,     // Model
-                    Vector3(2,0.25,2),//this.player.getModelPosition(), // Position Vector3(2,0.25,2),
+                    this.head,     // Model
+                    Vector3(2,0.25,2),//this.player.getModelPosition(), // Position  
                     Vector3(0,1,0), // Rotation Axis
                     45.0f,          // Rotation angle
                     Vector3(1,1,1), // Scale
                     Colors.WHITE    // Tint
                 );
 
-                /*
                 DrawModelEx(
                     this.torso,     // Model
                     Vector3(2,0.25,2),//this.player.getModelPosition(), // Position Vector3(2,0.25,2),
@@ -279,16 +211,6 @@ public class Game {
                     Vector3(1,1,1), // Scale
                     Colors.WHITE    // Tint
                 );
-
-                DrawModelEx(
-                    this.head,     // Model
-                    Vector3(2,0.25,2),//this.player.getModelPosition(), // Position  
-                    Vector3(0,1,0), // Rotation Axis
-                    45.0f,          // Rotation angle
-                    Vector3(1,1,1), // Scale
-                    Colors.WHITE    // Tint
-                );
-                */
 
                 /*
                 Vector3 debugTest = this.player.getModelPosition();
