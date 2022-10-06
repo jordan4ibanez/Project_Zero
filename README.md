@@ -23,7 +23,7 @@ I'm also practicing pure OOP for this. So it might look strange!
 
 Some notes:
 ### AI/Physics Hybrid
-Entities (Zombies, players, etc) exist as an object which holds a pointer to data in the physics engine. This is mutually shared. The physics engine will never delete this entity unless the entity's destructor is called. Now this will be a bit complex.
+This physics engine is not the best. But it was created from scratch by me. Entities (Zombies, players, etc) exist as an object which holds a pointer to data in the physics engine. This is mutually shared. The physics engine will never delete this entity unless the entity's destructor is called. Now this will be a bit complex.
 
 Let's say this happens when a zombie dies:
 
@@ -38,3 +38,9 @@ Let's say this happens when a zombie dies:
 9. Zombie is poofed into GC collection positive scan. Adios.
 
 Players will be handled slightly differently. Connect/disconnect is their primary physics engine container mutation.
+
+---
+
+### Models
+
+Models exist in the ModelContainer. Models are a wrapper class around Raylib's model, texture, and animation implementations. As these are objects an entity can gain acces to the object pointer easily. Due to D's excellent garbage collected nature, when an entity ceases to exist, the model will still be in the ModelContainer as it still has a pointer reference in the container's associative array. Models are created upon program load, and are cleaned up on program exit. 
