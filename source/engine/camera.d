@@ -32,7 +32,6 @@ public class GameCamera {
     private Vector3 cameraRight;
     private Vector3 cameraUp;
 
-
     this(Game game, Vector3 position) {
         this.game = game;
         this.camera            = Camera();
@@ -75,6 +74,10 @@ public class GameCamera {
 
     void ignoreFrame() {
         this.ignoreMouseInput = true;
+    }
+
+    Vector2 getLookRotation() {
+        return this.cameraLookRotation;
     }
 
 
