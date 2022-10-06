@@ -6,6 +6,7 @@ import std.stdio;
 import engine.world;
 import engine.keyboard;
 import engine.camera;
+import engine.models;
 
 import game.game;
 
@@ -88,16 +89,20 @@ public class Player {
 
     private Entity entity;
 
-    private immutable float eyeHeightStand = 0.55;
-    private immutable float modelYAdjust = 0.06;
+    private GameModel head;
+    private GameModel torso;
+    private GameModel legs;
 
+
+    private immutable float eyeHeightStand = 1.45;
+    private immutable float modelYAdjust = 0.06;
 
     private immutable float physicsEngineDelta;
     private immutable Vector3 movementSpeed;
 
     private bool wasOnGround = false;
 
-    this(Game game, Vector3 position) {
+    this(Game game, Vector3 position) {//, GameModel head, GameModel torso, GameModel legs) {
         this.game = game;
 
         this.entity = new Entity(position, Vector2(0.51,1.8),Vector3(0,0,0), true);
@@ -110,26 +115,14 @@ public class Player {
             this.physicsEngineDelta / 4.0,
             this.physicsEngineDelta / 4.0
         );
+
+        // this.head  = head;
+        // this.torso = torso;
+        // this.legs  = legs;
     }
 
     void update() {
-
         this.intakeControls();
-
-        Vector3 position = this.entity.getPosition();
-        position.y += this.eyeHeightStand;
-
-        // This section moves the camera forward to where their eyes "should" be
-        Vector3 lookDirection = game.camera3d.getForward2d();
-        lookDirection.x *= 0.1;
-        lookDirection.y *= 0.1;
-        lookDirection.z *= 0.1;
-        position = Vector3Add(position, lookDirection);
-        // End eye thing
-
-
-        game.camera3d.setPosition(position);
-
     }
 
     void intakeControls() {
@@ -195,5 +188,9 @@ public class Player {
         Vector3 modelPosition = this.entity.getCollisionBoxPosition();
         modelPosition.y += modelYAdjust;
         return modelPosition;
+    }
+
+    float getEyeHeightStand() {
+        return this.eyeHeightStand;
     }
 }

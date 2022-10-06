@@ -19,6 +19,9 @@ public class GameCamera {
     private immutable DOUBLE_PI = PI * 2;
     private immutable RAYLIB_FLIP_FIX = 0.0001;
 
+    private immutable pitchUpLimit   = DEG2RAD * 75;
+    private immutable pitchDownLimit = DEG2RAD * -75;
+
     private bool firstPerson = true;
 
     /*
@@ -129,8 +132,22 @@ public class GameCamera {
         cameraRight = Vector3Normalize(Vector3CrossProduct(cameraFront, camera.up));
         cameraUp = Vector3CrossProduct(cameraRight, direction);
 
+
+        Vector3 position = game.player.getPosition();
+        position.y += game.player.getEyeHeightStand();
+
+        // This section moves the camera forward to where their eyes "should" be
+        Vector3 lookDirection = this.getForward2d();
+        lookDirection.x *= 0.1;
+        lookDirection.y *= 0.1;
+        lookDirection.z *= 0.1;
+        position = Vector3Add(position, lookDirection);
+        // End eye thing
+
+        this.setPosition(position);
+
         this.setRotation(cameraFront);
-        
+
     }
 
     void setRotation(Vector3 rotation) {
@@ -146,8 +163,6 @@ public class GameCamera {
 
     void setPosition(Vector3 position) {
         this.camera.position = position;
-        // Must update the target or the rotation goes crazy
-        this.setRotation(this.camera.target);
     }
 
     Vector3 getPosition() {
