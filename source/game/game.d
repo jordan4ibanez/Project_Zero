@@ -2,6 +2,7 @@ module game.game;
 
 import std.stdio;
 
+import engine.models;
 import engine.camera;
 import engine.keyboard;
 import engine.mouse;
@@ -20,6 +21,7 @@ import fast_noise;
 public class Game {
 
     Window window;
+    ModelContainer modelContainer;
     GameCamera camera3d;
     Mouse mouse;
     Keyboard keyboard;
@@ -30,6 +32,7 @@ public class Game {
     World world;
 
 
+    /*
     Texture testTexture;
 
     Model head;
@@ -44,6 +47,7 @@ public class Game {
     uint torsoAnimationCount;
     uint legsAnimationCount;
     uint headAnimationCount;
+    */
 
     this() {
         /// Game sets up Raylib
@@ -51,16 +55,20 @@ public class Game {
         SetTraceLogLevel(TraceLogLevel.LOG_NONE);
 
         /// Allow objects to communicate with eachother
-        window      = new Window(this, 1280,720);
-        camera3d    = new GameCamera(this, Vector3(0,50,0));
-        keyboard    = new Keyboard(this);
-        mouse       = new Mouse(this);
-        soundEngine = new SoundEngine(this);
-        timeKeeper  = new TimeKeeper(this);
-        world       = new World(this);
-        player      = new Player(this, Vector3(3,0,2));
+        window         = new Window(this, 1280,720);
+        modelContainer = new ModelContainer();
+        camera3d       = new GameCamera(this, Vector3(0,50,0));
+        keyboard       = new Keyboard(this);
+        mouse          = new Mouse(this);
+        soundEngine    = new SoundEngine(this);
+        timeKeeper     = new TimeKeeper(this);
+        world          = new World(this);
+        player         = new Player(this, Vector3(3,0,2));
 
+        modelContainer.uploadModel("playerTorso", "textures/bricks.png", "models/torso.iqm");
+        modelContainer.uploadModel("playerLegs", "textures/bricks.png", "models/legs.iqm");
 
+        /*
         testTexture = LoadTexture("textures/bricks.png");
 
         torso = LoadModel("models/torso.iqm"); 
@@ -78,6 +86,7 @@ public class Game {
         writeln("ANIMATION COUNT HEAD: ", headAnimationCount);
         writeln("ANIMATION COUNT TORSO: ", torsoAnimationCount);
         writeln("ANIMATION COUNT LEGS: ", legsAnimationCount);
+        */
 
         /// Temporary debugging things
         mouse.grab();
@@ -161,6 +170,7 @@ public class Game {
 
                 world.render();
 
+                /*
                 // Animation is locked to 60 FPS
                 frameAccumulator += this.timeKeeper.getDelta();
                 if (frameAccumulator > 1.0 / 60.0) {
@@ -172,14 +182,13 @@ public class Game {
                         if (currentAnimation >= torsoAnimationCount) {
                             currentAnimation = 0;
                         }
-                        
                     }
 
                     frameAccumulator -= 1.0 / 60.0;
 
-                    UpdateModelAnimation(head,  headAnimation[0], 90 /* * 3*/ );
-                    UpdateModelAnimation(torso, torsoAnimation[19], frame);
-                    UpdateModelAnimation(legs,  legsAnimation[4], frame);
+                    UpdateModelAnimation(head,  headAnimation[0], 90 /* * 3* / );
+                    UpdateModelAnimation(torso, torsoAnimation[0], frame);
+                    UpdateModelAnimation(legs,  legsAnimation[0], frame);
 
                 }
 
@@ -194,11 +203,15 @@ public class Game {
                     Vector3(1,1,1), // Scale
                     Colors.WHITE    // Tint
                 );
-                */
+                * /
+
+                Vector3 modifiedModelPosition = this.player.getModelPosition();
+
+
 
                 DrawModelEx(
                     this.torso,     // Model
-                    this.player.getModelPosition(),//Vector3(2,0.25,2),//this.player.getModelPosition(), // Position Vector3(2,0.25,2),
+                    modifiedModelPosition,//Vector3(2,0.25,2),//this.player.getModelPosition(), // Position Vector3(2,0.25,2),
                     Vector3(0,1,0), // Rotation Axis
                     yaw,          // Rotation angle
                     Vector3(1,1,1), // Scale
@@ -207,14 +220,14 @@ public class Game {
 
                 DrawModelEx(
                     this.legs,     // Model
-                    this.player.getModelPosition(),//Vector3(2,0.25,2),//this.player.getModelPosition(), // Position  
+                    modifiedModelPosition,//Vector3(2,0.25,2),//this.player.getModelPosition(), // Position  
                     Vector3(0,1,0), // Rotation Axis
                     yaw,          // Rotation angle
                     Vector3(1,1,1), // Scale
                     Colors.WHITE    // Tint
                 );
 
-
+                */
                 
 
                 /*
