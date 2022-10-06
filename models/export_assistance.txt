@@ -13,17 +13,14 @@ head:
 head-tilt, base-stand-to-crouch, head-tilt-crouch
 
 torso:
-arms-stand, arms-walk, arms-run, arms-aiming, arms-cycle-gun, arms-toggle-safety, arms-into-fighting, arms-punch, arms-craft, arms-eat,
-base-stand-to-crouch,
-arms-crouch, arms-walk
+arms-stand,arms-walk,arms-run,arms-aiming,arms-cycle-gun,arms-toggle-safety,arms-into-fighting,arms-punch,arms-craft,arms-eat,base-stand-to-crouch,arms-crouch,arms-crouch-walk,arms-crouch-aiming,arms-crouch-cycle-gun, arms-crouch-toggle-safety,arms-crouch-into-fighting,arms-crouch-punch,arms-crouch-craft,arms-crouch-eat
 
 
 
 legs:
-legs-stand, legs-walk, legs-run, 
+legs-stand,legs-walk,legs-run,base-stand-to-crouch,legs-crouch-walk
 
 
-base-stand-to-crouch
 
 
 
