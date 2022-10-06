@@ -162,9 +162,11 @@ public class Game {
 
     // animation starts at 1 ends at 60
     private uint frame = 1;
-    float frameAccumulator = 0;
+    // float frameAccumulator = 0;
 
     int currentAnimation = 0;
+
+    float accumulator = 0;
 
     void render() {
         BeginDrawing();
@@ -176,7 +178,8 @@ public class Game {
                 world.render();
 
                 // Animation is locked to 60 FPS
-                frameAccumulator += timeKeeper.getDelta();
+                accumulator += timeKeeper.getDelta();
+                /*
                 if (frameAccumulator > 1.0 / 60.0) {
                     frame++;
                     if (frame >= 60) {
@@ -186,15 +189,17 @@ public class Game {
                         if (currentAnimation >= torsoAnimationCount) {
                             currentAnimation = 0;
                         }
-                        */
+                        
                     }
 
                     frameAccumulator -= 1.0 / 60.0;
 
-                    // UpdateModelAnimation(head, headAnimation[2], frame /* * 3 */);
+                    // UpdateModelAnimation(head, headAnimation[2], frame /* * 3 );
                     // UpdateModelAnimation(legs, legsAnimation[0], frame);
 
                 }
+                */
+
 
                 // boneId = test.boneIds[boneCounter];
 
@@ -220,8 +225,21 @@ public class Game {
                     }
                     boneMap[boneName] = i;
                 }
+                // writeln(boneMap["neck"]);
 
-                writeln(boneMap["neck"]);
+                /// This is an animation frame
+                Transform* animationCell = &testAnimation.framePoses[0][boneMap["chest"]];
+                writeln(accumulator);
+                if (accumulator > 3.14) {
+                    accumulator = -3.14;
+                }
+                Quaternion goal = QuaternionFromEuler(accumulator,0,0);
+                animationCell.rotation = goal;
+                
+
+
+                // outRotation = testAnimation.framePoses[0][boneId].rotation;
+                // outScale = testAnimation.framePoses[0][boneId].scale;
                 
 
 
