@@ -38,7 +38,11 @@ Hold the last frame (60) when complete
 Play this in reverse when a player isn't holding right click anymore
 6  - into-fighting
 7  - punch
+
+Loop frames 15-45 for continued animation
 8  - craft
+
+Loop frames 15-45 for continued animation
 9  - eat
 
 Play this animation in reverse when standing back up
@@ -56,7 +60,11 @@ Hold the last frame (60) when complete
 Play this in reverse when a player isn't holding right click anymore
 16 - crouch-into-fighting
 17 - crouch-punch
+
+Loop frames 15-45 for continued animation
 18 - crouch-craft
+
+Loop frames 15-45 for continued animation
 19 - crouch-eat
 
 
@@ -109,8 +117,16 @@ public class Player {
         this.intakeControls();
 
         Vector3 position = this.entity.getPosition();
-
         position.y += this.eyeHeightStand;
+
+        // This section moves the camera forward to where their eyes "should" be
+        Vector3 lookDirection = game.camera3d.getForward2d();
+        lookDirection.x *= 0.1;
+        lookDirection.y *= 0.1;
+        lookDirection.z *= 0.1;
+        position = Vector3Add(position, lookDirection);
+        // End eye thing
+
 
         game.camera3d.setPosition(position);
 
