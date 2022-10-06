@@ -200,24 +200,30 @@ public class Game {
 
                 Mesh testMesh = test.meshes[0];
 
-                writeln("---");
-                for (int i = 0; i < test.boneCount; i++) {
-                    writeln(testMesh.boneIds[i * BoneInfo.sizeof]);
-                }
-                for (int i = 0; i < test.boneCount; i++) {
+                
 
+                writeln("---");
+
+                for (int i = 0; i < test.boneCount; i++) {
+                    // writeln(testMesh.boneIds[i]);
+                }
+
+                uint[string] boneMap;
+                for (int i = 0; i < test.boneCount; i++) {
                     BoneInfo blah = test.bones[i];
                     string boneName;
-                    
                     foreach (character; blah.name) {
                         if (character == cast(char)"\0") {
                             break;
                         }
                         boneName ~= character;
                     }
-
-                    writeln("BoneName: ", boneName);
+                    boneMap[boneName] = i;
                 }
+
+                writeln(boneMap["neck"]);
+                
+
 
 
                 /*
