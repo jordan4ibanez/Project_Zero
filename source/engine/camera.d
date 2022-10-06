@@ -15,12 +15,12 @@ public class GameCamera {
     
     private Camera3D camera;
 
-    private immutable HALF_PI = PI / 2.0;
-    private immutable DOUBLE_PI = PI * 2;
-    private immutable RAYLIB_FLIP_FIX = 0.0001;
+    private static immutable HALF_PI = PI / 2.0;
+    private static immutable DOUBLE_PI = PI * 2;
+    private static immutable RAYLIB_FLIP_FIX = 0.0001;
 
-    private immutable pitchUpLimit   = DEG2RAD * 75;
-    private immutable pitchDownLimit = DEG2RAD * -75;
+    private static immutable pitchUpLimit   = DEG2RAD * 75;
+    private static immutable pitchDownLimit = DEG2RAD * -75;
 
     private bool firstPerson = true;
 
