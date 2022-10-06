@@ -1,9 +1,52 @@
 When you export a new animation, you need to add these to the sauerbraten iqm exporter!
 
+IMPORTANT! Export scale needs to be 0.80!
+IMPORTANT! these need to be in this order
+
+
+
+
+
+
+
 head:
+head-tilt, base-stand-to-crouch, head-tilt-crouch
 
 torso:
-arms-stand
+arms-stand, arms-walk, arms-run, arms-aiming, arms-cycle-gun, arms-toggle-safety, arms-into-fighting, arms-punch, arms-craft, arms-eat,
+base-stand-to-crouch,
+arms-crouch, arms-walk
+
+
 
 legs:
-legs-stand,legs-walk
+legs-stand, legs-walk, legs-run, 
+
+
+base-stand-to-crouch
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+Note: When creating an item/weapon mod, attach item to palm bone
+then export it with the torso animation, it will automatically attach
+
+Note: Create a special arm bone position called "item" that has the item
+on the ground at 0,0,0
+
+Note: Clothing will render on top of player, attach clothing to player bones
