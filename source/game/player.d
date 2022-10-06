@@ -10,26 +10,67 @@ import engine.camera;
 import game.game;
 
 /*
-torso:
-0 - stand
-1 - walk
-2 - run
 
-
-todo this index - aim
-
-legs:
-0 - stand
-1 - walk
-2 - run
+Every frame besides the head pitch is 1-60
 
 head:
 90 is the 0 so subtract by 90 or something
 0 to 180 : pitch
 
 0 - stand pitch
+
+Play this animation in reverse when standing back up
 1 - stand to crouch animation
+
 2 - crouch pitch
+
+torso:
+0  - stand idle animation
+1  - walk
+2  - run
+
+Hold the last frame (60) when complete
+3  - aiming
+
+4  - cycle-gun
+5  - toggle-safety
+
+Play this in reverse when a player isn't holding right click anymore
+6  - into-fighting
+7  - punch
+8  - craft
+9  - eat
+
+Play this animation in reverse when standing back up
+10 - stand-to-crouch
+
+11 - crouch idle animation
+12 - crouch-walk
+
+Hold the last frame (60) when complete
+13 - crouch-aiming
+
+14 - crouch-cycle-gun
+15 - crouch-toggle-safety
+
+Play this in reverse when a player isn't holding right click anymore
+16 - crouch-into-fighting
+17 - crouch-punch
+18 - crouch-craft
+19 - crouch-eat
+
+
+legs:
+Lock this to frame 1 so it doesn't do anything, animation looks strange
+0 - stand idle animation
+
+1 - walk
+2 - run
+
+Play this animation in reverse when standing back up
+3 - stand-to-crouch
+
+4 - crouch-walk
 
 */
 
@@ -39,8 +80,9 @@ public class Player {
 
     private Entity entity;
 
-    private immutable float eyeHeight = 0.5;
-    private immutable float modelYAdjust = 0.075;
+    private immutable float eyeHeightStand = 0.55;
+    private immutable float modelYAdjust = 0.06;
+
 
     private immutable float physicsEngineDelta;
     private immutable Vector3 movementSpeed;
@@ -68,7 +110,7 @@ public class Player {
 
         Vector3 position = this.entity.getPosition();
 
-        position.y += this.eyeHeight;
+        position.y += this.eyeHeightStand;
 
         game.camera3d.setPosition(position);
 
