@@ -107,8 +107,8 @@ public class GameCamera {
         float pitch = (
             this.cameraLookRotation.x = clamp(
                 this.cameraLookRotation.x + mouseDelta.y * sensitivity,
-                -HALF_PI + RAYLIB_FLIP_FIX,
-                HALF_PI - RAYLIB_FLIP_FIX
+                pitchDownLimit,//-HALF_PI + RAYLIB_FLIP_FIX,
+                pitchUpLimit//HALF_PI - RAYLIB_FLIP_FIX
             )
         ) + PI;
 
@@ -121,9 +121,9 @@ public class GameCamera {
             this.cameraLookRotation.y = yaw;
         }
 
+
         Vector3 direction;
         
-
         direction.x = cos(yaw) * cos(pitch);
         direction.y = sin(pitch);
         direction.z = sin(yaw) * cos(pitch);
