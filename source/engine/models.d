@@ -2,6 +2,7 @@ module engine.models;
 
 import raylib;
 import std.stdio;
+import std.string: toStringz;
 
 /// This is a container class for models
 public class ModelContainer {
@@ -38,7 +39,7 @@ public class ModelContainer {
 public class GameTexture {
     Texture texture;
     this(string texturePath) {
-        texture = LoadTexture(texturePath.ptr);
+        texture = LoadTexture(toStringz(texturePath));
     }
     ~this() {
         UnloadTexture(texture);
@@ -53,15 +54,23 @@ public class GameModel {
     ModelAnimation* modelAnimation;
     uint animationCount;
 
-    this(ModelContainer container, string texturePath, string modelPath) {
+    this(ModelContainer container, string modelPath, string texturePath) {
         Texture tempTexture = container.uploadTexture(texturePath);
-        this.model = LoadModel(modelPath.ptr);
+        this.model = LoadModel(toStringz(modelPath));
         this.model.materials[0].maps[MATERIAL_MAP_DIFFUSE].texture = tempTexture;
-        this.modelAnimation = LoadModelAnimations(modelPath.ptr, &this.animationCount);
+        this.modelAnimation = LoadModelAnimations(toStringz(modelPath), &this.animationCount);
+        /// Models are not automatically attached to bones, update to safe point
+        if (this.animationCount > 0) {
+            this.updateAnimation(0,0);
+        }
     }
 
     ~this() {
         UnloadModelAnimation(*this.modelAnimation);
         UnloadModel(this.model);
+    }
+    /// Easier to handle wrapper
+    void updateAnimation(int animation, int frame) {
+        UpdateModelAnimation(this.model,  this.modelAnimation[animation], frame);
     }
 }
