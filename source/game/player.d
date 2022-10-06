@@ -93,7 +93,6 @@ public class Player {
     private GameModel torso;
     private GameModel legs;
 
-
     private immutable float eyeHeightStand = 1.45;
     private immutable float modelYAdjust = 0.06;
 
@@ -102,7 +101,26 @@ public class Player {
 
     private bool wasOnGround = false;
 
-    this(Game game, Vector3 position) {//, GameModel head, GameModel torso, GameModel legs) {
+    //______________________________________
+    /// Animation fields                    |
+    //______________________________________|
+    private int   headAnimation    = 0;  // |
+    private int   headFrame        = 0;  // |
+    private float headAccumulator  = 0.0;// |
+    private float headFrameSpeed   = 0.0;// |
+    //--------------------------------------|
+    private int torsoAnimation     = 0;  // |
+    private int torsoFrame         = 0;  // |
+    private float torsoAccumulator = 0.0;// |
+    private float torsoFrameSpeed  = 0.0;// |
+    //--------------------------------------|
+    private int legsAnimation      = 0;  // |
+    private int legsFrame          = 0;  // |
+    private float legsAccumulator  = 0.0;// |
+    private float legsFrameSpeed   = 0.0;// |
+    //--------------------------------------|
+
+    this(Game game, Vector3 position, GameModel head, GameModel torso, GameModel legs) {
         this.game = game;
 
         this.entity = new Entity(position, Vector2(0.51,1.8),Vector3(0,0,0), true);
@@ -116,9 +134,9 @@ public class Player {
             this.physicsEngineDelta / 4.0
         );
 
-        // this.head  = head;
-        // this.torso = torso;
-        // this.legs  = legs;
+        this.head  = head;
+        this.torso = torso;
+        this.legs  = legs;
     }
 
     void update() {
@@ -126,7 +144,6 @@ public class Player {
     }
 
     void intakeControls() {
-
         if (!game.world.didTick()) {
             return;
         }
@@ -134,7 +151,6 @@ public class Player {
         if (!this.entity.wasOnTheGround()) {
             return;
         }
-
         // We're talking to the next engine steps here so it gets kinda weird
         this.entity.appliedForce = false;
 
@@ -178,6 +194,7 @@ public class Player {
             this.entity.addVelocity(addingVelocity);
             this.entity.appliedForce = true;
         }
+
     }
 
     Vector3 getPosition() {
