@@ -376,7 +376,7 @@ public class World {
 
                 // Enforce entity speed limit
                 // This is what needs to be configured in the entity on creation
-                float maxSpeed = 0.04;
+                float maxSpeed = thisEntity.maxSpeed;
                 if (Vector3Length(Vector3(thisEntity.velocity.x, 0, thisEntity.velocity.z)) > maxSpeed) {
                     Vector3 inverse = thisEntity.velocity;
                     inverse.y = 0;
@@ -645,6 +645,7 @@ public class Entity {
     private immutable Color color;
     bool deleteMe = false;
     bool appliedForce = false;
+    float maxSpeed = 0.04;
     
     
     /// Rotation is only used for rotating the model of an entity
