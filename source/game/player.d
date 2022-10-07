@@ -207,6 +207,7 @@ public class Player {
     private float headFrameSpeed   = 0.0; //|
     private Animation currentHeadAnimation = null;
     private static AnimationContainer headAnimations;
+    private string currentHeadAnimationName;
     //--------------------------------------|
     private int torsoAnimation     = 0;  // |
     private int torsoFrame         = 0;  // |
@@ -214,6 +215,7 @@ public class Player {
     private float torsoFrameSpeed  = 0.0;// |
     private Animation currentTorsoAnimation = null;
     private static AnimationContainer torsoAnimations;
+    private string currentTorsoAnimationName;
     //--------------------------------------|
     private int legsAnimation      = 0;  // |
     private int legsFrame          = 0;  // |
@@ -221,6 +223,7 @@ public class Player {
     private float legsFrameSpeed   = 0.0;// |
     private Animation currentLegsAnimation = null;
     private static AnimationContainer legsAnimations;
+    private string currentLegsAnimationName;
     //--------------------------------------|
 
     this(Game game, Vector3 position, GameModel head, GameModel torso, GameModel legs) {
@@ -285,7 +288,7 @@ public class Player {
         legsAnimations.addAnimation("run",             1, 60, 60.0, true);
         legsAnimations.addAnimation("stand-to-crouch", 1, 60, 120.0, false);
         legsAnimations.addAnimation("crouch",          1, 60, 60.0, false);
-        legsAnimations.addAnimation("crouch-walk",     1, 60, 60.0, true);
+        legsAnimations.addAnimation("crouch-walk",     1, 60, 30.0, true);
         currentLegsAnimation = legsAnimations.getAnimation("stand");
 
     }
@@ -342,6 +345,8 @@ public class Player {
             }
         }
 
+        run = keyboard.getRun();
+
 
         // Physics engine stuff is locked out until update
 
@@ -355,7 +360,13 @@ public class Player {
         // We're talking to the next engine steps here so it gets kinda weird
         this.entity.appliedForce = false;
 
-        
+        if (run && !crouched) {
+            entity.maxSpeed = 0.04;
+        } else if (crouched) {
+            entity.maxSpeed = 0.01;
+        } else {
+            entity.maxSpeed = 0.02;
+        }
         GameCamera camera3d = game.camera3d;
 
         bool changed = false;
@@ -398,7 +409,10 @@ public class Player {
         }
     }
 
-    private void setHeadAnimation(string name, bool reversed) {
+    private void setHeadAnimation(string name, bool reversed, bool ignore) {
+        if (!ignore && currentHeadAnimationName == name) {
+            return;
+        }
         currentHeadAnimation = headAnimations.getAnimation(name);
         if (reversed) {
             headFrame = currentHeadAnimation.end;
@@ -406,9 +420,14 @@ public class Player {
             headFrame = currentHeadAnimation.start;
         }
         playHeadReversed = reversed;
-        headAccumulator = 0.0;   
+        headAccumulator = 0.0;
+
+        currentHeadAnimationName = name;
     }
-    private void setTorsoAnimation(string name, bool reversed) {
+    private void setTorsoAnimation(string name, bool reversed, bool ignore) {
+        if (!ignore && currentTorsoAnimationName == name) {
+            return;
+        }
         currentTorsoAnimation = torsoAnimations.getAnimation(name);
         if (reversed) {
             torsoFrame = currentTorsoAnimation.end;
@@ -417,8 +436,13 @@ public class Player {
         }
         playTorsoReversed = reversed;
         torsoAccumulator = 0.0;
+
+        currentTorsoAnimationName = name;
     }
-    private void setLegsAnimation(string name, bool reversed) {
+    private void setLegsAnimation(string name, bool reversed, bool ignore) {
+        if (!ignore && currentLegsAnimationName == name) {
+            return;
+        }
         currentLegsAnimation = legsAnimations.getAnimation(name);
         if (reversed) {
             legsFrame = currentLegsAnimation.end;
@@ -427,11 +451,41 @@ public class Player {
         }
         playLegsReversed = reversed;
         legsAccumulator = 0.0;
+
+        currentLegsAnimationName = name;
     }
 
     /// This is going to be rigid, and complicated, unfortunately
-    private void animate() {        
+    private void animate() {
+        if (!legsLockedInAnimation) {
+
+            if (crouched) {
+
+                if (!wasCrouched) {
+                    setLegsAnimation("stand-to-crouch", false, true);
+                    legsLockedInAnimation = true;
+                } else if (walk) {
+                    setLegsAnimation("crouch-walk", false, false);
+                }
+
+            } else if (!crouched) {
+                if (wasCrouched) {
+                    setLegsAnimation("stand-to-crouch", true, true);
+                    legsLockedInAnimation = true;
+                } else if (!walk && !run) {
+                    setLegsAnimation("stand", false, false);
+                } else if (walk && !run) {
+                    setLegsAnimation("walk", false, false);
+                } else if (walk && run) {
+                    setLegsAnimation("run", false, false);
+                }
+
+            }
+        }
+
+
         
+        /*
         if (!legsLockedInAnimation) {
 
             /// handle legs
@@ -457,9 +511,9 @@ public class Player {
                 }
                 
                 if (run) {
-                    if (walk && !wasWalk) {
+                    if (run && !wasRun) {
                         setLegsAnimation("run", false);
-                    } else if (!walk && wasWalk) {
+                    } else if (!run && wasRun) {
                         setLegsAnimation("stand", false);
                     }
                 } else {
@@ -503,7 +557,9 @@ public class Player {
             } else {
                 // standing
                 if (torsoWasLockedInAnimation && !fighting) {
-                    setTorsoAnimation("stand", false);
+                    if (walk) {
+                        setTorsoAnimation("stand", false);
+                    }
                 }
                 if (fighting) {
                     if (!wasFighting) {
@@ -518,9 +574,9 @@ public class Player {
                     torsoLockedInAnimation = true;
                 } else {
                     if (run) {
-                        if (walk && !wasWalk) {
+                        if (run && !wasRun) {
                             setTorsoAnimation("run", false);
-                        } else if (!walk && wasWalk) {
+                        } else if (!run && wasRun) {
                             setTorsoAnimation("stand", false);
                         }
                     } else {
@@ -533,6 +589,7 @@ public class Player {
                 }
             }
         }
+        */
 
         headWasLockedInAnimation  = headLockedInAnimation;
         torsoWasLockedInAnimation = torsoLockedInAnimation;
