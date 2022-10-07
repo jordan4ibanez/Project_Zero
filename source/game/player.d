@@ -95,22 +95,22 @@ public class Animation {
 
     this(int start, int end, float frameSpeed, int keyCounter, bool loops) {
         this.key       = keyCounter;
-        this.start     = start;
-        this.end       = end;
+        this.start     = start - 1;
+        this.end       = end - 1;
         this.loops     = loops;
-        this.loopStart = start;
-        this.loopEnd   = end;
+        this.loopStart = start - 1;
+        this.loopEnd   = end - 1;
         this.frameSpeed = 1.0 / frameSpeed;
     }
 
     /// Animation that loops inside the start and end
     this(int start, int end, int loopStart, int loopEnd, float frameSpeed, int keyCounter) {
         this.key       = keyCounter;
-        this.start     = start;
-        this.end       = end;
+        this.start     = start - 1;
+        this.end       = end - 1;
         this.loops     = true;
-        this.loopStart = loopStart;
-        this.loopEnd   = loopEnd;
+        this.loopStart = loopStart - 1;
+        this.loopEnd   = loopEnd - 1;
         this.frameSpeed = 1.0 / frameSpeed;
     }
 }
@@ -185,6 +185,7 @@ public class Player {
 
     private bool playReversed;
     private bool lockedInAnimation;
+    private bool wasLockedInAnimation;
 
     //______________________________________
     /// Animation fields, too much data     |
@@ -253,6 +254,7 @@ public class Player {
         torsoAnimations.addAnimation("craft",                1, 60, 15, 45, 60.0);
         torsoAnimations.addAnimation("eat",                  1, 60, 15, 45, 60.0);
         torsoAnimations.addAnimation("stand-to-crouch",      1, 60, 60.0, false);
+
         torsoAnimations.addAnimation("crouch",               1, 60, 60.0, true);
         torsoAnimations.addAnimation("crouch-walk",          1, 60, 60.0, true);
         torsoAnimations.addAnimation("crouch-aim",           1, 60, 60.0, false);
@@ -269,6 +271,7 @@ public class Player {
         legsAnimations.addAnimation("walk",            1, 60, 60.0, true);
         legsAnimations.addAnimation("run",             1, 60, 60.0, true);
         legsAnimations.addAnimation("stand-to-crouch", 1, 60, 60.0, false);
+        legsAnimations.addAnimation("crouch",          1, 60, 60.0, false);
         legsAnimations.addAnimation("crouch-walk",     1, 60, 60.0, true);
         currentLegsAnimation = legsAnimations.getAnimation("stand");
 
@@ -279,8 +282,18 @@ public class Player {
         this.animate();
     }
 
-    void intakeControls() {
+    void resetAllFlags() {
+        walk = false;
+        run = false;
+        cyclingGun = false;
+        togglingSafety = false;
+        fighting = false;
+        punching = false;
+        crafting = false;
+        eating = false;
+    }
 
+    void intakeControls() {
         wasCrouched       = crouched;
         wasWalk           = walk;
         wasRun            = run;
@@ -291,7 +304,21 @@ public class Player {
         wasCrafting       = crafting;
         wasEating         = eating;
 
+        if (lockedInAnimation){
+            this.entity.appliedForce = false;
+            resetAllFlags();
+            return;            
+        }
+
         Keyboard keyboard = game.keyboard;
+
+        if (keyboard.getCrouch()) {
+            this.entity.appliedForce = false;
+            crouched = !crouched;
+            resetAllFlags();
+            return;
+        }
+
         Mouse mouse = game.mouse;
 
         if (mouse.getRightClick()) {
@@ -354,48 +381,114 @@ public class Player {
         }
     }
 
-    private void setHeadAnimation(string name) {
+    private void setHeadAnimation(string name, bool reversed) {
         currentHeadAnimation = headAnimations.getAnimation(name);
-        headFrame = 0;
+        if (reversed) {
+            headFrame = currentHeadAnimation.end;
+        } else {
+            headFrame = currentHeadAnimation.start;
+        }
+        playReversed = reversed;        
     }
-    private void setTorsoAnimation(string name) {
+    private void setTorsoAnimation(string name, bool reversed) {
         currentTorsoAnimation = torsoAnimations.getAnimation(name);
-        torsoFrame = 0;
+        if (reversed) {
+            torsoFrame = currentTorsoAnimation.end;
+        } else {
+            torsoFrame = currentTorsoAnimation.start;
+        }
+        playReversed = reversed;
     }
-    private void setLegsAnimation(string name) {
+    private void setLegsAnimation(string name, bool reversed) {
         currentLegsAnimation = legsAnimations.getAnimation(name);
-        legsFrame = 0;
+        if (reversed) {
+            legsFrame = currentLegsAnimation.end;
+        } else {
+            legsFrame = currentLegsAnimation.start;
+        }
+        playReversed = reversed;
     }
 
-    /// This is going to be ridig, and complicated, unfortunately
+    /// This is going to be rigid, and complicated, unfortunately
     private void animate() {
         immutable float delta = game.timeKeeper.getDelta();
 
         /// handle legs
-        if (run) {
-            if (walk && !wasWalk) {
-                setLegsAnimation("run");
-            } else if (!walk && wasWalk) {
-                setLegsAnimation("stand");
+
+        if (!lockedInAnimation) {
+
+            if (crouched) {
+                if (!wasCrouched) {
+                    setLegsAnimation("stand-to-crouch", false);
+                    lockedInAnimation = true;
+                } else if (walk && !wasWalk) {
+                    setLegsAnimation("crouch-walk", false);
+                } else if (!walk && wasWalk) {
+                    setLegsAnimation("crouch", false);
+                }
+
+            } else if (wasCrouched) {
+                setLegsAnimation("stand-to-crouch", true);
+                lockedInAnimation = true;
+            }
+             else {
+                if (wasLockedInAnimation) {
+                    setLegsAnimation("stand", false);
+                }
+                if (run) {
+                    if (walk && !wasWalk) {
+                        setLegsAnimation("run", false);
+                    } else if (!walk && wasWalk) {
+                        setLegsAnimation("stand", false);
+                    }
+                } else {
+                    if (walk && !wasWalk) {
+                        setLegsAnimation("walk", false);
+                    } else if (!walk && wasWalk) {
+                        setLegsAnimation("stand", false);
+                    }
+                }
             }
         } else {
-            if (walk && !wasWalk) {
-                setLegsAnimation("walk");
-            } else if (!walk && wasWalk) {
-                setLegsAnimation("stand");
-            }
+            // writeln("locked in");
         }
 
-        legsAccumulator += delta;
+        if (currentLegsAnimation.loops ||
+            (!currentLegsAnimation.loops && legsFrame < currentLegsAnimation.end) ||
+            (playReversed && !currentLegsAnimation.loops && legsFrame > currentLegsAnimation.start)) {
+            legsAccumulator += delta;
+        }
+
+        wasLockedInAnimation = lockedInAnimation;
+
+        /// genericize this into function
         if (legsAccumulator > currentLegsAnimation.frameSpeed) {
-            legsFrame++;
-            if (legsFrame >= currentLegsAnimation.end) {
-                legsFrame = currentLegsAnimation.start;
+            if (playReversed) {
+                if (legsFrame > 0) {
+                    legsFrame--;
+                }
+                if (legsFrame <= currentLegsAnimation.start) {
+                    if (currentLegsAnimation.loops) {
+                        legsFrame = currentLegsAnimation.end;
+                    } else if (lockedInAnimation) {
+                        lockedInAnimation = false;
+                    }
+                }
+            } else {
+                legsFrame++;
+                if (legsFrame >= currentLegsAnimation.end) {
+                    if (currentLegsAnimation.loops) {
+                        legsFrame = currentLegsAnimation.start;
+                    } else if (lockedInAnimation) {
+                        lockedInAnimation = false;
+                    }
+                }
             }
             legsAccumulator -= currentLegsAnimation.frameSpeed;
             legs.updateAnimation(currentLegsAnimation.key, legsFrame);
         }
 
+        // writeln(legsFrame);
     }
 
     Vector3 getPosition() {
