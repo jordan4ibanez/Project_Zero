@@ -7,6 +7,7 @@ import engine.world;
 import engine.keyboard;
 import engine.camera;
 import engine.models;
+import engine.mouse;
 
 import game.game;
 
@@ -83,6 +84,67 @@ Play this animation in reverse when standing back up
 
 */
 
+public class Animation {
+    immutable int key;
+    immutable int start;
+    immutable int end;
+    immutable bool loops;
+    immutable int loopStart;
+    immutable int loopEnd;
+    immutable float frameSpeed;
+
+    this(int start, int end, float frameSpeed, int keyCounter, bool loops) {
+        this.key       = keyCounter;
+        this.start     = start;
+        this.end       = end;
+        this.loops     = loops;
+        this.loopStart = start;
+        this.loopEnd   = end;
+        this.frameSpeed = 1.0 / frameSpeed;
+    }
+
+    /// Animation that loops inside the start and end
+    this(int start, int end, int loopStart, int loopEnd, float frameSpeed, int keyCounter) {
+        this.key       = keyCounter;
+        this.start     = start;
+        this.end       = end;
+        this.loops     = true;
+        this.loopStart = loopStart;
+        this.loopEnd   = loopEnd;
+        this.frameSpeed = 1.0 / frameSpeed;
+    }
+}
+
+public class AnimationContainer {
+    private int keyCounter = 0;
+    private Animation[string] animations;
+    
+    void addAnimation(string name, int start, int end, int loopStart, int loopEnd, float frameSpeed) {
+        if (name !in animations) {
+            animations[name] = new Animation(start, end, loopStart, loopEnd, frameSpeed, keyCounter);
+            keyCounter++;
+        } else {
+            throw new Exception(name ~ " is a duplicate in animations!");
+        }
+    }
+    void addAnimation(string name, int start, int end, float frameSpeed, bool loops) {
+        if (name !in animations) {
+            animations[name] = new Animation(start, end, frameSpeed, keyCounter, loops);
+            keyCounter++;
+        } else {
+            throw new Exception(name ~ " is a duplicate in animations!");
+        }
+    }
+
+    // Get an animation pointer
+    Animation getAnimation(string name) {
+        if (name in animations) {
+            return animations[name];
+        }
+        throw new Exception("Tried to get null animation! " ~ name ~ " is not a registered animation!");
+    }
+}
+
 public class Player {
 
     private Game game;
@@ -101,23 +163,52 @@ public class Player {
 
     private bool wasOnGround = false;
 
+    private bool crouched;
+    private bool walk;
+    private bool run;
+    private bool cyclingGun;
+    private bool togglingSafety;
+    private bool fighting;
+    private bool punching;
+    private bool crafting;
+    private bool eating;
+
+    private bool wasCrouched;
+    private bool wasWalk;
+    private bool wasRun;
+    private bool wasCyclingGun;
+    private bool wasTogglingSafety;
+    private bool wasFighting;
+    private bool wasPunching;
+    private bool wasCrafting;
+    private bool wasEating;
+
+    private bool playReversed;
+    private bool lockedInAnimation;
+
     //______________________________________
-    /// Animation fields                    |
+    /// Animation fields, too much data     |
     //______________________________________|
-    private int   headAnimation    = 0;  // |
-    private int   headFrame        = 0;  // |
-    private float headAccumulator  = 0.0;// |
-    private float headFrameSpeed   = 0.0;// |
+    private int   headAnimation    = 0;   //|
+    private int   headFrame        = 0;   //|
+    private float headAccumulator  = 0.0; //|
+    private float headFrameSpeed   = 0.0; //|
+    private Animation currentHeadAnimation = null;
+    private static AnimationContainer headAnimations;
     //--------------------------------------|
     private int torsoAnimation     = 0;  // |
     private int torsoFrame         = 0;  // |
     private float torsoAccumulator = 0.0;// |
     private float torsoFrameSpeed  = 0.0;// |
+    private Animation currentTorsoAnimation = null;
+    private static AnimationContainer torsoAnimations;
     //--------------------------------------|
     private int legsAnimation      = 0;  // |
     private int legsFrame          = 0;  // |
     private float legsAccumulator  = 0.0;// |
     private float legsFrameSpeed   = 0.0;// |
+    private Animation currentLegsAnimation = null;
+    private static AnimationContainer legsAnimations;
     //--------------------------------------|
 
     this(Game game, Vector3 position, GameModel head, GameModel torso, GameModel legs) {
@@ -137,13 +228,79 @@ public class Player {
         this.head  = head;
         this.torso = torso;
         this.legs  = legs;
+
+        headAnimations  = new AnimationContainer();
+        torsoAnimations = new AnimationContainer();
+        legsAnimations  = new AnimationContainer();
+
+        // Animations use a "-" to designate you're calling an animation
+        // Longer ones have inner loop frames
+
+        // Head animations
+        headAnimations.addAnimation("stand-pitch",     1, 180, 0.0,  false);
+        headAnimations.addAnimation("stand-to-crouch", 1, 60,  60.0, false);
+        headAnimations.addAnimation("crouch-pitch",    1, 180, 0.0 , false);
+
+        // Torso animations
+        torsoAnimations.addAnimation("stand",                1, 60, 60.0, true);
+        torsoAnimations.addAnimation("walk",                 1, 60, 60.0, true);
+        torsoAnimations.addAnimation("run",                  1, 60, 60.0, true);
+        torsoAnimations.addAnimation("aiming",               1, 60, 60.0, false);
+        torsoAnimations.addAnimation("cycle-gun",            1, 60, 60.0, false);
+        torsoAnimations.addAnimation("toggle-safety",        1, 60, 60.0, false);
+        torsoAnimations.addAnimation("into-fighting",        1, 60, 60.0, false);
+        torsoAnimations.addAnimation("punch",                1, 60, 60.0, false);
+        torsoAnimations.addAnimation("craft",                1, 60, 15, 45, 60.0);
+        torsoAnimations.addAnimation("eat",                  1, 60, 15, 45, 60.0);
+        torsoAnimations.addAnimation("stand-to-crouch",      1, 60, 60.0, false);
+        torsoAnimations.addAnimation("crouch",               1, 60, 60.0, true);
+        torsoAnimations.addAnimation("crouch-walk",          1, 60, 60.0, true);
+        torsoAnimations.addAnimation("crouch-aim",           1, 60, 60.0, false);
+        torsoAnimations.addAnimation("crouch-cycle-gun",     1, 60, 60.0, false);
+        torsoAnimations.addAnimation("crouch-toggle-safety", 1, 60, 60.0, false);
+        torsoAnimations.addAnimation("crouch-into-fighting", 1, 60, 60.0, false);
+        torsoAnimations.addAnimation("crouch-punch",         1, 60, 60.0, false);
+        torsoAnimations.addAnimation("crouch-craft",         1, 60, 15, 45, 60.0);
+        torsoAnimations.addAnimation("crouch-eat",           1, 60, 15, 45, 60.0);
+        currentTorsoAnimation = torsoAnimations.getAnimation("stand");
+
+        // Legs animations
+        legsAnimations.addAnimation("stand",           1, 60, 60.0, true);
+        legsAnimations.addAnimation("walk",            1, 60, 60.0, true);
+        legsAnimations.addAnimation("run",             1, 60, 60.0, true);
+        legsAnimations.addAnimation("stand-to-crouch", 1, 60, 60.0, false);
+        legsAnimations.addAnimation("crouch-walk",     1, 60, 60.0, true);
+        currentLegsAnimation = legsAnimations.getAnimation("stand");
+
     }
 
     void update() {
         this.intakeControls();
+        this.animate();
     }
 
     void intakeControls() {
+
+        wasCrouched       = crouched;
+        wasWalk           = walk;
+        wasRun            = run;
+        wasCyclingGun     = cyclingGun;
+        wasTogglingSafety = togglingSafety;
+        wasFighting       = fighting;
+        wasPunching       = punching;
+        wasCrafting       = crafting;
+        wasEating         = eating;
+
+        Keyboard keyboard = game.keyboard;
+        Mouse mouse = game.mouse;
+
+        if (mouse.getRightClick()) {
+            fighting = true;
+        }
+
+
+        // Physics engine stuff is locked out until update
+
         if (!game.world.didTick()) {
             return;
         }
@@ -154,7 +311,7 @@ public class Player {
         // We're talking to the next engine steps here so it gets kinda weird
         this.entity.appliedForce = false;
 
-        Keyboard keyboard = game.keyboard;
+        
         GameCamera camera3d = game.camera3d;
 
         bool changed = false;
@@ -193,6 +350,52 @@ public class Player {
         if (changed) {
             this.entity.addVelocity(addingVelocity);
             this.entity.appliedForce = true;
+            walk = true;
+        } else {
+            walk = false;
+        }
+    }
+
+    private void setHeadAnimation(string name) {
+        currentHeadAnimation = headAnimations.getAnimation(name);
+        headFrame = 0;
+    }
+    private void setTorsoAnimation(string name) {
+        currentTorsoAnimation = torsoAnimations.getAnimation(name);
+        torsoFrame = 0;
+    }
+    private void setLegsAnimation(string name) {
+        currentLegsAnimation = legsAnimations.getAnimation(name);
+        legsFrame = 0;
+    }
+
+    /// This is going to be ridig, and complicated, unfortunately
+    private void animate() {
+        immutable float delta = game.timeKeeper.getDelta();
+
+        /// handle legs
+        if (run) {
+            if (walk && !wasWalk) {
+                setLegsAnimation("run");
+            } else if (!walk && wasWalk) {
+                setLegsAnimation("stand");
+            }
+        } else {
+            if (walk && !wasWalk) {
+                setLegsAnimation("walk");
+            } else if (!walk && wasWalk) {
+                setLegsAnimation("stand");
+            }
+        }
+
+        legsAccumulator += delta;
+        if (legsAccumulator > currentLegsAnimation.frameSpeed) {
+            legsFrame++;
+            if (legsFrame >= currentLegsAnimation.end) {
+                legsFrame = currentLegsAnimation.start;
+            }
+            legsAccumulator -= currentLegsAnimation.frameSpeed;
+            legs.updateAnimation(currentLegsAnimation.key, legsFrame);
         }
 
     }
@@ -209,5 +412,38 @@ public class Player {
 
     float getEyeHeightStand() {
         return this.eyeHeightStand;
+    }
+
+    void render() {
+        float yaw = (game.camera3d.getLookRotation().y * -RAD2DEG) - 90.0;
+
+        /*
+        DrawModelEx(
+            head.model,     // Model
+            getModelPosition(),// Position  
+            Vector3(0,1,0), // Rotation Axis
+            yaw,          // Rotation angle
+            Vector3(1,1,1), // Scale
+            Colors.WHITE    // Tint
+        );
+        */
+
+        DrawModelEx(
+            torso.model,     // Model
+            getModelPosition(),// Position  
+            Vector3(0,1,0), // Rotation Axis
+            yaw,          // Rotation angle
+            Vector3(1,1,1), // Scale
+            Colors.WHITE    // Tint
+        );
+
+        DrawModelEx(
+            legs.model,     // Model
+            getModelPosition(),// Position  
+            Vector3(0,1,0), // Rotation Axis
+            yaw,          // Rotation angle
+            Vector3(1,1,1), // Scale
+            Colors.WHITE    // Tint
+        );
     }
 }
