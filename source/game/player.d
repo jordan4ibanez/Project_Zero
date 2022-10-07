@@ -459,9 +459,49 @@ public class Player {
         currentLegsAnimationName = name;
     }
 
+    float accumulator = 0.0;
+
     /// This is going to be rigid, and complicated, unfortunately
     private void animate() {
 
+        
+
+        uint[string] boneMap;
+
+        for (int i = 0; i < torso.model.boneCount; i++) {
+            BoneInfo blah = torso.model.bones[i];
+            string boneName;
+            foreach (character; blah.name) {
+                if (character == 0) {
+                    break;
+                }
+                boneName ~= character;
+            }
+            boneMap[boneName] = i;
+        }
+
+        ModelAnimation* anim = &torso.modelAnimation[torsoAnimations.getAnimation("aiming").key];
+        Transform** animationCells = anim.framePoses;
+
+        foreach (key, value; boneMap) {
+            animationCells[0][value].rotation = QuaternionFromEuler(accumulator,0,0);
+        }
+
+        UpdateModelAnimation(torso.model, *anim, 0 );
+
+        accumulator += 0.001;
+
+        writeln(accumulator);
+        
+        if (accumulator > 3.14) {
+            accumulator = -3.14;
+        }
+        /*
+        Quaternion goal = QuaternionFromEuler(accumulator,0,0);
+        foreach( i; 0..20) {
+            animationCell[i].rotation = goal;
+        }
+        
         if (!legsLockedInAnimation) {
 
             if (crouched) {
@@ -488,7 +528,7 @@ public class Player {
                 }
             }
         }
-
+        
         if (!torsoLockedInAnimation) {
             if (crouched) {
                 if (!wasCrouched) {
@@ -556,15 +596,16 @@ public class Player {
                 }
             }
         }
+        */
 
 
         headWasLockedInAnimation  = headLockedInAnimation;
-        torsoWasLockedInAnimation = torsoLockedInAnimation;
+        // torsoWasLockedInAnimation = torsoLockedInAnimation;
         legsWasLockedInAnimation  = legsLockedInAnimation;
 
         immutable float delta = game.timeKeeper.getDelta();
 
-        processAnimation(currentTorsoAnimation, torsoFrame, torsoAccumulator, torso, delta, torsoLockedInAnimation, playTorsoReversed);
+        // processAnimation(currentTorsoAnimation, torsoFrame, torsoAccumulator, torso, delta, torsoLockedInAnimation, playTorsoReversed);
         processAnimation(currentLegsAnimation, legsFrame, legsAccumulator, legs, delta, legsLockedInAnimation, playLegsReversed);
         
     }
