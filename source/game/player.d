@@ -322,8 +322,7 @@ public class Player {
             changed = true;
             Vector3 direction = Vector3Multiply(camera3d.getForward2d(), this.movementSpeed);
             addingVelocity = Vector3Add(addingVelocity, direction);
-        }
-        if (keyboard.getBack()) {
+        } else if (keyboard.getBack()) {
             changed = true;
             Vector3 direction = Vector3Multiply(camera3d.getBackward2d(), this.movementSpeed);
             addingVelocity = Vector3Add(addingVelocity, direction);
@@ -332,8 +331,7 @@ public class Player {
             changed = true;
             Vector3 direction = Vector3Multiply(camera3d.getRight2d(), this.movementSpeed);
             addingVelocity = Vector3Add(addingVelocity, direction);
-        }
-        if (keyboard.getLeft()) {
+        } else if (keyboard.getLeft()) {
             changed = true;
             Vector3 direction = Vector3Multiply(camera3d.getLeft2d(), this.movementSpeed);
             addingVelocity = Vector3Add(addingVelocity, direction);
