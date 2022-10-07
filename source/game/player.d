@@ -251,7 +251,7 @@ public class Player {
         // Animations use a "-" to designate you're calling an animation
         // Longer ones have inner loop frames
 
-        float punchSpeed = 160.0;
+        float punchSpeed = 200.0;
 
         // Head animations
         headAnimations.addAnimation("stand-pitch",     1, 180, 0.0,  false);
@@ -259,36 +259,36 @@ public class Player {
         headAnimations.addAnimation("crouch-pitch",    1, 180, 0.0 , false);
 
         // Torso animations
-        torsoAnimations.addAnimation("stand",                1, 60, 60.0, true);
-        torsoAnimations.addAnimation("walk",                 1, 60, 60.0, true);
-        torsoAnimations.addAnimation("run",                  1, 60, 60.0, true);
+        torsoAnimations.addAnimation("stand",                1, 60, 60.0, true); // check
+        torsoAnimations.addAnimation("walk",                 1, 60, 60.0, true); // check
+        torsoAnimations.addAnimation("run",                  1, 60, 60.0, true); // check
         torsoAnimations.addAnimation("aiming",               1, 60, 60.0, false);
         torsoAnimations.addAnimation("cycle-gun",            1, 60, 60.0, false);
         torsoAnimations.addAnimation("toggle-safety",        1, 60, 60.0, false);
-        torsoAnimations.addAnimation("into-fighting",        1, 60, punchSpeed, false);
-        torsoAnimations.addAnimation("punch",                1, 60, punchSpeed, false);
+        torsoAnimations.addAnimation("into-fighting",        1, 60, punchSpeed, false); // check
+        torsoAnimations.addAnimation("punch",                1, 60, punchSpeed, false); // check
         torsoAnimations.addAnimation("craft",                1, 60, 15, 45, 60.0);
         torsoAnimations.addAnimation("eat",                  1, 60, 15, 45, 60.0);
-        torsoAnimations.addAnimation("stand-to-crouch",      1, 60, 120.0, false);
+        torsoAnimations.addAnimation("stand-to-crouch",      1, 60, 120.0, false); // check
 
-        torsoAnimations.addAnimation("crouch",               1, 60, 60.0, true);
-        torsoAnimations.addAnimation("crouch-walk",          1, 60, 60.0, true);
+        torsoAnimations.addAnimation("crouch",               1, 60, 60.0, true); // check
+        torsoAnimations.addAnimation("crouch-walk",          1, 60, 60.0, true); // check
         torsoAnimations.addAnimation("crouch-aim",           1, 60, 60.0, false);
         torsoAnimations.addAnimation("crouch-cycle-gun",     1, 60, 60.0, false);
         torsoAnimations.addAnimation("crouch-toggle-safety", 1, 60, 60.0, false);
-        torsoAnimations.addAnimation("crouch-into-fighting", 1, 60, punchSpeed, false);
-        torsoAnimations.addAnimation("crouch-punch",         1, 60, punchSpeed, false);
+        torsoAnimations.addAnimation("crouch-into-fighting", 1, 60, punchSpeed, false); // check
+        torsoAnimations.addAnimation("crouch-punch",         1, 60, punchSpeed, false); // check
         torsoAnimations.addAnimation("crouch-craft",         1, 60, 15, 45, 60.0);
         torsoAnimations.addAnimation("crouch-eat",           1, 60, 15, 45, 60.0);
         currentTorsoAnimation = torsoAnimations.getAnimation("stand");
 
         // Legs animations
-        legsAnimations.addAnimation("stand",           1, 60, 60.0, true);
-        legsAnimations.addAnimation("walk",            1, 60, 60.0, true);
-        legsAnimations.addAnimation("run",             1, 60, 60.0, true);
-        legsAnimations.addAnimation("stand-to-crouch", 1, 60, 120.0, false);
-        legsAnimations.addAnimation("crouch",          1, 60, 60.0, false);
-        legsAnimations.addAnimation("crouch-walk",     1, 60, 30.0, true);
+        legsAnimations.addAnimation("stand",           1, 60, 60.0, true); // check
+        legsAnimations.addAnimation("walk",            1, 60, 60.0, true); // check
+        legsAnimations.addAnimation("run",             1, 60, 60.0, true); // check
+        legsAnimations.addAnimation("stand-to-crouch", 1, 60, 120.0, false); // check
+        legsAnimations.addAnimation("crouch",          1, 60, 60.0, false); // check
+        legsAnimations.addAnimation("crouch-walk",     1, 60, 30.0, true); // check
         currentLegsAnimation = legsAnimations.getAnimation("stand");
 
     }
@@ -466,20 +466,63 @@ public class Player {
                     legsLockedInAnimation = true;
                 } else if (walk) {
                     setLegsAnimation("crouch-walk", false, false);
+                } else {
+                    setLegsAnimation("crouch", false, false);
                 }
 
             } else if (!crouched) {
                 if (wasCrouched) {
                     setLegsAnimation("stand-to-crouch", true, true);
                     legsLockedInAnimation = true;
-                } else if (!walk && !run) {
+                } else if (!walk) {
                     setLegsAnimation("stand", false, false);
                 } else if (walk && !run) {
                     setLegsAnimation("walk", false, false);
                 } else if (walk && run) {
                     setLegsAnimation("run", false, false);
                 }
+            }
+        }
 
+        if (!torsoLockedInAnimation) {
+            if (crouched) {
+                if (!wasCrouched) {
+                    setTorsoAnimation("stand-to-crouch", false, true);
+                    torsoLockedInAnimation = true;
+                } else if (fighting && !wasFighting) {
+                    setTorsoAnimation("crouch-into-fighting", false, true);
+                    torsoLockedInAnimation = true;
+                } else if (!fighting && wasFighting) {
+                    setTorsoAnimation("crouch-into-fighting", true, true);
+                    torsoLockedInAnimation = true;
+                } else if (punching && !wasPunching) {
+                    setTorsoAnimation("crouch-punch", false, true);
+                    torsoLockedInAnimation = true;
+                } else if (walk && !fighting && !punching) {
+                    setTorsoAnimation("crouch-walk", false, false);
+                } else if (!walk && !fighting && !punching) {
+                    setTorsoAnimation("crouch", false, false);
+                }
+            } else {
+                if (wasCrouched) {
+                    setTorsoAnimation("stand-to-crouch", true, true);
+                    torsoLockedInAnimation = true;
+                } else if (fighting && !wasFighting) {
+                    setTorsoAnimation("into-fighting", false, true);
+                    torsoLockedInAnimation = true;
+                } else if (!fighting && wasFighting) {
+                    setTorsoAnimation("into-fighting", true, true);
+                    torsoLockedInAnimation = true;
+                } else if (punching && !wasPunching) {
+                    setTorsoAnimation("punch", false, true);
+                    torsoLockedInAnimation = true;
+                } else if (walk && run && !fighting && !punching) {
+                    setTorsoAnimation("run", false, false);
+                } else if (walk && !run && !fighting && !punching) {
+                    setTorsoAnimation("walk", false, false);
+                } else if (!walk && !fighting && !punching) {
+                    setTorsoAnimation("stand", false, false);
+                }
             }
         }
 
