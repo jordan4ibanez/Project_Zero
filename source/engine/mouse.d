@@ -31,7 +31,7 @@ public class Mouse {
         this.mouseWheelMove = GetMouseWheelMove();
         this.delta          = GetMouseDelta();
         this.leftClick      = IsMouseButtonDown(MouseButton.MOUSE_LEFT_BUTTON);
-        this.rightClick     = IsMouseButtonDown(MouseButton.MOUSE_RIGHT_BUTTON);
+        this.rightClick     = IsMouseButtonPressed(MouseButton.MOUSE_RIGHT_BUTTON);
         /// Reset the mouse position
         /// This is a workaround for glfw FLINGING the mouse delta on lock
         if (grabbed) {
