@@ -184,8 +184,15 @@ public class Player {
     private bool wasEating;
 
     private bool playReversed;
-    private bool lockedInAnimation;
-    private bool wasLockedInAnimation;
+
+    private bool headLockedInAnimation;
+    private bool headWasLockedInAnimation;
+
+    private bool torsoLockedInAnimation;
+    private bool torsoWasLockedInAnimation;
+
+    private bool legsLockedInAnimation;
+    private bool legsWasLockedInAnimation;
 
     //______________________________________
     /// Animation fields, too much data     |
@@ -304,7 +311,7 @@ public class Player {
         wasCrafting       = crafting;
         wasEating         = eating;
 
-        if (lockedInAnimation){
+        if (legsLockedInAnimation){
             this.entity.appliedForce = false;
             resetAllFlags();
             return;            
@@ -322,7 +329,7 @@ public class Player {
         Mouse mouse = game.mouse;
 
         if (mouse.getRightClick()) {
-            fighting = true;
+            fighting = !fighting;
         }
 
 
@@ -416,7 +423,7 @@ public class Player {
     private void animate() {        
 
         
-        if (!lockedInAnimation) {
+        if (!legsLockedInAnimation) {
 
             /// handle legs
 
@@ -424,7 +431,7 @@ public class Player {
                 // stand to crouch
                 if (!wasCrouched) {
                     setLegsAnimation("stand-to-crouch", false);
-                    lockedInAnimation = true;
+                    legsLockedInAnimation = true;
                 } else if (walk && !wasWalk) {
                     setLegsAnimation("crouch-walk", false);
                 } else if (!walk && wasWalk) {
@@ -433,12 +440,13 @@ public class Player {
             // crouched to stand 
             } else if (wasCrouched) {
                 setLegsAnimation("stand-to-crouch", true);
-                lockedInAnimation = true;
+                legsLockedInAnimation = true;
             } else {
                 // standing
-                if (wasLockedInAnimation) {
+                if (legsWasLockedInAnimation) {
                     setLegsAnimation("stand", false);
                 }
+                
                 if (run) {
                     if (walk && !wasWalk) {
                         setLegsAnimation("run", false);
@@ -453,14 +461,15 @@ public class Player {
                     }
                 }
             }
-
+        }
+        if (!torsoLockedInAnimation) {
             // handle torso
 
             if (crouched) {
                 // stand to crouch
                 if (!wasCrouched) {
                     setTorsoAnimation("stand-to-crouch", false);
-                    lockedInAnimation = true;
+                    torsoLockedInAnimation = true;
                 } else if (walk && !wasWalk) {
                     setTorsoAnimation("crouch-walk", false);
                 } else if (!walk && wasWalk) {
@@ -469,38 +478,49 @@ public class Player {
             // crouched to stand 
             } else if (wasCrouched) {
                 setTorsoAnimation("stand-to-crouch", true);
-                lockedInAnimation = true;
+                torsoLockedInAnimation = true;
             } else {
                 // standing
-                if (wasLockedInAnimation) {
+                if (torsoWasLockedInAnimation) {
                     setTorsoAnimation("stand", false);
                 }
-                if (run) {
-                    if (walk && !wasWalk) {
-                        setTorsoAnimation("run", false);
-                    } else if (!walk && wasWalk) {
-                        setTorsoAnimation("stand", false);
+
+                if (fighting) {
+                    if (!wasFighting) {
+                        writeln("time to fiht");
                     }
+                } else if (!fighting && wasFighting) {
+                    writeln("glkdfa");
                 } else {
-                    if (walk && !wasWalk) {
-                        setTorsoAnimation("walk", false);
-                    } else if (!walk && wasWalk) {
-                        setTorsoAnimation("stand", false);
+                    if (run) {
+                        if (walk && !wasWalk) {
+                            setTorsoAnimation("run", false);
+                        } else if (!walk && wasWalk) {
+                            setTorsoAnimation("stand", false);
+                        }
+                    } else {
+                        if (walk && !wasWalk) {
+                            setTorsoAnimation("walk", false);
+                        } else if (!walk && wasWalk) {
+                            setTorsoAnimation("stand", false);
+                        }
                     }
                 }
             }
         }
 
-        wasLockedInAnimation = lockedInAnimation;
+        headWasLockedInAnimation  = headLockedInAnimation;
+        torsoWasLockedInAnimation = torsoLockedInAnimation;
+        legsWasLockedInAnimation  = legsLockedInAnimation;
 
         immutable float delta = game.timeKeeper.getDelta();
 
-        processAnimation(currentTorsoAnimation, torsoFrame, torsoAccumulator, torso, delta);
-        processAnimation(currentLegsAnimation, legsFrame, legsAccumulator, legs, delta);
+        processAnimation(currentTorsoAnimation, torsoFrame, torsoAccumulator, torso, delta, torsoLockedInAnimation);
+        processAnimation(currentLegsAnimation, legsFrame, legsAccumulator, legs, delta, legsLockedInAnimation);
         
     }
 
-    void processAnimation(Animation currentAnimation, ref int frame, ref float accumulator, GameModel model, immutable float delta) {
+    void processAnimation(Animation currentAnimation, ref int frame, ref float accumulator, GameModel model, immutable float delta, ref bool animationLock) {
 
         if (currentAnimation.loops ||
             (!currentAnimation.loops && frame < currentAnimation.end) ||
@@ -516,8 +536,8 @@ public class Player {
                 if (frame <= currentAnimation.start) {
                     if (currentAnimation.loops) {
                         frame = currentAnimation.end;
-                    } else if (lockedInAnimation) {
-                        lockedInAnimation = false;
+                    } else if (animationLock) {
+                        animationLock = false;
                     }
                 }
             } else {
@@ -525,8 +545,8 @@ public class Player {
                 if (frame >= currentAnimation.end) {
                     if (currentAnimation.loops) {
                         frame = currentAnimation.start;
-                    } else if (lockedInAnimation) {
-                        lockedInAnimation = false;
+                    } else if (animationLock) {
+                        animationLock = false;
                     }
                 }
             }
