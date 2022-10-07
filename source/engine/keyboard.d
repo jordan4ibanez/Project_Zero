@@ -20,6 +20,7 @@ public class Keyboard {
     private bool leanRight        = false;
     private bool leanLeft         = false;
     private bool toggleFullScreen = false;
+    private bool reload           = false;
 
     private int forwardAssignment          = KeyboardKey.KEY_W;
     private int leftAssignment             = KeyboardKey.KEY_A;
@@ -33,6 +34,7 @@ public class Keyboard {
     private int leanRightAssignment        = KeyboardKey.KEY_E;
     private int leanLeftAssignment         = KeyboardKey.KEY_Q;
     private int toggleFullScreenAssignment = KeyboardKey.KEY_F11;
+    private int reloadAssignment           = KeyboardKey.KEY_R;
 
     this(Game game) {
         this.game = game;
@@ -54,6 +56,7 @@ public class Keyboard {
         this.leanRight        = IsKeyDown(this.leanRightAssignment);
         this.leanLeft         = IsKeyDown(this.leanLeftAssignment);
         this.toggleFullScreen = IsKeyDown(this.toggleFullScreenAssignment);
+        this.reload           = IsKeyPressed(reloadAssignment);
 
         if (!wasToggleFullScreen && toggleFullScreen) {
             game.window.toggleFullScreen();
@@ -106,5 +109,9 @@ public class Keyboard {
 
     bool getToggleFullScreen() {
         return this.toggleFullScreen;
+    }
+
+    bool getReload() {
+        return this.reload;
     }
 }
