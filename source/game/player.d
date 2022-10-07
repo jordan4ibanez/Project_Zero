@@ -388,7 +388,8 @@ public class Player {
         } else {
             headFrame = currentHeadAnimation.start;
         }
-        playReversed = reversed;        
+        playReversed = reversed;
+        headAccumulator = 0.0;   
     }
     private void setTorsoAnimation(string name, bool reversed) {
         currentTorsoAnimation = torsoAnimations.getAnimation(name);
@@ -398,6 +399,7 @@ public class Player {
             torsoFrame = currentTorsoAnimation.start;
         }
         playReversed = reversed;
+        torsoAccumulator = 0.0;
     }
     private void setLegsAnimation(string name, bool reversed) {
         currentLegsAnimation = legsAnimations.getAnimation(name);
@@ -407,17 +409,19 @@ public class Player {
             legsFrame = currentLegsAnimation.start;
         }
         playReversed = reversed;
+        legsAccumulator = 0.0;
     }
 
     /// This is going to be rigid, and complicated, unfortunately
-    private void animate() {
-        immutable float delta = game.timeKeeper.getDelta();
+    private void animate() {        
 
-        /// handle legs
-
+        
         if (!lockedInAnimation) {
 
+            /// handle legs
+
             if (crouched) {
+                // stand to crouch
                 if (!wasCrouched) {
                     setLegsAnimation("stand-to-crouch", false);
                     lockedInAnimation = true;
@@ -426,12 +430,12 @@ public class Player {
                 } else if (!walk && wasWalk) {
                     setLegsAnimation("crouch", false);
                 }
-
+            // crouched to stand 
             } else if (wasCrouched) {
                 setLegsAnimation("stand-to-crouch", true);
                 lockedInAnimation = true;
-            }
-             else {
+            } else {
+                // standing
                 if (wasLockedInAnimation) {
                     setLegsAnimation("stand", false);
                 }
@@ -449,46 +453,86 @@ public class Player {
                     }
                 }
             }
-        } else {
-            // writeln("locked in");
-        }
 
-        if (currentLegsAnimation.loops ||
-            (!currentLegsAnimation.loops && legsFrame < currentLegsAnimation.end) ||
-            (playReversed && !currentLegsAnimation.loops && legsFrame > currentLegsAnimation.start)) {
-            legsAccumulator += delta;
+            // handle torso
+
+            if (crouched) {
+                // stand to crouch
+                if (!wasCrouched) {
+                    setTorsoAnimation("stand-to-crouch", false);
+                    lockedInAnimation = true;
+                } else if (walk && !wasWalk) {
+                    setTorsoAnimation("crouch-walk", false);
+                } else if (!walk && wasWalk) {
+                    setTorsoAnimation("crouch", false);
+                }
+            // crouched to stand 
+            } else if (wasCrouched) {
+                setTorsoAnimation("stand-to-crouch", true);
+                lockedInAnimation = true;
+            } else {
+                // standing
+                if (wasLockedInAnimation) {
+                    setTorsoAnimation("stand", false);
+                }
+                if (run) {
+                    if (walk && !wasWalk) {
+                        setTorsoAnimation("run", false);
+                    } else if (!walk && wasWalk) {
+                        setTorsoAnimation("stand", false);
+                    }
+                } else {
+                    if (walk && !wasWalk) {
+                        setTorsoAnimation("walk", false);
+                    } else if (!walk && wasWalk) {
+                        setTorsoAnimation("stand", false);
+                    }
+                }
+            }
         }
 
         wasLockedInAnimation = lockedInAnimation;
 
-        /// genericize this into function
-        if (legsAccumulator > currentLegsAnimation.frameSpeed) {
+        immutable float delta = game.timeKeeper.getDelta();
+
+        processAnimation(currentTorsoAnimation, torsoFrame, torsoAccumulator, torso, delta);
+        processAnimation(currentLegsAnimation, legsFrame, legsAccumulator, legs, delta);
+        
+    }
+
+    void processAnimation(Animation currentAnimation, ref int frame, ref float accumulator, GameModel model, immutable float delta) {
+
+        if (currentAnimation.loops ||
+            (!currentAnimation.loops && frame < currentAnimation.end) ||
+            (playReversed && !currentAnimation.loops && frame > currentAnimation.start)) {
+            accumulator += delta;
+        }
+
+        if (accumulator > currentAnimation.frameSpeed) {
             if (playReversed) {
-                if (legsFrame > 0) {
-                    legsFrame--;
+                if (frame > 0) {
+                    frame--;
                 }
-                if (legsFrame <= currentLegsAnimation.start) {
-                    if (currentLegsAnimation.loops) {
-                        legsFrame = currentLegsAnimation.end;
+                if (frame <= currentAnimation.start) {
+                    if (currentAnimation.loops) {
+                        frame = currentAnimation.end;
                     } else if (lockedInAnimation) {
                         lockedInAnimation = false;
                     }
                 }
             } else {
-                legsFrame++;
-                if (legsFrame >= currentLegsAnimation.end) {
-                    if (currentLegsAnimation.loops) {
-                        legsFrame = currentLegsAnimation.start;
+                frame++;
+                if (frame >= currentAnimation.end) {
+                    if (currentAnimation.loops) {
+                        frame = currentAnimation.start;
                     } else if (lockedInAnimation) {
                         lockedInAnimation = false;
                     }
                 }
             }
-            legsAccumulator -= currentLegsAnimation.frameSpeed;
-            legs.updateAnimation(currentLegsAnimation.key, legsFrame);
+            accumulator -= currentAnimation.frameSpeed;
+            model.updateAnimation(currentAnimation.key, frame);
         }
-
-        // writeln(legsFrame);
     }
 
     Vector3 getPosition() {
