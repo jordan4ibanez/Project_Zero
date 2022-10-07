@@ -334,9 +334,8 @@ public class Player {
         if (!torsoLockedInAnimation) {
             if (mouse.getRightClick()) {
                 fighting = !fighting;
-            }
-            if (fighting && mouse.getLeftClick()) {
-                punching = true;
+            } else {
+                punching = fighting && mouse.getLeftClick();
             }
         }
 
@@ -429,8 +428,6 @@ public class Player {
 
     /// This is going to be rigid, and complicated, unfortunately
     private void animate() {        
-
-        
         
         if (!legsLockedInAnimation) {
 
@@ -473,8 +470,6 @@ public class Player {
         }        
 
         if (!torsoLockedInAnimation) {
-
-            writeln("this is running");
             // handle torso
 
             if (crouched) {
@@ -497,10 +492,12 @@ public class Player {
                     writeln("unlock me please");
                     setTorsoAnimation("stand", false);
                 }
-
                 if (fighting) {
                     if (!wasFighting) {
                         setTorsoAnimation("into-fighting", false);
+                        torsoLockedInAnimation = true;
+                    } else if (punching && !wasPunching) {
+                        setTorsoAnimation("punch", false);
                         torsoLockedInAnimation = true;
                     }
                 } else if (!fighting && wasFighting) {
