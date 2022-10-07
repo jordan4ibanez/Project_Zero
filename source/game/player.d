@@ -156,6 +156,7 @@ public class Player {
     private GameModel legs;
 
     private immutable float eyeHeightStand = 1.45;
+    private immutable float eyeHeightCrouch = 0.75;
     private immutable float modelYAdjust = 0.06;
 
     private immutable float physicsEngineDelta;
@@ -567,6 +568,14 @@ public class Player {
         }
     }
 
+    bool isCrouching() {
+        return this.crouched;
+    }
+
+    int getCrouchFrame() {
+        return legsFrame;
+    }
+
     Vector3 getPosition() {
         return this.entity.getCollisionBoxPosition();
     }
@@ -579,6 +588,10 @@ public class Player {
 
     float getEyeHeightStand() {
         return this.eyeHeightStand;
+    }
+
+    float getEyeHeightCrouch() {
+        return this.eyeHeightCrouch;
     }
 
     void render() {

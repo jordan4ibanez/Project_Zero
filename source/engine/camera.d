@@ -1,12 +1,14 @@
 module engine.camera;
 
 import raylib;
+import std.stdio;
 import std.math.trigonometry: cos, sin;
 import std.math.constants: PI;
 import std.algorithm.comparison: clamp;
 
 import engine.mouse;
 import game.game;
+import game.player;
 
 /// Wrapper class for the game camera
 public class GameCamera {
@@ -23,6 +25,8 @@ public class GameCamera {
     private static immutable pitchDownLimit = DEG2RAD * -75;
 
     private bool firstPerson = true;
+
+    bool crouch = false;
 
     /*
      * This is a flag to ignore one frame from when the mouse was grabbed
@@ -132,9 +136,35 @@ public class GameCamera {
         cameraRight = Vector3Normalize(Vector3CrossProduct(cameraFront, camera.up));
         cameraUp    = Vector3CrossProduct(cameraRight, direction);
 
+        Player player = game.player;
 
-        Vector3 position = game.player.getPosition();
-        position.y += game.player.getEyeHeightStand();
+        Vector3 position = player.getPosition();
+
+        float yPositionModifier = 0;
+        /// This part is a hardcoded nightmare
+        if (player.isCrouching() && !crouch || !player.isCrouching() && crouch) {
+            float frame = cast(float)player.getCrouchFrame();
+
+            float start = player.getEyeHeightStand();
+            float end   = player.getEyeHeightCrouch();
+            
+            float percentile = frame / 59.0;
+            
+            yPositionModifier = Lerp(start, end, percentile);
+
+            if (!crouch && percentile >= 1.0) {
+                crouch = true;
+            } else if (crouch && percentile <= 0) {
+                crouch = false;
+            }
+
+        }else if (crouch) {
+            yPositionModifier = player.getEyeHeightCrouch();
+        } else {
+            yPositionModifier = player.getEyeHeightStand();
+        }
+
+        position.y += yPositionModifier;
 
         // This section moves the camera forward to where their eyes "should" be
         Vector3 lookDirection = this.getForward2d();
