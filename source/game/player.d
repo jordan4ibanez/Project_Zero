@@ -184,8 +184,6 @@ public class Player {
     private bool wasCrafting;
     private bool wasEating;
 
-    
-
     private bool headLockedInAnimation;
     private bool headWasLockedInAnimation;
     private bool playHeadReversed;
@@ -197,6 +195,8 @@ public class Player {
     private bool legsLockedInAnimation;
     private bool legsWasLockedInAnimation;
     private bool playLegsReversed;
+
+    private bool hasGun = true;
 
     //______________________________________
     /// Animation fields, too much data     |
@@ -252,6 +252,7 @@ public class Player {
         // Longer ones have inner loop frames
 
         float punchSpeed = 200.0;
+        float gunHandlingSpeed = 200.0;
 
         // Head animations
         headAnimations.addAnimation("stand-pitch",     1, 180, 0.0,  false);
@@ -262,9 +263,9 @@ public class Player {
         torsoAnimations.addAnimation("stand",                1, 60, 60.0, true); // check
         torsoAnimations.addAnimation("walk",                 1, 60, 60.0, true); // check
         torsoAnimations.addAnimation("run",                  1, 60, 60.0, true); // check
-        torsoAnimations.addAnimation("aiming",               1, 60, 60.0, false);
-        torsoAnimations.addAnimation("cycle-gun",            1, 60, 60.0, false);
-        torsoAnimations.addAnimation("toggle-safety",        1, 60, 60.0, false);
+        torsoAnimations.addAnimation("aiming",               1, 60, gunHandlingSpeed, false); // check
+        torsoAnimations.addAnimation("cycle-gun",            1, 60, gunHandlingSpeed, false);
+        torsoAnimations.addAnimation("toggle-safety",        1, 60, gunHandlingSpeed, false);
         torsoAnimations.addAnimation("into-fighting",        1, 60, punchSpeed, false); // check
         torsoAnimations.addAnimation("punch",                1, 60, punchSpeed, false); // check
         torsoAnimations.addAnimation("craft",                1, 60, 15, 45, 60.0);
@@ -273,9 +274,9 @@ public class Player {
 
         torsoAnimations.addAnimation("crouch",               1, 60, 60.0, true); // check
         torsoAnimations.addAnimation("crouch-walk",          1, 60, 60.0, true); // check
-        torsoAnimations.addAnimation("crouch-aim",           1, 60, 60.0, false);
-        torsoAnimations.addAnimation("crouch-cycle-gun",     1, 60, 60.0, false);
-        torsoAnimations.addAnimation("crouch-toggle-safety", 1, 60, 60.0, false);
+        torsoAnimations.addAnimation("crouch-aim",           1, 60, gunHandlingSpeed, false); // check
+        torsoAnimations.addAnimation("crouch-cycle-gun",     1, 60, gunHandlingSpeed, false); // check
+        torsoAnimations.addAnimation("crouch-toggle-safety", 1, 60, gunHandlingSpeed, false);
         torsoAnimations.addAnimation("crouch-into-fighting", 1, 60, punchSpeed, false); // check
         torsoAnimations.addAnimation("crouch-punch",         1, 60, punchSpeed, false); // check
         torsoAnimations.addAnimation("crouch-craft",         1, 60, 15, 45, 60.0);
@@ -335,7 +336,10 @@ public class Player {
                 crouched = !crouched;
                 resetAllFlags();
                 return;
-            }        
+            }
+
+            cyclingGun = fighting && hasGun && keyboard.getReload();
+
             if (mouse.getRightClick()) {
                 fighting = !fighting;
             } else {
@@ -455,6 +459,7 @@ public class Player {
 
     /// This is going to be rigid, and complicated, unfortunately
     private void animate() {
+
         if (!legsLockedInAnimation) {
 
             if (crouched) {
@@ -487,13 +492,26 @@ public class Player {
                 if (!wasCrouched) {
                     setTorsoAnimation("stand-to-crouch", false, true);
                     torsoLockedInAnimation = true;
+                } else if (fighting && cyclingGun) {
+                    setTorsoAnimation("crouch-cycle-gun", false, true);
+                    torsoLockedInAnimation = true;
                 } else if (fighting && !wasFighting) {
-                    setTorsoAnimation("crouch-into-fighting", false, true);
-                    torsoLockedInAnimation = true;
+                    if (hasGun) {
+                        setTorsoAnimation("crouch-aim", false, true);
+                        torsoLockedInAnimation = true;
+                    } else {
+                        setTorsoAnimation("crouch-into-fighting", false, true);
+                        torsoLockedInAnimation = true;
+                    }
                 } else if (!fighting && wasFighting) {
-                    setTorsoAnimation("crouch-into-fighting", true, true);
-                    torsoLockedInAnimation = true;
-                } else if (punching && !wasPunching) {
+                    if (hasGun) {
+                        setTorsoAnimation("crouch-aim", true, true);
+                        torsoLockedInAnimation = true;
+                    } else {
+                        setTorsoAnimation("crouch-into-fighting", true, true);
+                        torsoLockedInAnimation = true;
+                    }
+                } else if (punching && !wasPunching && !hasGun) {
                     setTorsoAnimation("crouch-punch", false, true);
                     torsoLockedInAnimation = true;
                 } else if (walk && !fighting && !punching) {
@@ -505,13 +523,26 @@ public class Player {
                 if (wasCrouched) {
                     setTorsoAnimation("stand-to-crouch", true, true);
                     torsoLockedInAnimation = true;
+                } else if (fighting && cyclingGun) {
+                    setTorsoAnimation("cycle-gun", false, true);
+                    torsoLockedInAnimation = true;
                 } else if (fighting && !wasFighting) {
-                    setTorsoAnimation("into-fighting", false, true);
-                    torsoLockedInAnimation = true;
+                    if (hasGun) {
+                        setTorsoAnimation("aiming", false, true);
+                        torsoLockedInAnimation = true;
+                    } else {
+                        setTorsoAnimation("into-fighting", false, true);
+                        torsoLockedInAnimation = true;
+                    }
                 } else if (!fighting && wasFighting) {
-                    setTorsoAnimation("into-fighting", true, true);
-                    torsoLockedInAnimation = true;
-                } else if (punching && !wasPunching) {
+                    if (hasGun) {
+                        setTorsoAnimation("aiming", true, true);
+                        torsoLockedInAnimation = true;
+                    } else {
+                        setTorsoAnimation("into-fighting", true, true);
+                        torsoLockedInAnimation = true;
+                    }
+                } else if (punching && !wasPunching && !hasGun) {
                     setTorsoAnimation("punch", false, true);
                     torsoLockedInAnimation = true;
                 } else if (walk && run && !fighting && !punching) {
