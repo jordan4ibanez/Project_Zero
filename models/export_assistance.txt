@@ -18,7 +18,7 @@ arms-stand,arms-walk,arms-run,arms-aiming,arms-cycle-gun,arms-toggle-safety,arms
 
 
 legs:
-legs-stand,legs-walk,legs-run,base-stand-to-crouch,legs-crouch-walk
+legs-stand,legs-walk,legs-run,base-stand-to-crouch,legs-crouch,legs-crouch-walk
 
 
 
