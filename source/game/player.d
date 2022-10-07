@@ -598,6 +598,9 @@ public class Player {
         float yaw = (game.camera3d.getLookRotation().y * -RAD2DEG) - 90.0;
 
         /*
+        setHeadAnimation("crouch-pitch", true);
+        UpdateModelAnimation(head.model, head.modelAnimation[2], 90);
+        
         DrawModelEx(
             head.model,     // Model
             getModelPosition(),// Position  
@@ -607,6 +610,7 @@ public class Player {
             Colors.WHITE    // Tint
         );
         */
+        
 
         DrawModelEx(
             torso.model,     // Model

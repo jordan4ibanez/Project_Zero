@@ -28,6 +28,8 @@ public class GameCamera {
 
     bool crouch = false;
 
+    float crouchPercentile = 0.0;
+
     /*
      * This is a flag to ignore one frame from when the mouse was grabbed
      * This is required due to a side effect of GLFW calculations of mouse delta
@@ -152,10 +154,14 @@ public class GameCamera {
             
             yPositionModifier = Lerp(start, end, percentile);
 
+            crouchPercentile = percentile * 0.25;
+
             if (!crouch && percentile >= 1.0) {
                 crouch = true;
+                crouchPercentile = 0.25;
             } else if (crouch && percentile <= 0) {
                 crouch = false;
+                crouchPercentile = 0.0;
             }
 
         }else if (crouch) {
@@ -168,9 +174,9 @@ public class GameCamera {
 
         // This section moves the camera forward to where their eyes "should" be
         Vector3 lookDirection = this.getForward2d();
-        lookDirection.x *= 0.1;
-        lookDirection.y *= 0.1;
-        lookDirection.z *= 0.1;
+        lookDirection.x *= 0.1 + (crouchPercentile);
+        lookDirection.y *= 0.1 + (crouchPercentile);
+        lookDirection.z *= 0.1 + (crouchPercentile);
         position = Vector3Add(position, lookDirection);
         // End eye thing
 
