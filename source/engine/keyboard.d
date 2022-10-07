@@ -48,7 +48,7 @@ public class Keyboard {
         this.right            = IsKeyDown(this.rightAssignment);
         this.jump             = IsKeyDown(this.jumpAssignment);
         this.run              = IsKeyDown(this.runAssignment);
-        this.crouch           = IsKeyDown(this.crouchAssignment);
+        this.crouch           = IsKeyPressed(this.crouchAssignment);
         this.prone            = IsKeyDown(this.proneAssignment);
         this.activate         = IsKeyDown(this.activateAssignment);
         this.leanRight        = IsKeyDown(this.leanRightAssignment);
