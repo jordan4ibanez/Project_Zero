@@ -14,6 +14,9 @@ public class Mouse {
     private float mouseWheelMove;
     private float sensitivity;
     private bool grabbed = false;
+    private bool leftClick = false;
+    private bool rightClick = false;
+
     /// Only initialize after the window has been created
     this(Game game) {
         this.game = game;
@@ -27,12 +30,22 @@ public class Mouse {
         this.position       = GetMousePosition();
         this.mouseWheelMove = GetMouseWheelMove();
         this.delta          = GetMouseDelta();
+        this.leftClick      = IsMouseButtonDown(MouseButton.MOUSE_LEFT_BUTTON);
+        this.rightClick     = IsMouseButtonDown(MouseButton.MOUSE_RIGHT_BUTTON);
         /// Reset the mouse position
         /// This is a workaround for glfw FLINGING the mouse delta on lock
         if (grabbed) {
             SetMousePosition(0,0);
         }
-    }    
+    }
+
+    bool getLeftClick() {
+        return this.leftClick;
+    }
+
+    bool getRightClick() {
+        return this.rightClick;
+    }
 
     Vector2 getPosition() {
         return this.position;
