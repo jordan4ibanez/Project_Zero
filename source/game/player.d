@@ -464,8 +464,7 @@ public class Player {
     /// This is going to be rigid, and complicated, unfortunately
     private void animate() {
 
-        
-
+        /*
         uint[string] boneMap;
 
         for (int i = 0; i < torso.model.boneCount; i++) {
@@ -483,24 +482,29 @@ public class Player {
         ModelAnimation* anim = &torso.modelAnimation[torsoAnimations.getAnimation("aiming").key];
         Transform** animationCells = anim.framePoses;
 
+        Transform meep;
+
         foreach (key, value; boneMap) {
             animationCells[0][value].rotation = QuaternionFromEuler(accumulator,0,0);
+            animationCells[0][value].translation = Vector3(0,0,accumulator);
         }
 
         UpdateModelAnimation(torso.model, *anim, 0 );
 
-        accumulator += 0.001;
-
-        writeln(accumulator);
-        
-        if (accumulator > 3.14) {
-            accumulator = -3.14;
-        }
-        /*
         Quaternion goal = QuaternionFromEuler(accumulator,0,0);
         foreach( i; 0..20) {
             animationCell[i].rotation = goal;
         }
+        */
+
+        accumulator += 0.001;
+
+        writeln(accumulator);
+                
+        if (accumulator > 3.14) {
+            accumulator = -3.14;
+        }
+
         
         if (!legsLockedInAnimation) {
 
@@ -539,19 +543,19 @@ public class Player {
                     torsoLockedInAnimation = true;
                 } else if (fighting && !wasFighting) {
                     if (hasGun) {
-                        setTorsoAnimation("crouch-aim", false, true);
-                        torsoLockedInAnimation = true;
+                        // setTorsoAnimation("crouch-aim", false, true);
+                        // torsoLockedInAnimation = true;
                     } else {
-                        setTorsoAnimation("crouch-into-fighting", false, true);
-                        torsoLockedInAnimation = true;
+                        // setTorsoAnimation("crouch-into-fighting", false, true);
+                        // torsoLockedInAnimation = true;
                     }
                 } else if (!fighting && wasFighting) {
                     if (hasGun) {
-                        setTorsoAnimation("crouch-aim", true, true);
-                        torsoLockedInAnimation = true;
+                        //setTorsoAnimation("crouch-aim", true, true);
+                        //torsoLockedInAnimation = true;
                     } else {
-                        setTorsoAnimation("crouch-into-fighting", true, true);
-                        torsoLockedInAnimation = true;
+                        //setTorsoAnimation("crouch-into-fighting", true, true);
+                        //torsoLockedInAnimation = true;
                     }
                 } else if (punching && !wasPunching && !hasGun) {
                     setTorsoAnimation("crouch-punch", false, true);
@@ -570,16 +574,16 @@ public class Player {
                     torsoLockedInAnimation = true;
                 } else if (fighting && !wasFighting) {
                     if (hasGun) {
-                        setTorsoAnimation("aiming", false, true);
-                        torsoLockedInAnimation = true;
+                        //setTorsoAnimation("aiming", false, true);
+                        //torsoLockedInAnimation = true;
                     } else {
                         setTorsoAnimation("into-fighting", false, true);
                         torsoLockedInAnimation = true;
                     }
                 } else if (!fighting && wasFighting) {
                     if (hasGun) {
-                        setTorsoAnimation("aiming", true, true);
-                        torsoLockedInAnimation = true;
+                        //setTorsoAnimation("aiming", true, true);
+                        //torsoLockedInAnimation = true;
                     } else {
                         setTorsoAnimation("into-fighting", true, true);
                         torsoLockedInAnimation = true;
@@ -596,16 +600,15 @@ public class Player {
                 }
             }
         }
-        */
 
 
         headWasLockedInAnimation  = headLockedInAnimation;
-        // torsoWasLockedInAnimation = torsoLockedInAnimation;
+        torsoWasLockedInAnimation = torsoLockedInAnimation;
         legsWasLockedInAnimation  = legsLockedInAnimation;
 
         immutable float delta = game.timeKeeper.getDelta();
 
-        // processAnimation(currentTorsoAnimation, torsoFrame, torsoAccumulator, torso, delta, torsoLockedInAnimation, playTorsoReversed);
+        processAnimation(currentTorsoAnimation, torsoFrame, torsoAccumulator, torso, delta, torsoLockedInAnimation, playTorsoReversed);
         processAnimation(currentLegsAnimation, legsFrame, legsAccumulator, legs, delta, legsLockedInAnimation, playLegsReversed);
         
     }
