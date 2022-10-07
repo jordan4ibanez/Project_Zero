@@ -183,16 +183,19 @@ public class Player {
     private bool wasCrafting;
     private bool wasEating;
 
-    private bool playReversed;
+    
 
     private bool headLockedInAnimation;
     private bool headWasLockedInAnimation;
+    private bool playHeadReversed;
 
     private bool torsoLockedInAnimation;
     private bool torsoWasLockedInAnimation;
+    private bool playTorsoReversed;
 
     private bool legsLockedInAnimation;
     private bool legsWasLockedInAnimation;
+    private bool playLegsReversed;
 
     //______________________________________
     /// Animation fields, too much data     |
@@ -328,8 +331,13 @@ public class Player {
 
         Mouse mouse = game.mouse;
 
-        if (mouse.getRightClick()) {
-            fighting = !fighting;
+        if (!torsoLockedInAnimation) {
+            if (mouse.getRightClick()) {
+                fighting = !fighting;
+            }
+            if (fighting && mouse.getLeftClick()) {
+                punching = true;
+            }
         }
 
 
@@ -395,7 +403,7 @@ public class Player {
         } else {
             headFrame = currentHeadAnimation.start;
         }
-        playReversed = reversed;
+        playHeadReversed = reversed;
         headAccumulator = 0.0;   
     }
     private void setTorsoAnimation(string name, bool reversed) {
@@ -405,7 +413,7 @@ public class Player {
         } else {
             torsoFrame = currentTorsoAnimation.start;
         }
-        playReversed = reversed;
+        playTorsoReversed = reversed;
         torsoAccumulator = 0.0;
     }
     private void setLegsAnimation(string name, bool reversed) {
@@ -415,13 +423,14 @@ public class Player {
         } else {
             legsFrame = currentLegsAnimation.start;
         }
-        playReversed = reversed;
+        playLegsReversed = reversed;
         legsAccumulator = 0.0;
     }
 
     /// This is going to be rigid, and complicated, unfortunately
     private void animate() {        
 
+        
         
         if (!legsLockedInAnimation) {
 
@@ -461,8 +470,11 @@ public class Player {
                     }
                 }
             }
-        }
+        }        
+
         if (!torsoLockedInAnimation) {
+
+            writeln("this is running");
             // handle torso
 
             if (crouched) {
@@ -481,16 +493,19 @@ public class Player {
                 torsoLockedInAnimation = true;
             } else {
                 // standing
-                if (torsoWasLockedInAnimation) {
+                if (torsoWasLockedInAnimation && !fighting) {
+                    writeln("unlock me please");
                     setTorsoAnimation("stand", false);
                 }
 
                 if (fighting) {
                     if (!wasFighting) {
-                        writeln("time to fiht");
+                        setTorsoAnimation("into-fighting", false);
+                        torsoLockedInAnimation = true;
                     }
                 } else if (!fighting && wasFighting) {
-                    writeln("glkdfa");
+                    setTorsoAnimation("into-fighting", true);
+                    torsoLockedInAnimation = true;
                 } else {
                     if (run) {
                         if (walk && !wasWalk) {
@@ -515,12 +530,12 @@ public class Player {
 
         immutable float delta = game.timeKeeper.getDelta();
 
-        processAnimation(currentTorsoAnimation, torsoFrame, torsoAccumulator, torso, delta, torsoLockedInAnimation);
-        processAnimation(currentLegsAnimation, legsFrame, legsAccumulator, legs, delta, legsLockedInAnimation);
+        processAnimation(currentTorsoAnimation, torsoFrame, torsoAccumulator, torso, delta, torsoLockedInAnimation, playTorsoReversed);
+        processAnimation(currentLegsAnimation, legsFrame, legsAccumulator, legs, delta, legsLockedInAnimation, playLegsReversed);
         
     }
 
-    void processAnimation(Animation currentAnimation, ref int frame, ref float accumulator, GameModel model, immutable float delta, ref bool animationLock) {
+    void processAnimation(Animation currentAnimation, ref int frame, ref float accumulator, GameModel model, immutable float delta, ref bool animationLock, bool playReversed) {
 
         if (currentAnimation.loops ||
             (!currentAnimation.loops && frame < currentAnimation.end) ||
