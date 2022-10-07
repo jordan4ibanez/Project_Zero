@@ -327,17 +327,15 @@ public class Player {
         }
 
         Keyboard keyboard = game.keyboard;
-
-        if (keyboard.getCrouch()) {
-            this.entity.appliedForce = false;
-            crouched = !crouched;
-            resetAllFlags();
-            return;
-        }
-
         Mouse mouse = game.mouse;
 
-        if (!torsoLockedInAnimation) {
+        if (!torsoLockedInAnimation && !legsLockedInAnimation) {
+            if (keyboard.getCrouch()) {
+                this.entity.appliedForce = false;
+                crouched = !crouched;
+                resetAllFlags();
+                return;
+            }        
             if (mouse.getRightClick()) {
                 fighting = !fighting;
             } else {
