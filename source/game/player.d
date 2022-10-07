@@ -92,6 +92,8 @@ public class Animation {
     immutable int loopStart;
     immutable int loopEnd;
     immutable float frameSpeed;
+    
+    // subtract 1 because C arrays start at 0, but blender animation is at 1 for ease of use
 
     this(int start, int end, float frameSpeed, int keyCounter, bool loops) {
         this.key       = keyCounter;
