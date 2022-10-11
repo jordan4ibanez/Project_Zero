@@ -61,7 +61,7 @@ public class Window {
             }
 
             if (updateWithFPS) {
-                SetWindowTitle(this.convertTitleWithFPS());
+                // SetWindowTitle(this.convertTitleWithFPS());
             }
         }
 
