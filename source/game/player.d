@@ -495,7 +495,7 @@ public class Player {
         foreach( i; 0..20) {
             animationCell[i].rotation = goal;
         }
-        */
+        
 
         accumulator += 0.001;
 
@@ -504,6 +504,7 @@ public class Player {
         if (accumulator > 3.14) {
             accumulator = -3.14;
         }
+        */
 
         
         if (!legsLockedInAnimation) {
