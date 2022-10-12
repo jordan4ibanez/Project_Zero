@@ -31,24 +31,6 @@ public class Game {
     SoundEngine soundEngine;
     World world;
 
-
-    /*
-    Texture testTexture;
-
-    Model head;
-    ModelAnimation* headAnimation;
-
-    Model torso;
-    ModelAnimation* torsoAnimation;
-
-    Model legs;
-    ModelAnimation* legsAnimation;
-    
-    uint torsoAnimationCount;
-    uint legsAnimationCount;
-    uint headAnimationCount;
-    */
-
     this() {
         /// Game sets up Raylib
         validateRaylibBinding();
@@ -62,7 +44,7 @@ public class Game {
         mouse          = new Mouse(this);
         soundEngine    = new SoundEngine(this);
         timeKeeper     = new TimeKeeper(this);
-        world          = new World(this);        
+        world          = new World(this);
 
         modelContainer.uploadModel("playerHead",  "models/head.iqm",  "textures/bricks.png");
         modelContainer.uploadModel("playerTorso", "models/torso.iqm", "textures/bricks.png");
@@ -117,11 +99,14 @@ public class Game {
         }
 
         world.uploadHeightMap(heightMap, 10);
-
     }
 
     ~this() {
         writeln("I'm dead!");
+    }
+
+    void cleanUp() {        
+        this.modelContainer.cleanUp();
     }
 
     void run() {

@@ -831,7 +831,7 @@ public class Entity {
  * Therefor, we only need the Y positions of the quads.
  */
 public class MapQuad {
-    float[] yPoints;
+    float[4] yPoints;
     Vector2 position;
     float tileSize;
 
@@ -844,17 +844,14 @@ public class MapQuad {
         float yPosPositiveXPositiveZ,
         float tileSize
     ){
-        float[] newYPoints = new float[4];
         // y: negative x, negative z
-        newYPoints[0] = yPosNegativeXNegativeZ;
+        this.yPoints[0] = yPosNegativeXNegativeZ;
         // y: negative x, positive z
-        newYPoints[1] = yPosNegativeXPositiveZ;
+        this.yPoints[1] = yPosNegativeXPositiveZ;
         // y: positive x, positive z
-        newYPoints[2] = yPosPositiveXPositiveZ;
+        this.yPoints[2] = yPosPositiveXPositiveZ;
         // y: positive x, negative z
-        newYPoints[3] = yPosPositiveXNegativeZ;
-
-        this.yPoints = newYPoints;
+        this.yPoints[3] = yPosPositiveXNegativeZ;
 
         this.position = Vector2(position.x, position.y);
         this.tileSize = tileSize;

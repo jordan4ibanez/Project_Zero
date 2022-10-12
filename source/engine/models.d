@@ -6,11 +6,15 @@ import std.string: toStringz;
 
 /// This is a container class for models
 public class ModelContainer {
-    /// Texture cache
-    private GameTexture[string] textureCache;
     /// Model cache
     private GameModel[string] modelCache;
 
+
+    void cleanUp() {
+        foreach (GameModel model; modelCache) {
+            model.destroy();
+        }
+    }
 
     void uploadModel(string name, string texturePath, string modelPath) {
         modelCache[name] = new GameModel(this, texturePath, modelPath);
@@ -23,27 +27,6 @@ public class ModelContainer {
             throw new Exception("Tried to get a nonexistent model! " ~ name ~ " is not an uploaded model!");
         }
     }
-
-    private Texture uploadTexture(string texturePath) {
-        if (texturePath in this.textureCache) {
-            return this.textureCache[texturePath].texture;
-        } else {
-            GameTexture tempTexture = new GameTexture(texturePath);
-            this.textureCache[texturePath] = tempTexture;
-            return tempTexture.texture;
-        }
-    }
-}
-
-/// Wrapper around Texture
-public class GameTexture {
-    Texture texture;
-    this(string texturePath) {
-        texture = LoadTexture(toStringz(texturePath));
-    }
-    ~this() {
-        UnloadTexture(texture);
-    }
 }
 
 
@@ -51,13 +34,14 @@ public class GameTexture {
 public class GameModel {
 
     Model model;
+    Texture texture;
     ModelAnimation* modelAnimation;
     uint animationCount;
 
     this(ModelContainer container, string modelPath, string texturePath) {
-        Texture tempTexture = container.uploadTexture(texturePath);
+        texture = LoadTexture(toStringz(texturePath));
         this.model = LoadModel(toStringz(modelPath));
-        this.model.materials[0].maps[MATERIAL_MAP_DIFFUSE].texture = tempTexture;
+        this.model.materials[0].maps[MATERIAL_MAP_DIFFUSE].texture = texture;
         this.modelAnimation = LoadModelAnimations(toStringz(modelPath), &this.animationCount);
         /// Models are not automatically attached to bones, update to safe point
         if (this.animationCount > 0) {
@@ -66,8 +50,9 @@ public class GameModel {
     }
 
     ~this() {
-        UnloadModelAnimation(*this.modelAnimation);
         UnloadModel(this.model);
+        UnloadModelAnimation(*this.modelAnimation);
+        UnloadTexture(this.texture);
     }
     /// Easier to handle wrapper
     void updateAnimation(int animation, int frame) {
